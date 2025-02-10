@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+const API_BASE_URL = 'http://localhost:3000'
 
 export const useBookStore = defineStore('cridades', {
   state: () => ({
@@ -14,41 +15,22 @@ export const useBookStore = defineStore('cridades', {
 
   
   actions: {
-    async fetchCridades() {
-      try {
-        const response = await axios.get('http://localhost:3000/cridades')
-        this.pacientes = response.data
-      } catch (error) {
-        this.error = 'Error loading cridades: ' + error.message
-      }
+    async fetchCridades(tipus = '') {
+      const response = await axios.get(API_BASE_URL + `/api/cridades${tipus ? `?tipus=${tipus}` : ''}`);
+      this.cridades = response.data;
     },
-    
-    async deleteCridades(id) {
-      try {
-        await axios.delete(`http://localhost:3000/cridades/${id}`)
-        this.cridades = this.cridades.filter(cridada => cridada.id !== id)
-      } catch (error) {
-        this.error = 'Error deleting Cridades: ' + error.message
-      }
-    },
-    
     async addCridada(cridada) {
-      try {
-        const response = await axios.post('http://localhost:3000/cridades', cridada)
-        this.cridades.push(response.data)
-      } catch (error) {
-        this.error = 'Error adding Cridada: ' + error.message
-      }
+      await axios.post(API_BASE_URL + '/api/cridades', cridada);
+      this.fetchCridades();
     },
-
-    async getCridadaById(id) {
-        return this.cridades.find((cridada) => cridada.id === id)
-      },
-      async updatePaciente(updatedCridada) {
-        const index = this.cridades.findIndex((cridada) => cridada.id === updatedPaciente.id)
-        if (index !== -1) {
-          this.cridades[index] = updatedCridada
-        }
-      },
+    async fetchHistorialByPacient(id) {
+      const response = await axios.get(API_BASE_URL + `/api/pacients/${id}/cridades`);
+      return response.data;
+    },
+    async fetchHistorialByTeleoperador(id) {
+      const response = await axios.get(API_BASE_URL + `/api/teleoperadors/${id}/cridades`);
+      return response.data;
+    }
+  
     },
 });

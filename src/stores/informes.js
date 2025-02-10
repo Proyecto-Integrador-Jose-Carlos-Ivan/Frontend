@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
+const API_BASE_URL = 'http://localhost:3000'
 export const useBookStore = defineStore('informes', {
   state: () => ({
     informes: [],
-    
+    emergencies: [],
+
   }),
   
   getters: {
@@ -16,7 +18,7 @@ export const useBookStore = defineStore('informes', {
   actions: {
     async fetchInformes() {
       try {
-        const response = await axios.get('http://localhost:3000/informes')
+        const response = await axios.get(API_BASE_URL + '/informes')
         this.informes = response.data
       } catch (error) {
         this.error = 'Error loading informes: ' + error.message
@@ -25,7 +27,7 @@ export const useBookStore = defineStore('informes', {
     
     async deleteInformes(id) {
       try {
-        await axios.delete(`http://localhost:3000/informes/${id}`)
+        await axios.delete(API_BASE_URL + `/informes/${id}`)
         this.informes = this.informes.filter(infome => infome.id !== id)
       } catch (error) {
         this.error = 'Error deleting informes: ' + error.message
@@ -34,7 +36,7 @@ export const useBookStore = defineStore('informes', {
     
     async addInforme(informe) {
       try {
-        const response = await axios.post('http://localhost:3000/informes', informe)
+        const response = await axios.post(API_BASE_URL + '/informes', informe)
         this.informes.push(response.data)
       } catch (error) {
         this.error = 'Error adding Informes: ' + error.message
@@ -50,5 +52,18 @@ export const useBookStore = defineStore('informes', {
           this.informes[index] = updatedInforme
         }
       },
+      async fetchInformeEmergencies(data_inici, data_fi) {
+        const response = await axios.get(`/api/informes/emergencies?data_inici=${data_inici}&data_fi=${data_fi}`);
+        return response.data;
+      },
+      async fetchInformeSocials(data_inici, data_fi) {
+        const response = await axios.get(`/api/informes/socials?data_inici=${data_inici}&data_fi=${data_fi}`);
+        return response.data;
+      },
+      async fetchInformeSeguiment(data_inici, data_fi) {
+        const response = await axios.get(`/api/informes/seguiment?data_inici=${data_inici}&data_fi=${data_fi}`);
+        return response.data;
+      },
+    
     },
 });
