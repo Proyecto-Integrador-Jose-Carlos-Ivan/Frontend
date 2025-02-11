@@ -1,0 +1,76 @@
+{
+    "pacients": [
+      {
+        "id": "1",
+        "nom_complet": "Joan Pérez",
+        "data_naixement": "1980-05-15",
+        "adreça_completa": "Carrer Major, 45, Barcelona, 08001",
+        "dni": "12345678X",
+        "numero_targeta_sanitaria": "TS123456789",
+        "telefon": "+34 600 123 456",
+        "correu_electronic": "joan.perez@example.com",
+        "situacio_personal_familiar": "Viu sol",
+        "situacio_sanitaria": "Diabètic",
+        "situacio_habitatge": "Pis de lloguer",
+        "autonomia_personal": "Independent",
+        "situacio_economica": "Ingressos baixos"
+      },
+      {
+        "id": "2",
+        "nom_complet": "Maria López",
+        "data_naixement": "1975-09-23",
+        "adreça_completa": "Avinguda Llibertat, 12, València, 46001",
+        "dni": "87654321Y",
+        "numero_targeta_sanitaria": "TS987654321",
+        "telefon": "+34 650 987 321",
+        "correu_electronic": "maria.lopez@example.com",
+        "situacio_personal_familiar": "Casada, dos fills",
+        "situacio_sanitaria": "Hipertensió",
+        "situacio_habitatge": "Pis propi",
+        "autonomia_personal": "Independent",
+        "situacio_economica": "Ingressos mitjans"
+      }
+    ],
+    "cridades": [
+      {
+        "id": "101",
+        "tipus": "Entrant",
+        "data_hora": "2025-02-10T14:30:00",
+        "detalls": "Consulta sobre medicació",
+        "usuari_id": "1",
+        "teleoperador": "Marc Molina",
+        "teleoperador_email": "mmolina@atencio.lan"
+      },
+      {
+        "id": "102",
+        "tipus": "Sortint",
+        "data_hora": "2025-02-09T10:15:00",
+        "detalls": "Seguiment mensual",
+        "usuari_id": "2",
+        "teleoperador": "Laura Gómez",
+        "teleoperador_email": "lgomez@atencio.lan"
+      }
+    ],
+    "informes": [
+      {
+        "id": "201",
+        "tipus": "Emergències",
+        "data_inici": "2025-01-01",
+        "data_fi": "2025-01-31",
+        "usuari_id": "1",
+        "nom_complet": "Joan Pérez",
+        "cridades": 3,
+        "detalls": "Ha tingut 3 emergències aquest mes"
+      },
+      {
+        "id": "202",
+        "tipus": "Socials",
+        "data_inici": "2025-01-01",
+        "data_fi": "2025-01-31",
+        "usuari_id": "2",
+        "nom_complet": "Maria López",
+        "cridades": 1,
+        "detalls": "Cridada per suport emocional"
+      }
+    ]
+  }

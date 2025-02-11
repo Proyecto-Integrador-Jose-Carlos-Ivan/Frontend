@@ -1,0 +1,26 @@
+import { defineStore } from 'pinia'
+import axios from 'axios'
+
+const API_BASE_URL = 'http://localhost:3000'
+
+export const useOperadoresStore = defineStore('operadores', {
+  state: () => ({
+    operadores: [],
+    errors: null,
+  }),
+
+  getters: {
+    totalOperadores: (state) => state.operadores.length,
+  },
+
+  actions: {
+    async fetchOperadores() {
+      try {
+        const response = await axios.get(API_BASE_URL + '/api/operators')
+        this.operadores = response.data
+      } catch (error) {
+        this.errors = 'Error loading operadores: ' + error.message
+      }
+    },
+  },
+})
