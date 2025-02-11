@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 
 // Definir la URL base de la API
-const API_BASE_URL = 'http://localhost:3000'
+const API_BASE_URL = 'http://localhost:80'
 
 export const useApiStore = defineStore('apiStore', {
   state: () => ({
@@ -34,7 +34,7 @@ export const useApiStore = defineStore('apiStore', {
     // Pacientes
     async fetchPacientes() {
       try {
-        const response = await axios.get(API_BASE_URL + '/api/pacients')
+        const response = await axios.get(API_BASE_URL + '/api/patients')
         this.pacientes = response.data
       } catch (error) {
         this.errors = 'Error loading pacientes: ' + error.message
@@ -43,7 +43,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async addPaciente(paciente) {
       try {
-        const response = await axios.post(API_BASE_URL + '/api/pacients', paciente)
+        const response = await axios.post(API_BASE_URL + '/api/patients', paciente)
         this.pacientes.push(response.data)
       } catch (error) {
         this.errors = 'Error adding paciente: ' + error.message
@@ -52,7 +52,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async updatePaciente(id, paciente) {
       try {
-        const response = await axios.put(API_BASE_URL + `/api/pacients/${id}`, paciente)
+        const response = await axios.put(API_BASE_URL + `/api/patients/${id}`, paciente)
         const index = this.pacientes.findIndex((p) => p.id === id)
         if (index !== -1) {
           this.pacientes[index] = response.data
@@ -64,7 +64,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async deletePaciente(id) {
       try {
-        await axios.delete(API_BASE_URL + `/api/pacients/${id}`)
+        await axios.delete(API_BASE_URL + `/api/patients/${id}`)
         this.pacientes = this.pacientes.filter(p => p.id !== id)
       } catch (error) {
         this.errors = 'Error deleting paciente: ' + error.message
@@ -113,7 +113,7 @@ export const useApiStore = defineStore('apiStore', {
     },
 
 
-    
+
     // Llamadas
     async fetchLlamadas() {
       try {

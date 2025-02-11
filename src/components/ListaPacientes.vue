@@ -11,7 +11,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="paciente in pacientes" :key="paciente.nombre">
+                    <!-- Mostrar los pacientes desde el store -->
+                    <tr v-for="paciente in pacientes" :key="paciente.id">
                         <td>{{ paciente.nombre }}</td>
                         <td>{{ paciente.apellidos }}</td>
                         <td>{{ paciente.fecha }}</td>
@@ -25,43 +26,35 @@
         </div>
     </div>
 </template>
+
 <script>
+// Importa el store de Pinia
+import { useApiStore } from '@/stores/api';
+
+
 export default {
     data() {
         return {
-            pacientes: [
-                { nombre: 'Juan', apellidos: 'Pérez', fecha: '03/02/2025', hora: '08:00' },
-                { nombre: 'María', apellidos: 'Gómez', fecha: '04/02/2025', hora: '09:00' },
-                { nombre: 'Carlos', apellidos: 'López', fecha: '05/02/2025', hora: '10:00' },
-                { nombre: 'Ana', apellidos: 'Martínez', fecha: '06/02/2025', hora: '11:00' },
-                { nombre: 'Luis', apellidos: 'Hernández', fecha: '07/02/2025', hora: '12:00' },
-                { nombre: 'Laura', apellidos: 'García', fecha: '10/02/2025', hora: '13:00' },
-                { nombre: 'Pedro', apellidos: 'Rodríguez', fecha: '11/02/2025', hora: '14:00' },
-                { nombre: 'Sofía', apellidos: 'Fernández', fecha: '12/02/2025', hora: '15:00' },
-                { nombre: 'Miguel', apellidos: 'Sánchez', fecha: '13/02/2025', hora: '16:00' },
-                { nombre: 'Lucía', apellidos: 'Ramírez', fecha: '14/02/2025', hora: '17:00' },
-                { nombre: 'Javier', apellidos: 'Torres', fecha: '17/02/2025', hora: '18:00' },
-                { nombre: 'Elena', apellidos: 'Flores', fecha: '18/02/2025', hora: '19:00' },
-                { nombre: 'Raúl', apellidos: 'Ruiz', fecha: '19/02/2025', hora: '20:00' },
-                { nombre: 'Carmen', apellidos: 'Díaz', fecha: '20/02/2025', hora: '21:00' },
-                { nombre: 'Alberto', apellidos: 'Jiménez', fecha: '21/02/2025', hora: '08:00' },
-                { nombre: 'Isabel', apellidos: 'Moreno', fecha: '24/02/2025', hora: '09:00' },
-                { nombre: 'Pablo', apellidos: 'Álvarez', fecha: '25/02/2025', hora: '10:00' },
-                { nombre: 'Teresa', apellidos: 'Castro', fecha: '26/02/2025', hora: '11:00' },
-                { nombre: 'Andrés', apellidos: 'Ortiz', fecha: '27/02/2025', hora: '12:00' },
-                { nombre: 'Rosa', apellidos: 'Rubio', fecha: '28/02/2025', hora: '13:00' },
-                { nombre: 'Mario', apellidos: 'Vargas', fecha: '03/02/2025', hora: '14:00' },
-                { nombre: 'Lucía', apellidos: 'Méndez', fecha: '04/02/2025', hora: '15:00' },
-                { nombre: 'Clara', apellidos: 'Núñez', fecha: '05/02/2025', hora: '16:00' },
-                { nombre: 'Diego', apellidos: 'Paredes', fecha: '06/02/2025', hora: '17:00' },
-                { nombre: 'Eva', apellidos: 'Santos', fecha: '07/02/2025', hora: '18:00' },
-                { nombre: 'Hugo', apellidos: 'Ramos', fecha: '10/02/2025', hora: '19:00' },
-                { nombre: 'Marta', apellidos: 'Vega', fecha: '11/02/2025', hora: '20:00' },
-                { nombre: 'Sergio', apellidos: 'Cruz', fecha: '12/02/2025', hora: '21:00' },
-                { nombre: 'Paula', apellidos: 'Ortega', fecha: '13/02/2025', hora: '08:00' },
-                { nombre: 'David', apellidos: 'Navarro', fecha: '14/02/2025', hora: '09:00' }
-            ]
+            date: new Date(),  // Fecha actual
+            events: []         // Eventos para el calendario, si los necesitas
         };
+    },
+    computed: {
+        // Usamos el store de Pinia para obtener los pacientes
+        pacientes() {
+            const store = useApiStore();
+            return store.pacientes;
+        }
+    },
+    mounted() {
+        // Llamamos a la acción fetchPacientes cuando el componente se monte
+        const store = useApiStore();
+        store.fetchPacientes();
+    },
+    methods: {
+        moveToday() {
+            // Lógica para mover el calendario a la fecha actual
+        }
     }
 };
 </script>
@@ -75,6 +68,11 @@ export default {
 
     .pacientes {
         width: 85%;
+    }
+    .calendario {
+        width: 500px; /* Fixed size */
+        margin-top: 80px;
+        transform: translate(-80px);
     }
 
     .styled-table {
