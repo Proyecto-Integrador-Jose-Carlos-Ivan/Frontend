@@ -1,8 +1,15 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
+//activar las cookies y el cors
+axios.defaults.withCredentials = true;
+axios.defaults.withXSRFToken = true;
+
+// Token de autenticación
+const token = '5|UXxUYGMRukwYpboC9DwdANgg4zl4F607Fkb5D3qibd7be412';
+
 // Definir la URL base de la API
-const API_BASE_URL = 'http://localhost:80'
+const API_BASE_URL = 'http://localhost'
 
 export const useApiStore = defineStore('apiStore', {
   state: () => ({
@@ -34,7 +41,11 @@ export const useApiStore = defineStore('apiStore', {
     // Pacientes
     async fetchPacientes() {
       try {
-        const response = await axios.get(API_BASE_URL + '/api/patients')
+        const response = await axios.get(API_BASE_URL + '/api/patients', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
         this.pacientes = response.data
       } catch (error) {
         this.errors = 'Error loading pacientes: ' + error.message
