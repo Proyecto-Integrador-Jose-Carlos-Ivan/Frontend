@@ -1,6 +1,7 @@
 <template>
     <div class="container">
         <div class="pacientes">
+            <h2>Fecha actual: {{ formattedDate }}</h2>
             <table class="styled-table">
                 <thead>
                     <tr>
@@ -11,8 +12,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Mostrar los pacientes desde el store -->
-                    <tr v-for="paciente in pacientes" :key="paciente.id">
+                    <tr v-for="paciente in filteredPacientes" :key="paciente.id">
                         <td>{{ paciente.nombre }}</td>
                         <td>{{ paciente.apellidos }}</td>
                         <td>{{ paciente.fecha }}</td>
@@ -22,100 +22,167 @@
             </table>
         </div>
         <div class="calendario">
-            <Calendar :date="date" :events="events" @moveToday="moveToday" />
+            <!-- Usa 'v-calendar' en minúsculas -->
+            <VDatePicker 
+                :select-attribute="selectedAttribute" 
+                :attributes="attributes" 
+                v-model="date" 
+                mode="date" 
+                ref="date" 
+                expanded 
+                :date="date" 
+                :events="events" 
+                @moveToday="moveToday">
+                <template #footer>
+                    <button @click="moveToday" class="custom-button">Hoy</button>
+                </template>
+            </VDatePicker>
         </div>
     </div>
 </template>
 
 <script>
-// Importa el store de Pinia
-import { useApiStore } from '@/stores/api';
-
+import { useApiStore } from '@/stores/api';  // Asumiendo que tienes un store para obtener los pacientes
 
 export default {
     data() {
         return {
-            date: new Date(),  // Fecha actual
-            events: []         // Eventos para el calendario, si los necesitas
+            date: new Date(),  // Fecha actual seleccionada en el calendario
+            pacientes: [],      // Lista de pacientes
+            attributes: [],     // Atributos de las fechas en el calendario (marcadores de eventos)
+            events: [],         // Eventos del calendario (pacientes con citas en esa fecha)
+            selectedAttribute: { dot: true }, // Atributos para marcar fechas en el calendario
         };
     },
     computed: {
-        // Usamos el store de Pinia para obtener los pacientes
-        pacientes() {
+        // Formatear la fecha para coincidir con el formato de los pacientes
+        formattedDate() {
+            const day = String(this.date.getDate()).padStart(2, '0');
+            const month = String(this.date.getMonth() + 1).padStart(2, '0');
+            const year = this.date.getFullYear();
+            return `${day}/${month}/${year}`;
+        },
+
+        // Filtrar pacientes según la fecha seleccionada
+        filteredPacientes() {
+            return this.pacientes
+                .filter(paciente => paciente.fecha === this.formattedDate)
+                .sort((a, b) => a.hora.localeCompare(b.hora));
+        }
+    },
+    methods: {
+        // Cuando se cambia la fecha en el calendario
+        onDateChange(newDate) {
+            this.date = newDate;
+        },
+
+        // Recuperar pacientes desde el store
+        async fetchPacientes() {
             const store = useApiStore();
-            return store.pacientes;
+            this.pacientes = store.pacientes; // Aquí asumimos que tienes un store que devuelve los pacientes
+            this.updateCalendarAttributes();
+        },
+
+        // Actualizar los atributos de las fechas en el calendario
+        updateCalendarAttributes() {
+            this.attributes = this.pacientes.map(paciente => ({
+                key: paciente.fecha,
+                dates: [new Date(paciente.fecha.split('/').reverse().join('-'))],
+                dot: true, // Puedes agregar un marcador de punto para las fechas
+                bar: 'red' // Puedes personalizar el estilo de los atributos
+            }));
+
+            this.events = this.pacientes.map(paciente => ({
+                start: new Date(paciente.fecha.split('/').reverse().join('-') + ' ' + paciente.hora),
+                title: `${paciente.nombre} ${paciente.apellidos}`,
+                color: 'red', // Puedes personalizar el color del evento
+            }));
+        },
+
+        // Mover la fecha al día actual
+        moveToday() {
+            this.date = new Date();
         }
     },
     mounted() {
-        // Llamamos a la acción fetchPacientes cuando el componente se monte
-        const store = useApiStore();
-        store.fetchPacientes();
-    },
-    methods: {
-        moveToday() {
-            // Lógica para mover el calendario a la fecha actual
-        }
+        // Llamamos a la función para obtener los pacientes al montar el componente
+        this.fetchPacientes();
     }
 };
 </script>
 
-<style>
-    .container {
-        display: grid;
-        grid-template-columns: 1fr 500px; /* Adjusted size */
-        gap: 10px;
-    }
+<style scoped>
+.container {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
 
-    .pacientes {
-        width: 85%;
-    }
-    .calendario {
-        width: 500px; /* Fixed size */
-        margin-top: 80px;
-        transform: translate(-80px);
-    }
+.pacientes {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
 
-    .styled-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 15px 0;
-        font-size: 18px;
-        text-align: left;
-    }
+h2 {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
 
-    .styled-table thead tr {
-        background-color: #c62041;
-        color: #ffffff;
-        text-align: left;
-    }
+.styled-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+}
 
-    .styled-table th,
-    .styled-table td {
-        padding: 12px 15px;
-    }
+.styled-table thead tr {
+  background-color: #3498db;
+  color: #ffffff;
+}
 
-    .styled-table tbody tr {
-        border-bottom: 1px solid #dddddd;
-    }
+.styled-table th,
+.styled-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
 
-    .styled-table tbody tr:nth-child(odd) {
-        background-color: #ffe7e7;
-    }
+.styled-table th {
+  font-weight: 600;
+}
 
-    .styled-table tbody tr:nth-child(even) {
-        background-color: #fff2f2;
-    }
+.styled-table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
 
-    .styled-table tbody tr:hover {
-        background-color: #bb879181;
-    }
+.styled-table tbody tr:hover {
+  background-color: #e9ecef;
+}
 
-    .styled-table tbody tr:last-of-type {
-        border-bottom: 2px solid #c62041;
-    }
+.calendario {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
 
-    .styled-table tbody tr.active-row {
-        font-weight: bold;
-        color: #009879;
-    }
+.custom-button {
+  background-color: #3498db;
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.custom-button:hover {
+  background-color: #2980b9;
+}
 </style>

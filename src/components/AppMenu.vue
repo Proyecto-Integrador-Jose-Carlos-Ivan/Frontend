@@ -2,37 +2,48 @@
     <nav class="app-menu">
         <h1>Sistema de Teleoperadores</h1>
         <ul>
-            <li><a href="http://localhost:5173/">Pacientes</a></li>
-            <li><a href="http://localhost:5173/calendario">Calendario</a></li>
-            <li><a href="http://localhost:5173/calendario">Informes</a></li>
+            <!-- Usamos 'router-link' en lugar de 'a' para usar Vue Router -->
+            <li><router-link to="/" class="nav-link">Pacientes</router-link></li>
+            <li><router-link to="/calendario" class="nav-link">Calendario</router-link></li>
+            <li><router-link to="/informes" class="nav-link">Informes</router-link></li>
         </ul>
     </nav>
 </template>
 
 <style scoped>
-    .app-menu {
-        background-color: #a50000;
-        color: #ececec;
-        padding: 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    h1 {
-        font-size: 2em;
-    }
-    ul {
-        list-style: none;
-        padding: 0;
-        display: flex;
-        gap: 15px;
-        font-size: 1.2em;
-    }
-    li {
-        cursor: pointer;
-        a {
-            color: #ececec;
-            text-decoration: none;
-        }
-    }
+.app-menu {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+}
+
+.nav-link {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #3498db;
+}
 </style>
+
