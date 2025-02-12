@@ -6,7 +6,7 @@ axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
 // Token de autenticación
-const token = '5|UXxUYGMRukwYpboC9DwdANgg4zl4F607Fkb5D3qibd7be412';
+const token = '2|OdazqBZHakOynvKP7VmvuUefXbfH6xLBAoFZM8RNf00c3c4f';
 
 // Definir la URL base de la API
 const API_BASE_URL = 'http://localhost'
@@ -22,7 +22,7 @@ export const useApiStore = defineStore('apiStore', {
     emergencies: [],
     socials: [],
     seguiment: [],
-    errors: null,  // Para manejar los errores
+    errors: null, 
   }),
 
   getters: {
@@ -41,16 +41,19 @@ export const useApiStore = defineStore('apiStore', {
     // Pacientes
     async fetchPacientes() {
       try {
-        const response = await axios.get(API_BASE_URL + '/api/patients', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
-        this.pacientes = response.data
+          const response = await axios.get(API_BASE_URL + '/api/patients', {
+              headers: {
+                  'Authorization': `Bearer ${token}`
+              }
+          });
+          console.log('Pacientes:', response.data);  // Verifica si los pacientes están siendo obtenidos
+          this.pacientes = response.data;  // Asigna los pacientes al estado
       } catch (error) {
-        this.errors = 'Error loading pacientes: ' + error.message
+          this.errors = 'Error loading pacientes: ' + error.message;
+          console.error(this.errors);
       }
-    },
+  },
+  
 
     async addPaciente(paciente) {
       try {

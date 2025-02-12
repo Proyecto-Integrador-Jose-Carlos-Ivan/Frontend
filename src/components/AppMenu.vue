@@ -1,6 +1,6 @@
 <template>
     <nav class="app-menu">
-        <h1>Sistema de Teleoperadores</h1>
+        <h1>Sistema de TeleAsistencia</h1>
         <ul>
             <!-- Usamos 'router-link' en lugar de 'a' para usar Vue Router -->
             <li><router-link to="/" class="nav-link">Pacientes</router-link></li>
@@ -19,6 +19,11 @@
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
 
 h1 {
