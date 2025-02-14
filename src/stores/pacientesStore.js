@@ -6,7 +6,7 @@ axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
 // Token de autenticación
-const token = '2|OdazqBZHakOynvKP7VmvuUefXbfH6xLBAoFZM8RNf00c3c4f';
+const token = '4|7Q3PY0h4AJvN1XVnbzMjOR7s9LQQA9FzyEFOsSxi00d1e7ea';
 
 // URL base de la API
 const API_BASE_URL = 'http://localhost';
@@ -14,11 +14,17 @@ const API_BASE_URL = 'http://localhost';
 export const usePacientesStore = defineStore('pacientesStore', {
   state: () => ({
     pacientes: [], // Lista de pacientes
+    searchQuery: '',
     errors: null,  // Errores
   }),
 
   getters: {
-    totalPacientes: (state) => state.pacientes.length, // Total de pacientes
+    totalPacientes: (state) => state.pacientes.length,
+    pacientesFiltrados: (state) => {
+      return state.pacientes.filter(paciente =>
+        paciente.name.toLowerCase().includes(state.searchQuery.toLowerCase())
+      )
+    }, // Total de pacientes
   },
 
   actions: {
@@ -46,7 +52,7 @@ export const usePacientesStore = defineStore('pacientesStore', {
             Authorization: `Bearer ${token}`,
           },
         });
-        this.pacientes.push(response.data); // Agregar el nuevo paciente a la lista
+        this.pacientes.push(response.data.data); // Agregar el nuevo paciente a la lista
       } catch (error) {
         this.errors = 'Error al agregar el paciente: ' + error.message;
       }
@@ -62,7 +68,7 @@ export const usePacientesStore = defineStore('pacientesStore', {
         });
         const index = this.pacientes.findIndex((p) => p.id === id);
         if (index !== -1) {
-          this.pacientes[index] = response.data; // Actualizar el paciente en la lista
+          this.pacientes[index] = response.data.data; // Actualizar el paciente en la lista
         }
       } catch (error) {
         this.errors = 'Error al actualizar el paciente: ' + error.message;

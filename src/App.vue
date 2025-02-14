@@ -19,6 +19,7 @@ export default {
     AppMenu,
     AppFooter
   },
+  
 }
 </script>
 
@@ -43,5 +44,13 @@ body {
 
 .content {
   flex: 1 0 auto;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
 }
 </style>

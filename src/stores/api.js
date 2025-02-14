@@ -1,31 +1,34 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-//activar las cookies y el cors
+// Configuración de axios para manejar cookies y CORS
 axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
-// Token de autenticación
-const token = '2|OdazqBZHakOynvKP7VmvuUefXbfH6xLBAoFZM8RNf00c3c4f';
-
-// Definir la URL base de la API
+// URL base de la API
 const API_BASE_URL = 'http://localhost'
 
 export const useApiStore = defineStore('apiStore', {
   state: () => ({
-    pacientes: [],
-    contactos: [],
-    llamadas: [],
-    operadores: [],
-    zonas: [],
-    informes: [],
-    emergencies: [],
-    socials: [],
-    seguiment: [],
-    errors: null, 
+    token: localStorage.getItem('token') || null, // Token de autenticación
+    user: JSON.parse(localStorage.getItem('user')) || null, // Datos del usuario
+    pacientes: [], // Lista de pacientes
+    contactos: [], // Lista de contactos
+    llamadas: [], // Lista de llamadas
+    operadores: [], // Lista de operadores
+    zonas: [], // Lista de zonas
+    informes: [], // Lista de informes
+    emergencies: [], // Lista de emergencias
+    socials: [], // Lista de informes sociales
+    seguiment: [], // Lista de seguimientos
+    errors: null, // Errores
   }),
 
   getters: {
+    // Verifica si el usuario está autenticado
+    isAuthenticated: (state) => !!state.token,
+
+    // Getters para contar elementos (opcional)
     totalPacientes: (state) => state.pacientes.length,
     totalContactos: (state) => state.contactos.length,
     totalLlamadas: (state) => state.llamadas.length,
@@ -38,191 +41,292 @@ export const useApiStore = defineStore('apiStore', {
   },
 
   actions: {
-    // Pacientes
+    // Acción para iniciar sesión
+    async login(email, password) {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/login`, { email, password });
+
+        if (response.data.token) {
+          this.token = response.data.token;
+          this.user = response.data.user;
+
+          localStorage.setItem('token', this.token);
+          localStorage.setItem('user', JSON.stringify(this.user));
+
+          axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
+        } else {
+          throw new Error('Token de autenticación no recibido.');
+        }
+      } catch (error) {
+        console.error('Error en el login:', error.response ? error.response.data : error.message);
+        throw error;
+      }
+    },
+
+    logout() {
+      this.token = null;
+      this.user = null;
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      delete axios.defaults.headers.common['Authorization'];
+    },
+  
+
+    // Acción para establecer el token manualmente (útil si ya tienes un token válido)
+    setToken(token) {
+      this.token = token;
+      localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    },
+
+    // Acciones para manejar pacientes
     async fetchPacientes() {
       try {
-          const response = await axios.get(API_BASE_URL + '/api/patients', {
-              headers: {
-                  'Authorization': `Bearer ${token}`
-              }
-          });
-          console.log('Pacientes:', response.data);  // Verifica si los pacientes están siendo obtenidos
-          this.pacientes = response.data;  // Asigna los pacientes al estado
+        const response = await axios.get(`${API_BASE_URL}/api/patients`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}` // Usa el token almacenado
+          }
+        });
+        this.pacientes = response.data; // Almacena los pacientes en el estado
       } catch (error) {
-          this.errors = 'Error loading pacientes: ' + error.message;
-          console.error(this.errors);
+        this.errors = 'Error cargando pacientes: ' + error.message;
+        console.error(this.errors);
       }
-  },
-  
+    },
 
     async addPaciente(paciente) {
       try {
-        const response = await axios.post(API_BASE_URL + '/api/patients', paciente)
-        this.pacientes.push(response.data)
+        const response = await axios.post(`${API_BASE_URL}/api/patients`, paciente, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.pacientes.push(response.data); // Añade el nuevo paciente a la lista
       } catch (error) {
-        this.errors = 'Error adding paciente: ' + error.message
+        this.errors = 'Error añadiendo paciente: ' + error.message;
       }
     },
 
     async updatePaciente(id, paciente) {
       try {
-        const response = await axios.put(API_BASE_URL + `/api/patients/${id}`, paciente)
-        const index = this.pacientes.findIndex((p) => p.id === id)
+        const response = await axios.put(`${API_BASE_URL}/api/patients/${id}`, paciente, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        const index = this.pacientes.findIndex((p) => p.id === id);
         if (index !== -1) {
-          this.pacientes[index] = response.data
+          this.pacientes[index] = response.data; // Actualiza el paciente en la lista
         }
       } catch (error) {
-        this.errors = 'Error updating paciente: ' + error.message
+        this.errors = 'Error actualizando paciente: ' + error.message;
       }
     },
 
     async deletePaciente(id) {
       try {
-        await axios.delete(API_BASE_URL + `/api/patients/${id}`)
-        this.pacientes = this.pacientes.filter(p => p.id !== id)
+        await axios.delete(`${API_BASE_URL}/api/patients/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.pacientes = this.pacientes.filter(p => p.id !== id); // Elimina el paciente de la lista
       } catch (error) {
-        this.errors = 'Error deleting paciente: ' + error.message
+        this.errors = 'Error eliminando paciente: ' + error.message;
       }
     },
 
-
-    // Contactos
+    // Acciones para manejar contactos
     async fetchContactos() {
       try {
-        const response = await axios.get(API_BASE_URL + '/api/contacts')
-        this.contactos = response.data
+        const response = await axios.get(`${API_BASE_URL}/api/contacts`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.contactos = response.data; // Almacena los contactos en el estado
       } catch (error) {
-        this.errors = 'Error loading contactos: ' + error.message
+        this.errors = 'Error cargando contactos: ' + error.message;
       }
     },
 
     async addContacto(contacto) {
       try {
-        const response = await axios.post(API_BASE_URL + '/api/contacts', contacto)
-        this.contactos.push(response.data)
+        const response = await axios.post(`${API_BASE_URL}/api/contacts`, contacto, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.contactos.push(response.data); // Añade el nuevo contacto a la lista
       } catch (error) {
-        this.errors = 'Error adding contacto: ' + error.message
+        this.errors = 'Error añadiendo contacto: ' + error.message;
       }
     },
 
     async updateContacto(id, contacto) {
       try {
-        const response = await axios.put(API_BASE_URL + `/api/contacts/${id}`, contacto)
-        const index = this.contactos.findIndex((c) => c.id === id)
+        const response = await axios.put(`${API_BASE_URL}/api/contacts/${id}`, contacto, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        const index = this.contactos.findIndex((c) => c.id === id);
         if (index !== -1) {
-          this.contactos[index] = response.data
+          this.contactos[index] = response.data; // Actualiza el contacto en la lista
         }
       } catch (error) {
-        this.errors = 'Error updating contacto: ' + error.message
+        this.errors = 'Error actualizando contacto: ' + error.message;
       }
     },
 
     async deleteContacto(id) {
       try {
-        await axios.delete(API_BASE_URL + `/api/contacts/${id}`)
-        this.contactos = this.contactos.filter(c => c.id !== id)
+        await axios.delete(`${API_BASE_URL}/api/contacts/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.contactos = this.contactos.filter(c => c.id !== id); // Elimina el contacto de la lista
       } catch (error) {
-        this.errors = 'Error deleting contacto: ' + error.message
+        this.errors = 'Error eliminando contacto: ' + error.message;
       }
     },
 
-
-
-    // Llamadas
+    // Acciones para manejar llamadas
     async fetchLlamadas() {
       try {
-        const response = await axios.get(API_BASE_URL + '/api/calls')
-        this.llamadas = response.data
+        const response = await axios.get(`${API_BASE_URL}/api/calls`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.llamadas = response.data.data; // Almacena las llamadas en el estado
       } catch (error) {
-        this.errors = 'Error loading llamadas: ' + error.message
+        this.errors = 'Error cargando llamadas: ' + error.message;
       }
     },
 
     async addLlamada(llamada) {
       try {
-        const response = await axios.post(API_BASE_URL + '/api/calls', llamada)
-        this.llamadas.push(response.data)
+        const response = await axios.post(`${API_BASE_URL}/api/calls`, llamada, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.llamadas.push(response.data.data); // Añade la nueva llamada a la lista
       } catch (error) {
-        this.errors = 'Error adding llamada: ' + error.message
+        this.errors = 'Error añadiendo llamada: ' + error.message;
       }
     },
 
     async updateLlamada(id, llamada) {
       try {
-        const response = await axios.put(API_BASE_URL + `/api/calls/${id}`, llamada)
-        const index = this.llamadas.findIndex((l) => l.id === id)
+        const response = await axios.put(`${API_BASE_URL}/api/calls/${id}`, llamada, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        const index = this.llamadas.findIndex((l) => l.id === id);
         if (index !== -1) {
-          this.llamadas[index] = response.data
+          this.llamadas[index] = response.data.data; // Actualiza la llamada en la lista
         }
       } catch (error) {
-        this.errors = 'Error updating llamada: ' + error.message
+        this.errors = 'Error actualizando llamada: ' + error.message;
       }
     },
 
     async deleteLlamada(id) {
       try {
-        await axios.delete(API_BASE_URL + `/api/calls/${id}`)
-        this.llamadas = this.llamadas.filter(l => l.id !== id)
+        await axios.delete(`${API_BASE_URL}/api/calls/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.llamadas = this.llamadas.filter(l => l.id !== id); // Elimina la llamada de la lista
       } catch (error) {
-        this.errors = 'Error deleting llamada: ' + error.message
+        this.errors = 'Error eliminando llamada: ' + error.message;
       }
     },
 
-    // Operadores
+    // Acciones para manejar operadores
     async fetchOperadores() {
       try {
-        const response = await axios.get(API_BASE_URL + '/api/operators')
-        this.operadores = response.data
+        const response = await axios.get(`${API_BASE_URL}/api/operators`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.operadores = response.data.data; // Almacena los operadores en el estado
       } catch (error) {
-        this.errors = 'Error loading operadores: ' + error.message
+        this.errors = 'Error cargando operadores: ' + error.message;
       }
     },
 
-    // Zonas
+    // Acciones para manejar zonas
     async fetchZonas() {
       try {
-        const response = await axios.get(API_BASE_URL + '/api/zones')
-        this.zonas = response.data
+        const response = await axios.get(`${API_BASE_URL}/api/zones`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.zonas = response.data.data; // Almacena las zonas en el estado
       } catch (error) {
-        this.errors = 'Error loading zonas: ' + error.message
+        this.errors = 'Error cargando zonas: ' + error.message;
       }
     },
 
-    // Informes
+    // Acciones para manejar informes
     async fetchInformes() {
       try {
-        const response = await axios.get(API_BASE_URL + '/api/informes')
-        this.informes = response.data
+        const response = await axios.get(`${API_BASE_URL}/api/informes`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.informes = response.data.data; // Almacena los informes en el estado
       } catch (error) {
-        this.errors = 'Error loading informes: ' + error.message
+        this.errors = 'Error cargando informes: ' + error.message;
       }
     },
 
     async fetchInformeEmergencies(data_inici, data_fi) {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/informes/emergencies?data_inici=${data_inici}&data_fi=${data_fi}`)
-        this.emergencies = response.data
+        const response = await axios.get(`${API_BASE_URL}/api/informes/emergencies?data_inici=${data_inici}&data_fi=${data_fi}`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.emergencies = response.data.data; // Almacena las emergencias en el estado
       } catch (error) {
-        this.errors = 'Error fetching emergency reports: ' + error.message
+        this.errors = 'Error cargando informes de emergencias: ' + error.message;
       }
     },
 
     async fetchInformeSocials(data_inici, data_fi) {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/informes/socials?data_inici=${data_inici}&data_fi=${data_fi}`)
-        this.socials = response.data
+        const response = await axios.get(`${API_BASE_URL}/api/informes/socials?data_inici=${data_inici}&data_fi=${data_fi}`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.socials = response.data.data; // Almacena los informes sociales en el estado
       } catch (error) {
-        this.errors = 'Error fetching social reports: ' + error.message
+        this.errors = 'Error cargando informes sociales: ' + error.message;
       }
     },
 
     async fetchInformeSeguiment(data_inici, data_fi) {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/informes/seguiment?data_inici=${data_inici}&data_fi=${data_fi}`)
-        this.seguiment = response.data
+        const response = await axios.get(`${API_BASE_URL}/api/informes/seguiment?data_inici=${data_inici}&data_fi=${data_fi}`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.seguiment = response.data.data; // Almacena los seguimientos en el estado
       } catch (error) {
-        this.errors = 'Error fetching tracking reports: ' + error.message
+        this.errors = 'Error cargando informes de seguimiento: ' + error.message;
       }
     },
   },
-})
+});

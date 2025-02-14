@@ -1,132 +1,301 @@
 <template>
-  <div class="container">
+  <div class="main-container">
+    <div class="container">
       <div class="pacientes">
+        <!-- Header con "Mis Pacientes" y la fecha -->
+        <div class="header-container">
+          <h2>Mis Pacientes</h2>
           <h2>Fecha actual: {{ formattedDate }}</h2>
+        </div>
 
-          <table v-if="pacientes.length > 0" class="styled-table">
-              <thead>
-                  <tr>
-                      <th>Nombre</th>
-                      <th>Situación Personal</th>
-                      <th>Fecha de Nacimiento</th>
-                      <th>Dirección</th>
-                      <th>DNI</th>
-                      <th>Email</th>
-                      <th>Teléfono</th>
-                      <th>SIP</th>
-                      <th>Situación Económica</th>
-                      <th>Situación Sanitaria</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  <tr v-for="paciente in pacientes" :key="paciente.id">
-                      <td>{{ paciente.nombre || "No disponible" }}</td>
-                      <td>{{ paciente.situacion_personal || "No disponible" }}</td>
-                      <td>{{ formatFecha(paciente.fecha_nacimiento) }}</td>
-                      <td>{{ paciente.direccion || "No disponible" }}</td>
-                      <td>{{ paciente.dni || "No disponible" }}</td>
-                      <td>{{ paciente.email || "No disponible" }}</td>
-                      <td>{{ paciente.telefono || "No disponible" }}</td>
-                      <td>{{ paciente.sip || "No disponible" }}</td>
-                      <td>{{ paciente.situacion_economica || "No disponible" }}</td>
-                      <td>{{ paciente.situacion_sanitaria || "No disponible" }}</td>
-                  </tr>
-              </tbody>
-          </table>
-          <p v-else>Cargando pacientes...</p>
+        <!-- Tabla de pacientes y llamadas -->
+        <table v-if="datosCombinadosFiltrados.length > 0" class="styled-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Teléfono</th>
+              <th>DNI</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Categoría</th>
+              <th>Subtipo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="paciente in datosCombinadosFiltrados"
+              :key="paciente.id"
+              @click="mostrarDetallesPaciente(paciente)"
+              class="clickable-row"
+            >
+              <td>{{ paciente.nombre || "No disponible" }}</td>
+              <td>{{ paciente.telefono || "No disponible" }}</td>
+              <td>{{ paciente.dni || "No disponible" }}</td>
+              <td>
+                <div v-if="paciente.llamadas.length > 0">
+                  <div v-for="llamada in paciente.llamadas" :key="llamada.id">
+                    {{ formatFecha(llamada.fecha_hora) }}
+                  </div>
+                </div>
+                <span v-else>No hay llamadas</span>
+              </td>
+              <td>
+                <div v-if="paciente.llamadas.length > 0">
+                  <div v-for="llamada in paciente.llamadas" :key="llamada.id">
+                    {{ formatHora(llamada.fecha_hora) }}
+                  </div>
+                </div>
+                <span v-else>No hay llamadas</span>
+              </td>
+              <td>
+                <div v-if="paciente.llamadas.length > 0">
+                  <div v-for="llamada in paciente.llamadas" :key="llamada.id">
+                    {{ formatCategoria(llamada.categoria) }}
+                  </div>
+                </div>
+                <span v-else>No hay llamadas</span>
+              </td>
+              <td>
+                <div v-if="paciente.llamadas.length > 0">
+                  <div v-for="llamada in paciente.llamadas" :key="llamada.id">
+                    {{ formatSubtipo(llamada.subtipo) }}
+                  </div>
+                </div>
+                <span v-else>No hay llamadas</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p v-else>Cargando pacientes...</p>
       </div>
 
-      <div class="calendario">
-          <VDatePicker 
-              v-model="date"
-              mode="date"
-              expanded
-              :attributes="attributes"
-              @update:modelValue="onDateChange">
-              <template #footer>
-                  <button @click="moveToday" class="custom-button">Hoy</button>
-              </template>
-          </VDatePicker>
+      <!-- Calendario o detalles del paciente -->
+      <div class="calendario" v-if="!mostrarDetalles">
+        <VDatePicker
+          v-model="date"
+          mode="date"
+          expanded
+          @update:modelValue="onDateChange"
+        >
+          <template #footer>
+            <button @click="moveToday" class="custom-button">Hoy</button>
+            <button @click="resetFiltro" class="custom-button">Reiniciar</button>
+          </template>
+        </VDatePicker>
       </div>
+
+      <!-- Detalles del paciente -->
+      <div class="detalles-paciente" v-if="mostrarDetalles">
+        <div class="detalles-header">
+          <h2>Detalles del Paciente</h2>
+          <button @click="cerrarDetalles" class="close-btn">&times;</button>
+        </div>
+        <div class="detalles-body">
+          <div class="form-group">
+            <label><strong>Nombre:</strong></label>
+            <span>{{ pacienteSeleccionado.nombre }}</span>
+          </div>
+          <div class="form-group">
+            <label><strong>Teléfono:</strong></label>
+            <span>{{ pacienteSeleccionado.telefono }}</span>
+          </div>
+          <div class="form-group">
+            <label><strong>DNI:</strong></label>
+            <span>{{ pacienteSeleccionado.dni }}</span>
+          </div>
+          <div class="form-group">
+            <label><strong>Email:</strong></label>
+            <span>{{ pacienteSeleccionado.email }}</span>
+          </div>
+          <div class="form-group">
+            <label><strong>Dirección:</strong></label>
+            <span>{{ pacienteSeleccionado.direccion }}</span>
+          </div>
+          <div class="form-group">
+            <label><strong>SIP:</strong></label>
+            <span>{{ pacienteSeleccionado.sip }}</span>
+          </div>
+          <div class="form-group">
+            <label><strong>Situación Personal:</strong></label>
+            <span>{{ pacienteSeleccionado.situacion_personal }}</span>
+          </div>
+          <div class="form-group">
+            <label><strong>Situación Económica:</strong></label>
+            <span>{{ pacienteSeleccionado.situacion_economica }}</span>
+          </div>
+          <div class="form-group">
+            <label><strong>Situación Sanitaria:</strong></label>
+            <span>{{ pacienteSeleccionado.situacion_sanitaria }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { usePacientesStore } from '@/stores/pacientesStore'; // Importamos la store
+import { useCallsStore } from '@/stores/callsStore'; // Importar el store de llamadas
+import { usePacientesStore } from '@/stores/pacientesStore';
 import { computed, ref, onMounted } from 'vue';
 
 export default {
+  
   setup() {
-      const store = usePacientesStore(); // Inicializamos la store
-      const date = ref(new Date()); // Fecha actual seleccionada en el calendario
+    const pacientesStore = usePacientesStore();
+    const callsStore = useCallsStore();
+    const date = ref(null); // Fecha seleccionada en el calendario (null por defecto)
+    const mostrarDetalles = ref(false);
+    const pacienteSeleccionado = ref({});
 
-      // Computed para obtener pacientes desde la store
-      const pacientes = computed(() => store.pacientes);
+    // Obtener pacientes y llamadas al montar el componente
+    onMounted(async () => {
+      await pacientesStore.fetchPacientes();
+      await callsStore.fetchCalls();
+    });
 
-      // Formatear fecha actual
-      const formattedDate = computed(() => {
-          const day = String(date.value.getDate()).padStart(2, '0');
-          const month = String(date.value.getMonth() + 1).padStart(2, '0');
-          const year = date.value.getFullYear();
-          return `${day}/${month}/${year}`;
-      });
+    // Formatear la fecha actual
+    const formattedDate = computed(() => {
+      if (!date.value) return "No hay fecha seleccionada";
+      const day = String(date.value.getDate()).padStart(2, '0');
+      const month = String(date.value.getMonth() + 1).padStart(2, '0');
+      const year = date.value.getFullYear();
+      return `${day}/${month}/${year}`;
+    });
 
-      // Formatear fechas de pacientes
-      const formatFecha = (fecha) => {
-          if (!fecha) return "No disponible";
-          const dateObj = new Date(fecha);
-          return dateObj.toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" });
-      };
+    // Combinar datos de pacientes y llamadas, excluyendo pacientes sin llamadas
+    const datosCombinados = computed(() => {
+      return pacientesStore.pacientes
+        .map((paciente) => {
+          const llamadasPaciente = callsStore.calls.filter(
+            (llamada) => llamada.paciente_id === paciente.id
+          );
 
-      // Atributos para marcar las fechas en el calendario
-      const attributes = computed(() =>
-          store.pacientes.map(paciente => ({
-              key: paciente.id,
-              dates: [new Date(paciente.fecha_nacimiento)],
-              dot: true,
-              bar: 'red',
-          }))
+          return {
+            ...paciente,
+            llamadas: llamadasPaciente,
+          };
+        })
+        .filter((paciente) => paciente.llamadas.length > 0); // Excluir pacientes sin llamadas
+    });
+
+    // Filtrar pacientes por la fecha seleccionada en el calendario
+    const datosCombinadosFiltrados = computed(() => {
+      if (!date.value) return datosCombinados.value; // Si no hay fecha seleccionada, mostrar todos
+      const fechaSeleccionada = date.value.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+      return datosCombinados.value.filter((paciente) =>
+        paciente.llamadas.some((llamada) =>
+          new Date(llamada.fecha_hora).toISOString().split('T')[0] === fechaSeleccionada
+        )
       );
+    });
 
-      // Cambiar fecha en el calendario
-      const onDateChange = (newDate) => {
-          date.value = newDate;
-      };
-
-      // Volver a la fecha de hoy
-      const moveToday = () => {
-          date.value = new Date();
-      };
-
-      // Cargar pacientes al montar el componente
-      onMounted(async () => {
-          await store.fetchPacientes();
-          console.log("Pacientes cargados:", store.pacientes);
+    // Formatear la fecha
+    const formatFecha = (fechaHora) => {
+      if (!fechaHora) return "No disponible";
+      const dateObj = new Date(fechaHora);
+      return dateObj.toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
+    };
 
-      return {
-          store,
-          pacientes,
-          date,
-          formattedDate,
-          formatFecha,
-          attributes,
-          onDateChange,
-          moveToday
-      };
+    // Formatear la hora
+    const formatHora = (fechaHora) => {
+      if (!fechaHora) return "No disponible";
+      const dateObj = new Date(fechaHora);
+      return dateObj.toLocaleTimeString("es-ES", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    };
+
+    // Formatear la categoría (ejemplo: "llamadas_sociales" -> "Llamadas Sociales")
+    const formatCategoria = (categoria) => {
+      if (!categoria) return "No disponible";
+      return categoria
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    };
+
+    // Formatear el subtipo (ejemplo: "llamada_social" -> "Llamada Social")
+    const formatSubtipo = (subtipo) => {
+      if (!subtipo) return "No disponible";
+      return subtipo
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    };
+
+    // Mostrar detalles del paciente
+    const mostrarDetallesPaciente = (paciente) => {
+      pacienteSeleccionado.value = paciente;
+      mostrarDetalles.value = true;
+    };
+
+    // Cerrar detalles del paciente
+    const cerrarDetalles = () => {
+      mostrarDetalles.value = false;
+    };
+
+    // Mover el calendario al día de hoy
+    const moveToday = () => {
+      date.value = new Date(); // Establece la fecha actual
+    };
+
+    // Restablecer el filtrado
+    const resetFiltro = () => {
+      date.value = null; // Restablece la fecha seleccionada
+    };
+
+    // Manejar el cambio de fecha en el calendario
+    const onDateChange = (newDate) => {
+      date.value = newDate;
+    };
+
+    return {
+      pacientesStore,
+      callsStore,
+      date,
+      formattedDate,
+      datosCombinadosFiltrados,
+      formatFecha,
+      formatHora,
+      formatCategoria,
+      formatSubtipo,
+      mostrarDetalles,
+      pacienteSeleccionado,
+      mostrarDetallesPaciente,
+      cerrarDetalles,
+      moveToday,
+      resetFiltro,
+      onDateChange,
+    };
   },
 };
 </script>
 
 <style scoped>
+.main-container {
+  padding-top: 80px; /* Ajusta este valor según la altura de tu header secundario */
+}
+
 .container {
   display: grid;
-  grid-template-columns: 3fr 1fr;
+  grid-template-columns: 2fr 1fr; /* Ajustar el ancho de la tabla y la hoja */
   gap: 1.5rem;
   max-width: 100%;
   margin: 0 auto;
-  padding: 90px 1rem 20px; /* Increased top padding */
+  padding: 20px; /* Ajusta el padding según sea necesario */
   align-items: start;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem; /* Ajusta el margen inferior según sea necesario */
 }
 
 .pacientes {
@@ -138,16 +307,9 @@ export default {
   max-width: 100%;
 }
 
-h2 {
-  font-size: 1.5rem;
-  color: #2c3e50;
-  margin-top: 1rem; /* Added top margin */
-  margin-bottom: 1.5rem; /* Increased bottom margin */
-}
-
 .styled-table {
   width: 100%;
-  min-width: 900px;
+  min-width: 700px; /* Reducir el ancho mínimo de la tabla */
   border-collapse: separate;
   border-spacing: 0;
   font-size: 0.9rem;
@@ -160,7 +322,7 @@ h2 {
 
 .styled-table th,
 .styled-table td {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem; /* Reducir el padding para compactar la tabla */
   text-align: left;
 }
 
@@ -176,15 +338,75 @@ h2 {
   background-color: #e9ecef;
 }
 
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  background-color: #e9ecef;
+}
+
 .calendario {
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
-  min-width: 350px;
+  min-width: 300px; /* Reducir el ancho mínimo del calendario */
   align-self: start;
   position: sticky;
-  top: 90px; /* Adjusted to account for the fixed header */
+  top: 90px; /* Ajusta según la altura del header secundario */
+}
+
+.detalles-paciente {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  min-width: 300px; /* Reducir el ancho mínimo de la hoja */
+  align-self: start;
+  position: sticky;
+  top: 90px; /* Ajusta según la altura del header secundario */
+  max-height: 80vh; /* Limitar la altura */
+  overflow-y: auto; /* Agregar scroll interno */
+}
+
+.detalles-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.detalles-header h2 {
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6c757d;
+}
+
+.close-btn:hover {
+  color: #343a40;
+}
+
+.detalles-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
 }
 
 .custom-button {
@@ -196,6 +418,8 @@ h2 {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: 100%; /* Extender el botón "Hoy" */
+  margin-top: 0.5rem; /* Espacio entre botones */
 }
 
 .custom-button:hover {
@@ -205,10 +429,11 @@ h2 {
 @media (max-width: 768px) {
   .container {
     grid-template-columns: 1fr;
-    padding: 80px 10px 10px; /* Adjusted top padding for mobile */
+    padding: 80px 10px 10px; /* Ajusta el padding para móviles */
   }
 
-  .calendario {
+  .calendario,
+  .detalles-paciente {
     position: static;
     margin-top: 1rem;
   }

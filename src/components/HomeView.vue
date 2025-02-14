@@ -1,4 +1,5 @@
 <template>
+  <div class="main-container">  
   <div class="container">
     <div class="pacientes">
       <h2>Lista de Pacientes</h2>
@@ -16,192 +17,43 @@
             <th>SIP</th>
             <th>Situación Económica</th>
             <th>Situación Sanitaria</th>
-            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="paciente in pacientesStore.pacientes" :key="paciente.id">
             <td>{{ paciente.nombre }}</td>
-            <td>{{ paciente.situacion_personal }}</td>
+            <td>{{ paciente.situacion_personal || "No disponible" }}</td>
             <td>{{ formatFecha(paciente.fecha_nacimiento) }}</td>
             <td>{{ paciente.direccion }}</td>
             <td>{{ paciente.dni }}</td>
             <td>{{ paciente.email }}</td>
             <td>{{ paciente.telefono }}</td>
             <td>{{ paciente.sip }}</td>
-            <td>{{ paciente.situacion_economica }}</td>
-            <td>{{ paciente.situacion_sanitaria }}</td>
-            <td class="actions">
-              <button @click="mostrarPaciente(paciente)" class="btn btn-info">
-                <Eye size="18" />
-              </button>
-              <button @click="editarPaciente(paciente)" class="btn btn-warning">
-                <Edit size="18" />
-              </button>
-              <button @click="confirmarEliminar(paciente)" class="btn btn-danger">
-                <Trash2 size="18" />
-              </button>
-            </td>
+            <td>{{ paciente.situacion_economica || "No disponible" }}</td>
+            <td>{{ paciente.situacion_sanitaria || "No disponible" }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Modal para mostrar paciente -->
-    <div v-if="modalMostrar" class="modal-overlay">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Detalles del Paciente</h2>
-          <button @click="cerrarModal" class="close-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-          <p><strong>Nombre:</strong> {{ pacienteSeleccionado.nombre }}</p>
-          <p><strong>Situación Personal:</strong> {{ pacienteSeleccionado.situacion_personal }}</p>
-          <p><strong>Fecha de Nacimiento:</strong> {{ formatFecha(pacienteSeleccionado.fecha_nacimiento) }}</p>
-          <p><strong>Dirección:</strong> {{ pacienteSeleccionado.direccion }}</p>
-          <p><strong>DNI:</strong> {{ pacienteSeleccionado.dni }}</p>
-          <p><strong>Email:</strong> {{ pacienteSeleccionado.email }}</p>
-          <p><strong>Teléfono:</strong> {{ pacienteSeleccionado.telefono }}</p>
-          <p><strong>SIP:</strong> {{ pacienteSeleccionado.sip }}</p>
-          <p><strong>Situación Económica:</strong> {{ pacienteSeleccionado.situacion_economica }}</p>
-          <p><strong>Situación Sanitaria:</strong> {{ pacienteSeleccionado.situacion_sanitaria }}</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal para editar paciente -->
-    <div v-if="modalEditar" class="modal-overlay">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Editar Paciente</h2>
-          <button @click="cerrarModal" class="close-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-          <form @submit.prevent="guardarEdicion">
-            <div class="form-group">
-              <label for="nombre">Nombre:</label>
-              <input id="nombre" v-model="pacienteEditado.nombre" required>
-            </div>
-            <div class="form-group">
-              <label for="situacion_personal">Situación Personal:</label>
-              <input id="situacion_personal" v-model="pacienteEditado.situacion_personal">
-            </div>
-            <div class="form-group">
-              <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-              <input id="fecha_nacimiento" type="date" v-model="pacienteEditado.fecha_nacimiento">
-            </div>
-            <div class="form-group">
-              <label for="direccion">Dirección:</label>
-              <input id="direccion" v-model="pacienteEditado.direccion">
-            </div>
-            <div class="form-group">
-              <label for="dni">DNI:</label>
-              <input id="dni" v-model="pacienteEditado.dni">
-            </div>
-            <div class="form-group">
-              <label for="email">Email:</label>
-              <input id="email" type="email" v-model="pacienteEditado.email">
-            </div>
-            <div class="form-group">
-              <label for="telefono">Teléfono:</label>
-              <input id="telefono" v-model="pacienteEditado.telefono">
-            </div>
-            <div class="form-group">
-              <label for="sip">SIP:</label>
-              <input id="sip" v-model="pacienteEditado.sip">
-            </div>
-            <div class="form-group">
-              <label for="situacion_economica">Situación Económica:</label>
-              <input id="situacion_economica" v-model="pacienteEditado.situacion_economica">
-            </div>
-            <div class="form-group">
-              <label for="situacion_sanitaria">Situación Sanitaria:</label>
-              <input id="situacion_sanitaria" v-model="pacienteEditado.situacion_sanitaria">
-            </div>
-            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal para confirmar eliminación -->
-    <div v-if="modalEliminar" class="modal-overlay">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Confirmar Eliminación</h2>
-          <button @click="cerrarModal" class="close-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-          <p>¿Está seguro de que desea eliminar al paciente {{ pacienteSeleccionado.nombre }}?</p>
-          <div class="modal-actions">
-            <button @click="eliminarPaciente" class="btn btn-danger">Sí, Eliminar</button>
-            <button @click="cerrarModal" class="btn btn-secondary">Cancelar</button>
-          </div>
-        </div>
-      </div>
-    </div>
+  </div>
   </div>
 </template>
 
 <script>
 import { usePacientesStore } from '@/stores/pacientesStore';
-import { ref, onMounted } from "vue";
-import { Eye, Edit, Trash2 } from 'lucide-vue-next';
+import { onMounted } from "vue";
 
 export default {
-  components: {
-    Eye,
-    Edit,
-    Trash2
-  },
   setup() {
     const pacientesStore = usePacientesStore();
-    const modalMostrar = ref(false);
-    const modalEditar = ref(false);
-    const modalEliminar = ref(false);
-    const pacienteSeleccionado = ref({});
-    const pacienteEditado = ref({});
+
 
     const formatFecha = (fecha) => {
       if (!fecha) return "Fecha no disponible";
       const fechaValida = fecha.includes("T") ? fecha : `${fecha}T00:00:00`;
       const date = new Date(fechaValida);
       return date.toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" });
-    };
-
-    const mostrarPaciente = (paciente) => {
-      pacienteSeleccionado.value = paciente;
-      modalMostrar.value = true;
-      document.body.style.overflow = 'hidden';
-    };
-
-    const editarPaciente = (paciente) => {
-      pacienteEditado.value = { ...paciente };
-      modalEditar.value = true;
-      document.body.style.overflow = 'hidden';
-    };
-
-    const confirmarEliminar = (paciente) => {
-      pacienteSeleccionado.value = paciente;
-      modalEliminar.value = true;
-      document.body.style.overflow = 'hidden';
-    };
-
-    const cerrarModal = () => {
-      modalMostrar.value = false;
-      modalEditar.value = false;
-      modalEliminar.value = false;
-      document.body.style.overflow = 'auto';
-    };
-
-    const guardarEdicion = async () => {
-      await pacientesStore.updatePaciente(pacienteEditado.value.id, pacienteEditado.value);
-      cerrarModal();
-    };
-
-    const eliminarPaciente = async () => {
-      await pacientesStore.deletePaciente(pacienteSeleccionado.value.id);
-      cerrarModal();
     };
 
     onMounted(async () => {
@@ -211,28 +63,20 @@ export default {
     return {
       pacientesStore,
       formatFecha,
-      modalMostrar,
-      modalEditar,
-      modalEliminar,
-      pacienteSeleccionado,
-      pacienteEditado,
-      mostrarPaciente,
-      editarPaciente,
-      confirmarEliminar,
-      cerrarModal,
-      guardarEdicion,
-      eliminarPaciente
     };
   }
 };
 </script>
 
 <style scoped>
+.main-container {
+  padding-top: 80px; /* Asegura que el contenido no se solape con el header secundario */
+}
 .container {
   display: grid;
   grid-template-columns: 1fr;
   justify-content: center;
-  padding: 90px 20px 20px;
+  padding: 80px 20px 20px;
 }
 
 .pacientes {
@@ -304,6 +148,14 @@ h2 {
   height: 36px;
 }
 
+.btn.modal-btn {
+  width: auto;
+  min-width: 120px;
+  height: auto;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
 .btn-info {
   background-color: #17a2b8;
   color: white;
@@ -348,65 +200,67 @@ h2 {
 
 .modal-container {
   background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
+  padding: 1rem;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  background-color: #3498db;
-  color: #ffffff;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
 }
 
 .modal-header h2 {
   margin: 0;
-  color: white;
-  font-size: 1.25rem;
+  color: #343a40;
+  font-size: 1.5rem;
 }
 
 .close-btn {
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #ffffff;
+  color: #6c757d;
   cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #343a40;
 }
 
 .modal-body {
-  padding: 1rem;
+  padding: 1.5rem;
+  flex-grow: 1;
+  overflow-y: auto;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 15px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
+  margin-bottom: 5px;
 }
 
-.form-group input {
+.form-group input,
+.form-group select,
+.form-group textarea {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ced4da;
+  padding: 8px;
+  border: 1px solid #ddd;
   border-radius: 4px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
 }
 
 @media (max-width: 768px) {
@@ -438,6 +292,10 @@ h2 {
 
   .modal-container {
     width: 95%;
+  }
+
+  .grid-container {
+    grid-template-columns: 1fr;
   }
 }
 </style>
