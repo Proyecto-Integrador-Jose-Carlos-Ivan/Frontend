@@ -1,9 +1,9 @@
 <template>
-  <div class="main-container">  
+  <div class="main-container">
     <div class="container">
-      <h2>Añadir Nueva Llamada</h2>
+      <h2>Añadir Llamada Entrante</h2>
 
-      <!-- Formulario para añadir llamadas -->
+      <!-- Formulario para añadir llamadas entrantes -->
       <form @submit.prevent="guardarLlamada" class="form-container">
         <div class="form-group">
           <label for="fecha_hora">Fecha y Hora:</label>
@@ -30,29 +30,33 @@
           <textarea id="descripcion" v-model="llamadaActual.descripcion" required></textarea>
         </div>
         <div class="form-group">
-          <label for="sentido">Sentido:</label>
-          <select id="sentido" v-model="llamadaActual.sentido" required>
-            <option value="entrante">Entrante</option>
-            <option value="saliente">Saliente</option>
+          <label for="tipo">Tipo de Llamada:</label>
+          <select id="tipo" v-model="llamadaActual.tipo" required>
+            <option value="emergencia">Emergencia</option>
+            <option value="no_urgente">No Urgente</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="categoria">Categoría:</label>
-          <input type="text" id="categoria" v-model="llamadaActual.categoria" required>
-        </div>
-        <div class="form-group">
           <label for="subtipo">Subtipo:</label>
-          <input type="text" id="subtipo" v-model="llamadaActual.subtipo" required>
+          <select id="subtipo" v-model="llamadaActual.subtipo" required>
+            <option value="emergencia_sanitaria">Emergencia Sanitaria</option>
+            <option value="cita_medica">Cita Médica</option>
+            <option value="crisis_soledad">Crisis de Soledad</option>
+            <option value="alarma_sin_respuesta">Alarma sin Respuesta</option>
+            <option value="informacion">Petición de Información</option>
+            <option value="sugerencia">Sugerencia, Queja o Reclamación</option>
+            <option value="social">Llamada Social</option>
+          </select>
         </div>
         <button type="submit" class="btn btn-primary">Añadir Llamada</button>
       </form>
 
       <!-- Mensaje de confirmación -->
       <div v-if="mostrarMensaje" class="mensaje-exito">
-        La llamada se ha añadido correctamente.
+        La llamada entrante se ha añadido correctamente.
       </div>
     </div>
-  </div>  
+  </div>
 </template>
 
 <script>
@@ -72,9 +76,9 @@ export default {
       operador_id: '',
       paciente_id: '',
       descripcion: '',
-      sentido: '',
-      categoria: '',
-      subtipo: ''
+      tipo: '',
+      subtipo: '',
+      sentido: 'entrante' // Siempre será "entrante"
     });
 
     const mostrarMensaje = ref(false);
@@ -82,10 +86,9 @@ export default {
     const guardarLlamada = async () => {
       try {
         await callStore.addCall(llamadaActual.value);
-        mostrarMensaje.value = true; // Mostrar mensaje de éxito
-        resetFormulario(); // Reiniciar el formulario
+        mostrarMensaje.value = true;
+        resetFormulario();
 
-        // Ocultar el mensaje después de 3 segundos
         setTimeout(() => {
           mostrarMensaje.value = false;
         }, 3000);
@@ -100,13 +103,12 @@ export default {
         operador_id: '',
         paciente_id: '',
         descripcion: '',
-        sentido: '',
-        categoria: '',
-        subtipo: ''
+        tipo: '',
+        subtipo: '',
+        sentido: 'entrante'
       };
     };
 
-    // Cargar operadores y pacientes al montar el componente
     onMounted(async () => {
       await operadorStore.fetchOperadores();
       await pacienteStore.fetchPacientes();

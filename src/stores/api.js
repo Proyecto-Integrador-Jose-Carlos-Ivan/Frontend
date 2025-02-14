@@ -5,6 +5,7 @@ import axios from 'axios'
 axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
+const token = '1|E3CKHEQ1chLIwQSBTLQv4aGrX0EmCZcGJCHIjG4L11bf2a48';
 // URL base de la API
 const API_BASE_URL = 'http://localhost'
 
@@ -42,18 +43,15 @@ export const useApiStore = defineStore('apiStore', {
 
   actions: {
     // Acción para iniciar sesión
-    async login(email, password) {
+    async login() {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/login`, { email, password });
+        const response = await axios.get(`${API_BASE_URL}/api/login/google`);
 
         if (response.data.token) {
-          this.token = response.data.token;
-          this.user = response.data.user;
+          this.token = response.data.token;        
 
-          localStorage.setItem('token', this.token);
-          localStorage.setItem('user', JSON.stringify(this.user));
-
-          axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
+          localStorage.setItem('token', token);
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         } else {
           throw new Error('Token de autenticación no recibido.');
         }
@@ -65,9 +63,7 @@ export const useApiStore = defineStore('apiStore', {
 
     logout() {
       this.token = null;
-      this.user = null;
       localStorage.removeItem('token');
-      localStorage.removeItem('user');
       delete axios.defaults.headers.common['Authorization'];
     },
   

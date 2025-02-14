@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Pacientes from '../components/ListaPacientes.vue'
 import ListaPacientes from '../components/ListaPacientes.vue'
-import ListaLlamadas from '@/components/ListaLlamadas.vue'
 import HomeView from '../components/HomeView.vue'
 import InformeView from '@/components/InformeView.vue'
+import LlamadasEntrantes from '@/components/LlamadasEntrantes.vue'
+import LlamadasSalientes from '@/components/LlamadasSalientes.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,7 +12,8 @@ const router = createRouter({
     { path: '/', component: HomeView },
     { path: '/pacientes', component: Pacientes },
     { path: '/calendario', component: ListaPacientes},
-    { path: '/llamadas', component: ListaLlamadas },
+    { path: '/llamadasEntrantes', component: LlamadasEntrantes },
+    { path: '/llamadasSalientes', component: LlamadasSalientes },
     {
       path: '/informes',
       name: 'Reports',

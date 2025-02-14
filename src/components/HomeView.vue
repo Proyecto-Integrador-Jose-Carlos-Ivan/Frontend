@@ -1,59 +1,89 @@
 <template>
-  <div class="main-container">  
-  <div class="container">
-    <div class="pacientes">
-      <h2>Lista de Pacientes</h2>
-      
-      <table class="styled-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Situación Personal</th>
-            <th>Fecha de Nacimiento</th>
-            <th>Dirección</th>
-            <th>DNI</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>SIP</th>
-            <th>Situación Económica</th>
-            <th>Situación Sanitaria</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="paciente in pacientesStore.pacientes" :key="paciente.id">
-            <td>{{ paciente.nombre }}</td>
-            <td>{{ paciente.situacion_personal || "No disponible" }}</td>
-            <td>{{ formatFecha(paciente.fecha_nacimiento) }}</td>
-            <td>{{ paciente.direccion }}</td>
-            <td>{{ paciente.dni }}</td>
-            <td>{{ paciente.email }}</td>
-            <td>{{ paciente.telefono }}</td>
-            <td>{{ paciente.sip }}</td>
-            <td>{{ paciente.situacion_economica || "No disponible" }}</td>
-            <td>{{ paciente.situacion_sanitaria || "No disponible" }}</td>
-          </tr>
-        </tbody>
-      </table>
+  <div class="main-container">
+    <div class="container">
+      <div class="pacientes">
+        <h2>Lista de Pacientes</h2>
+
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Situación Personal</th>
+              <th>Dirección</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>SIP</th>
+              <th>Situación Sanitaria</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="paciente in pacientesStore.pacientes" :key="paciente.id" @click="showPacienteDetails(paciente)">
+              <td>{{ paciente.nombre }}</td>
+              <td>{{ paciente.situacion_personal || "No disponible" }}</td>
+              <td>{{ paciente.direccion }}</td>
+              <td>{{ paciente.email }}</td>
+              <td>{{ paciente.telefono }}</td>
+              <td>{{ paciente.sip }}</td>
+              <td>{{ paciente.situacion_sanitaria || "No disponible" }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-  </div>
+    <!-- Modal para mostrar detalles del paciente -->
+    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2>Detalles del Paciente</h2>
+          <button @click="closeModal" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div v-if="selectedPaciente">
+            <p><strong>Nombre:</strong> {{ selectedPaciente.nombre }}</p>
+            <p><strong>Situación Personal:</strong> {{ selectedPaciente.situacion_personal || "No disponible" }}</p>
+            <p><strong>Dirección:</strong> {{ selectedPaciente.direccion }}</p>
+            <p><strong>Email:</strong> {{ selectedPaciente.email }}</p>
+            <p><strong>Teléfono:</strong> {{ selectedPaciente.telefono }}</p>
+            <p><strong>SIP:</strong> {{ selectedPaciente.sip }}</p>
+            <p><strong>Situación Sanitaria:</strong> {{ selectedPaciente.situacion_sanitaria || "No disponible" }}</p>
+            <p><strong>Fecha de Nacimiento:</strong> {{ formatFecha(selectedPaciente.fecha_nacimiento) }}</p>
+            <p><strong>DNI:</strong> {{ selectedPaciente.dni || "No disponible" }}</p>
+            <p><strong>Situación Económica:</strong> {{ selectedPaciente.situacion_economica || "No disponible" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { usePacientesStore } from '@/stores/pacientesStore';
-import { onMounted } from "vue";
+import { ref, onMounted } from "vue";
 
 export default {
   setup() {
     const pacientesStore = usePacientesStore();
-
+    const showModal = ref(false); // Controla la visibilidad del modal
+    const selectedPaciente = ref(null); // Almacena el paciente seleccionado
 
     const formatFecha = (fecha) => {
       if (!fecha) return "Fecha no disponible";
       const fechaValida = fecha.includes("T") ? fecha : `${fecha}T00:00:00`;
       const date = new Date(fechaValida);
       return date.toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" });
+    };
+
+    // Muestra el modal con los detalles del paciente
+    const showPacienteDetails = (paciente) => {
+      selectedPaciente.value = paciente;
+      showModal.value = true;
+    };
+
+    // Cierra el modal
+    const closeModal = () => {
+      showModal.value = false;
+      selectedPaciente.value = null;
     };
 
     onMounted(async () => {
@@ -63,6 +93,10 @@ export default {
     return {
       pacientesStore,
       formatFecha,
+      showModal,
+      selectedPaciente,
+      showPacienteDetails,
+      closeModal,
     };
   }
 };
@@ -72,6 +106,7 @@ export default {
 .main-container {
   padding-top: 80px; /* Asegura que el contenido no se solape con el header secundario */
 }
+
 .container {
   display: grid;
   grid-template-columns: 1fr;
@@ -122,67 +157,11 @@ h2 {
 
 .styled-table tbody tr:hover {
   background-color: #e9ecef;
+  cursor: pointer; /* Cambia el cursor al pasar sobre una fila */
 }
 
 .styled-table tbody tr:last-of-type {
   border-bottom: 2px solid #ffffff;
-}
-
-.actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-}
-
-.btn {
-  padding: 0.5rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-  width: 36px;
-  height: 36px;
-}
-
-.btn.modal-btn {
-  width: auto;
-  min-width: 120px;
-  height: auto;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-}
-
-.btn-info {
-  background-color: #17a2b8;
-  color: white;
-}
-
-.btn-warning {
-  background-color: #ffc107;
-  color: black;
-}
-
-.btn-danger {
-  background-color: #dc3545;
-  color: white;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  color: white;
-}
-
-.btn-secondary {
-  background-color: #6c757d;
-  color: white;
-}
-
-.btn:hover {
-  opacity: 0.8;
 }
 
 .modal-overlay {
@@ -245,22 +224,10 @@ h2 {
   overflow-y: auto;
 }
 
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+.modal-body p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #2c3e50;
 }
 
 @media (max-width: 768px) {
@@ -282,20 +249,8 @@ h2 {
     padding: 0.5rem;
   }
 
-  .actions {
-    flex-direction: column;
-  }
-
-  .btn {
-    width: 100%;
-  }
-
   .modal-container {
     width: 95%;
-  }
-
-  .grid-container {
-    grid-template-columns: 1fr;
   }
 }
 </style>

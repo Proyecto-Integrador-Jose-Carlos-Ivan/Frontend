@@ -66,7 +66,7 @@
             </tr>
           </tbody>
         </table>
-        <p v-else>Cargando pacientes...</p>
+        <p v-else>No hay llamadas este día</p>
       </div>
 
       <!-- Calendario o detalles del paciente -->

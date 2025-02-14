@@ -4,11 +4,31 @@
     <nav class="app-menu">
       <h1>Sistema de TeleAsistencia</h1>
       <ul>
-        <li><router-link to="/" class="nav-link"><font-awesome-icon icon="user" class="w-6 h-6 text-white" /></router-link></li>
-        <li><router-link to="/calendario" class="nav-link"><font-awesome-icon icon="calendar" class="w-6 h-6 text-white" /></router-link></li>
-        <li><router-link to="/informes" class="nav-link"><font-awesome-icon icon="file-alt" class="w-6 h-6 text-white" /></router-link></li>
-        <li><router-link to="/llamadas" class="nav-link"><font-awesome-icon icon="phone" class="w-6 h-6 text-white" /></router-link></li>
-        <li><router-link to="/llamadas" class="nav-link"><font-awesome-icon icon="phone-alt" class="w-6 h-6 text-white" /></router-link></li>
+        <li>
+          <router-link to="/" class="nav-link">
+            <font-awesome-icon :icon="['fas', 'user']" class="w-6 h-6 text-white" />
+          </router-link>
+        </li>
+        <li>
+          <router-link to="/calendario" class="nav-link">
+            <font-awesome-icon :icon="['fas', 'calendar']" class="w-6 h-6 text-white" />
+          </router-link>
+        </li>
+        <li>
+          <router-link to="/informes" class="nav-link">
+            <font-awesome-icon :icon="['fas', 'file-alt']" class="w-6 h-6 text-white" />
+          </router-link>
+        </li>
+        <li>
+          <router-link to="/llamadasEntrantes" class="nav-link">
+            <font-awesome-icon :icon="['fas', 'phone-volume']" class="w-6 h-6 text-white" />
+          </router-link>
+        </li>
+        <li>
+          <router-link to="/llamadasSalientes" class="nav-link">
+            <font-awesome-icon :icon="['fas', 'phone-slash']" class="w-6 h-6 text-white" />
+          </router-link>
+        </li>
         <li>
           <button @click="logout" class="nav-link logout-btn">Cerrar sesión</button>
         </li>
@@ -101,9 +121,12 @@ import { usePacientesStore } from '@/stores/pacientesStore'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume } from '@fortawesome/free-solid-svg-icons';
 
+import { library } from '@fortawesome/fontawesome-svg-core';
 
+// Añade los iconos a la librería
+library.add(faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume);
 export default {
   components: {
     FontAwesomeIcon,

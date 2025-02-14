@@ -6,7 +6,7 @@ axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
 // Token de autenticación
-const token = '4|7Q3PY0h4AJvN1XVnbzMjOR7s9LQQA9FzyEFOsSxi00d1e7ea';
+const token = '1|E3CKHEQ1chLIwQSBTLQv4aGrX0EmCZcGJCHIjG4L11bf2a48';
 
 // URL base de la API
 const API_BASE_URL = 'http://localhost'
