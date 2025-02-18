@@ -83,16 +83,27 @@
 
       <!-- Mensaje si no hay resultados -->
       <div v-else class="no-results">No se encontraron resultados.</div>
+      <button v-if="emergenciesUrl" @click="openPdfInPopup" class="btn btn-primary">Ver Informe de Emergencias</button>
     </div>
+    <teleport to="body">
+      <div v-if="showPopup" class="modal-overlay">
+        <div class="modal-container">
+          <PdfPopup :pdf-url="emergenciesUrl" @close="closePopup" />
+        </div>
+      </div>
+    </teleport>
   </div>
 </template>
-  
-  <script>
 
+<script>
 import { ref, onMounted } from 'vue';
 import { useApiStore } from '@/stores/api';
+import PdfPopup from './PdfPopup.vue';
 
 export default {
+  components: {
+    PdfPopup
+  },
   setup() {
     const informesStore = useApiStore();
     const pacientesStore = useApiStore();
@@ -104,6 +115,8 @@ export default {
     const pacienteId = ref('');
     const informes = ref([]);
     const loading = ref(false);
+    const emergenciesUrl = ref(null);
+    const showPopup = ref(false);
 
     // Cargar pacientes y zonas al montar el componente
     onMounted(async () => {
@@ -119,6 +132,8 @@ export default {
         switch (reportType.value) {
           case 'emergencias':
             await informesStore.fetchEmergenciesByZone(zona.value, fecha.value, fecha.value);
+            emergenciesUrl.value = informesStore.emergencies;
+            showPopup.value = true; // Open popup automatically
             break;
           case 'pacientes':
             await informesStore.fetchPacientesOrdenados();
@@ -166,6 +181,14 @@ export default {
       URL.revokeObjectURL(url);
     };
 
+    const openPdfInPopup = () => {
+      showPopup.value = true;
+    };
+
+    const closePopup = () => {
+      showPopup.value = false;
+    };
+
     return {
       reportType,
       zona,
@@ -179,103 +202,129 @@ export default {
       generateReport,
       showAllEmergencies,
       downloadReport,
+      emergenciesUrl,
+      openPdfInPopup,
+      showPopup,
+      closePopup,
     };
   },
 };
+</script>
 
-  </script>
-  
 <style scoped>
+.reports-container {
+  display: grid;
+  grid-template-columns: 400px 1fr; /* Filtros más anchos a la izquierda */
+  gap: 2rem;
+  padding: 2rem;
+  padding-top: 120px;
+}
+
+.filters-column {
+  grid-column: 1;
+  position: sticky;
+  top: 120px;
+  height: fit-content;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filters label {
+  font-weight: bold;
+}
+
+.filters input,
+.filters select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%; /* Asegura que los inputs y selects ocupen todo el ancho */
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  background-color: #009879;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.btn:hover {
+  background-color: #007f63;
+}
+
+.btn-download {
+  background-color: #007bff;
+}
+
+.btn-download:hover {
+  background-color: #0056b3;
+}
+
+.loading {
+  font-style: italic;
+  color: #666;
+}
+
+.report-content {
+  background-color: #f0f0f0;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.no-results {
+  font-style: italic;
+  color: #666;
+  margin-top: 1rem;
+}
+
+.report-actions {
+  margin-top: 1rem;
+  text-align: right;
+}
+
+/* Estilos del modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.modal-container {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 90%; /* Adjust width */
+  max-width: 800px; /* Maximum width */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
   .reports-container {
-    display: grid;
-    grid-template-columns: 400px 1fr; /* Filtros más anchos a la izquierda */
-    gap: 2rem;
-    padding: 2rem;
-    padding-top: 120px;
+    grid-template-columns: 1fr; /* Una sola columna en móviles */
   }
-  
+
   .filters-column {
     grid-column: 1;
-    position: sticky;
-    top: 120px;
-    height: fit-content;
+    position: static;
   }
-  
-  .filters {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    background-color: #f9f9f9;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .filters label {
-    font-weight: bold;
-  }
-  
-  .filters input,
-  .filters select {
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 100%; /* Asegura que los inputs y selects ocupen todo el ancho */
-  }
-  
-  .btn {
-    padding: 0.5rem 1rem;
-    background-color: #009879;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 1rem;
-  }
-  
-  .btn:hover {
-    background-color: #007f63;
-  }
-  
-  .btn-download {
-    background-color: #007bff;
-  }
-  
-  .btn-download:hover {
-    background-color: #0056b3;
-  }
-  
-  .loading {
-    font-style: italic;
-    color: #666;
-  }
-  
-  .report-content {
-    background-color: #f0f0f0;
-    padding: 1rem;
-    border-radius: 4px;
-    margin-top: 1rem;
-  }
-  
-  .no-results {
-    font-style: italic;
-    color: #666;
-    margin-top: 1rem;
-  }
-  
-  .report-actions {
-    margin-top: 1rem;
-    text-align: right;
-  }
-  
-  @media (max-width: 768px) {
-    .reports-container {
-      grid-template-columns: 1fr; /* Una sola columna en móviles */
-    }
-  
-    .filters-column {
-      grid-column: 1;
-      position: static;
-    }
-  }
-  </style>
+}
+</style>

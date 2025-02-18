@@ -312,15 +312,22 @@ export const useApiStore = defineStore('apiStore', {
     async fetchEmergenciesByZone(zona, startDate, endDate) {
       this.loading = true;
       try {
-        const response = await axios.get(`${API_BASE_URL}/reports/emergencies`, {
+        const response = await axios.get(`${API_BASE_URL}/api/reports/emergencies`, {
           params: { 
             zona: zona || null, // Si no hay zona, no se envía el parámetro
-            startDate: startDate || new Date().toISOString().split('T')[0],
+            startDate: startDate || '2014-01-01',
             endDate: endDate || new Date().toISOString().split('T')[0],
           },
-          headers: { Authorization: `Bearer ${this.token}` },
+          headers: { 
+            Authorization: `Bearer ${this.token}`,
+          },
+          responseType: 'blob'
         });
-        this.emergencies = response.data.data;
+
+        // Crear un enlace de descarga para el PDF
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+        this.emergencies = url;
+
       } catch (error) {
         this.errors = 'Error cargando emergencias: ' + error.message;
       } finally {
