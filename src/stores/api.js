@@ -5,14 +5,13 @@ import axios from 'axios'
 axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
-const token = '1|E3CKHEQ1chLIwQSBTLQv4aGrX0EmCZcGJCHIjG4L11bf2a48';
 // URL base de la API
 const API_BASE_URL = 'http://localhost'
 
 export const useApiStore = defineStore('apiStore', {
   state: () => ({
-    token: localStorage.getItem('token') || null, // Token de autenticación
-    user: JSON.parse(localStorage.getItem('user')) || null, // Datos del usuario
+    token: localStorage.getItem('token') || null,
+    user: JSON.parse(localStorage.getItem('user')) || null,
     pacientes: [], // Lista de pacientes
     contactos: [], // Lista de contactos
     llamadas: [], // Lista de llamadas
@@ -42,39 +41,36 @@ export const useApiStore = defineStore('apiStore', {
   },
 
   actions: {
-    // Acción para iniciar sesión
-    async login() {
+    
+    setToken(token) {
+      this.token = token;
+      localStorage.setItem('token', token);
+    },
+
+    setUser(user) {
+      this.user = user;
+      localStorage.setItem('user', JSON.stringify(user));
+    },
+
+    async fetchUser() {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/login/google`);
-
-        if (response.data.token) {
-          this.token = response.data.token;        
-
-          localStorage.setItem('token', token);
-          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        } else {
-          throw new Error('Token de autenticación no recibido.');
-        }
+        const response = await axios.get(`${API_BASE_URL}/api/user`, {
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+          },
+        });
+        this.setUser(response.data);
       } catch (error) {
-        console.error('Error en el login:', error.response ? error.response.data : error.message);
-        throw error;
+        console.error('Error fetching user:', error);
       }
     },
 
     logout() {
       this.token = null;
+      this.user = null;
       localStorage.removeItem('token');
-      delete axios.defaults.headers.common['Authorization'];
+      localStorage.removeItem('user');
     },
-  
-
-    // Acción para establecer el token manualmente (útil si ya tienes un token válido)
-    setToken(token) {
-      this.token = token;
-      localStorage.setItem('token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    },
-
     // Acciones para manejar pacientes
     async fetchPacientes() {
       try {

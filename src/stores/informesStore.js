@@ -99,5 +99,58 @@ export const useInformesStore = defineStore('informesStore', {
         this.loading = false;
       }
     },
+
+    async fetchInformes() {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/informes`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.informes = response.data.data;
+      } catch (error) {
+        this.errors = 'Error cargando informes: ' + error.message;
+      }
+    },
+
+    async fetchInformeEmergencies(data_inici, data_fi) {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/informes/emergencies?data_inici=${data_inici}&data_fi=${data_fi}`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.emergencies = response.data.data;
+      } catch (error) {
+        this.errors = 'Error cargando informes de emergencias: ' + error.message;
+      }
+    },
+
+    async fetchInformeSocials(data_inici, data_fi) {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/informes/socials?data_inici=${data_inici}&data_fi=${data_fi}`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.socials = response.data.data;
+      } catch (error) {
+        this.errors = 'Error cargando informes sociales: ' + error.message;
+      }
+    },
+
+    async fetchInformeSeguiment(data_inici, data_fi) {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/informes/seguiment?data_inici=${data_inici}&data_fi=${data_fi}`, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        });
+        this.seguiment = response.data.data;
+      } catch (error) {
+        this.errors = 'Error cargando informes de seguimiento: ' + error.message;
+      }
+    },
   },
+  
 });

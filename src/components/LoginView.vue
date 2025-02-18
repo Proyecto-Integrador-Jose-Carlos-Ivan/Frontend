@@ -1,50 +1,33 @@
 <template>
   <div class="login-container">
-    <form @submit.prevent="login" class="login-form">
-      <h2>Iniciar Sesión</h2>
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" v-model="email" required>
-      </div>
-      <div class="form-group">
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" v-model="password" required>
-      </div>
-      <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-      <p v-if="error" class="error-message">{{ error }}</p>
-    </form>
+    <h1>Iniciar Sesión</h1>
+    <button @click="loginWithGoogle" class="google-login-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" class="google-logo" />
+      Iniciar sesión con Google
+    </button>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useApiStore } from '@/stores/api';
 import { useRouter } from 'vue-router';
+import { useApiStore } from '@/stores/api';
 
 export default {
   setup() {
-    const apiStore = useApiStore();
     const router = useRouter();
-    const email = ref('');
-    const password = ref('');
-    const error = ref('');
+    const apiStore = useApiStore();
 
-    const login = async () => {
-      error.value = '';
-      try {
-        await apiStore.login(email.value, password.value);
-        router.push('/pacientes'); // Redirige a la página principal después del login
-      } catch (err) {
-        console.error('Error de autenticación:', err);
-        error.value = 'Error de inicio de sesión. Verifica tus credenciales.';
-      }
+    const loginWithGoogle = () => {
+      window.location.href = 'http://localhost/api/login/google';
     };
 
+    // Verificar si el usuario ya está autenticado
+    if (apiStore.isAuthenticated) {
+      router.push({ name: 'home' });
+    }
+
     return {
-      email,
-      password,
-      error,
-      login,
+      loginWithGoogle,
     };
   },
 };
@@ -53,60 +36,40 @@ export default {
 <style scoped>
 .login-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   height: 100vh;
+  background-color: #f4f4f4;
+}
+
+h1 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #333;
+}
+
+.google-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.google-login-btn:hover {
   background-color: #f0f0f0;
 }
 
-.login-form {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.btn {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #009879;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.btn:hover {
-  background-color: #007f67;
-}
-
-.error-message {
-  color: red;
-  margin-top: 1rem;
-  text-align: center;
+.google-logo {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
 }
 </style>

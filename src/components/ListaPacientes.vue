@@ -4,8 +4,8 @@
       <div class="pacientes">
         <!-- Header con "Mis Pacientes" y la fecha -->
         <div class="header-container">
-          <h2>Mis Pacientes</h2>
-          <h2>Fecha actual: {{ formattedDate }}</h2>
+          <h2>Llamadas Programadas de Pacientes</h2>
+          
         </div>
 
         <!-- Tabla de pacientes y llamadas -->
