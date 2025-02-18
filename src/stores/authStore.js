@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import AuthRepository from '@/repositories/auth.repository.js'
 
 axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
@@ -7,7 +8,15 @@ axios.defaults.withXSRFToken = true;
 export const useAuthStore = defineStore('authStore', {
   state: () => ({
     token: localStorage.getItem('token') || null,
-    user: JSON.parse(localStorage.getItem('user')) || null,
+    // user: (() => {
+    //   try {
+    //     const storedUser = localStorage.getItem('user');
+    //     return storedUser ? JSON.parse(storedUser) : null;
+    //   } catch (error) {
+    //     console.error("Error parsing user from localStorage:", error);
+    //     return null;
+    //   }
+    // })(),
   }),
 
   getters: {
@@ -24,21 +33,61 @@ export const useAuthStore = defineStore('authStore', {
       this.user = user;
       localStorage.setItem('user', JSON.stringify(user));
     },
-    async logout() {
-        try {
-          await axios.post('http://localhost/api/logout', {}, {
-            headers: {
-              Authorization: `Bearer ${this.token}`,
-            },
-          });
-          this.token = null;
-          this.user = null;
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-        } catch (error) {
-          console.error('Error during logout:', error);
+
+    async loginWithGoogle() {
+      const authRepository = new AuthRepository()
+      const response = await authRepository.loginWithGoogle()
+
+      if (response) {
+        if(response.error){
+          this.googleMessageError = response.error
+          return false
         }
-      },
+
+        if(response.token && response.user) {
+          this.token = response.token
+          this.user = response.user
+          localStorage.setItem("token", response.token)
+          localStorage.setItem("user", JSON.stringify(response.user))
+          return true
+        }
+
+      } else {
+        return false
+      }
+
+    },
+
+    logout() {
+      this.user = null
+      this.token = null
+      localStorage.removeItem("token")
+      localStorage.removeItem("user")
+    },
+    initializeAuth() {
+      const token = localStorage.getItem("token")
+      const user = JSON.parse(localStorage.getItem("user"))
+      if (token && user) {
+        this.token = token
+        this.user = user
+      }
+    },
+
+    // async logout() {
+    //     try {
+    //       await axios.post('http://localhost/api/logout', {}, {
+    //         headers: {
+    //           Authorization: `Bearer ${this.token}`,
+    //         },
+    //       });
+    //       this.token = null;
+    //       this.user = null;
+    //       localStorage.removeItem('token');
+    //       localStorage.removeItem('user');
+    //     } catch (error) {
+    //       console.error('Error during logout:', error);
+    //     }
+    //   },
 
     clearAuth() {
       this.token = null;

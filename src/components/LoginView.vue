@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <h1>Iniciar Sesión</h1>
-    
+
     <!-- Formulario de inicio de sesión -->
     <form @submit.prevent="loginWithCredentials" class="login-form">
       <div class="form-group">
@@ -17,51 +17,74 @@
 
     <!-- Botón de inicio de sesión con Google -->
     <button @click="loginWithGoogle" class="google-login-btn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" class="google-logo" />
+      <img src="/google.svg" alt="Google Logo" class="google-logo" />
       Iniciar sesión con Google
     </button>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useApiStore } from '@/stores/api';
+import { useAuthStore } from '@/stores/authStore';
+import AuthRepository from '../repositories/auth.repository';
 
 export default {
   setup() {
     const router = useRouter();
-    const apiStore = useApiStore();
+    const authStore = useAuthStore();
+    const authRepository = new AuthRepository();
 
-    const email = ref(''); // Cambiado de username a email
+    const email = ref('');
     const password = ref('');
 
     const loginWithCredentials = async () => {
       try {
         const payload = {
-          email: email.value, // Cambiado de username a email
+          email: email.value,
           password: password.value,
         };
-        await apiStore.login(payload);
-        if (apiStore.isAuthenticated) {
+        const result = await authRepository.loginWithCredentials(payload);
+        if (result.success) {
+          authStore.setToken(result.data.token);
+          authStore.setUser(result.data.user);
           router.push({ name: 'home' });
+        } else {
+          console.error('Login with credentials failed:', result.error);
         }
       } catch (error) {
         console.error('Error al iniciar sesión:', error);
       }
     };
 
-    const loginWithGoogle = () => {
-      window.location.href = 'http://localhost/api/login/google';
+    const loginWithGoogle = async () => {
+      try {
+        const result = await authRepository.loginWithGoogle();
+        if (result.success) {
+          authStore.setToken(result.data.token);
+          authStore.setUser(result.data.user);
+          router.push({ name: 'home' });
+        } else {
+          console.error('Google login failed:', result.error);
+        }
+      } catch (error) {
+        console.error('Error during Google login:', error);
+      }
     };
 
-    // Verificar si el usuario ya está autenticado
-    if (apiStore.isAuthenticated) {
-      router.push({ name: 'home' });
-    }
+    // Watch for changes in isAuthenticated
+    watch(
+      () => authStore.isLoggedIn,
+      (isLoggedIn) => {
+        if (isLoggedIn) {
+          router.push({ name: 'home' });
+        }
+      },
+      { immediate: true } // Add immediate: true to run the watcher on component mount
+    );
 
     return {
-      email, // Cambiado de username a email
+      email,
       password,
       loginWithCredentials,
       loginWithGoogle,

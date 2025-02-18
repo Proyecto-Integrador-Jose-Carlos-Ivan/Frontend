@@ -19,16 +19,16 @@ const router = createRouter({
       meta: { requiresAuth: false }, // No requiere autenticación
     },
     {
-      path: '/google-callback',
-      name: 'google-callback',
-      component: GoogleCallback,
-      meta: { requiresAuth: false }, // No requiere autenticación
-    },
-    {
       path: '/home',
       name: 'home',
       component: HomeView,
       meta: { requiresAuth: true }, // Requiere autenticación
+    },
+    {
+      path: '/google-callback',
+      name: 'google-callback',
+      component: GoogleCallback,
+      meta: { requiresAuth: false }, // No requiere autenticación
     },
     {
       path: '/pacientes',

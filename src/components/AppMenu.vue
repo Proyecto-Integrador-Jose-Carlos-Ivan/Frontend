@@ -145,6 +145,7 @@ import { ref, computed, onMounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
+import { useAuthStore } from '@/stores/authStore';
 
 // Añade los iconos a la librería
 library.add(faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume);
@@ -170,6 +171,7 @@ export default {
     const apiStore = useApiStore();
     const router = useRouter();
     const route = useRoute();
+    const authStore = useAuthStore();
 
     const modalAlta = ref(false);
     const zonas = ref([]); // Lista de zonas
@@ -201,8 +203,8 @@ export default {
     });
 
     const logout = () => {
-      localStorage.removeItem('token');
-      router.push({ name: 'login' });
+      authStore.logout();
+      router.push('/');
     };
 
     const mostrarFormularioAlta = () => {
