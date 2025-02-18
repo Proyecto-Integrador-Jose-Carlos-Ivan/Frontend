@@ -1,11 +1,11 @@
 <template>
   <div>
     <!-- Header principal (menú) -->
-    <nav class="app-menu">
+    <nav v-if="!isLoginRoute" class="app-menu">
       <h1>Sistema de TeleAsistencia</h1>
       <ul>
         <li>
-          <router-link to="/" class="nav-link">
+          <router-link to="/home" class="nav-link">
             <font-awesome-icon :icon="['fas', 'user']" class="w-6 h-6 text-white" />
           </router-link>
         </li>
@@ -36,7 +36,7 @@
     </nav>
 
     <!-- Header secundario (buscador y botón de alta) -->
-    <header class="secondary-header">
+    <header v-if="!isLoginRoute" class="secondary-header">
       <div>
         <button @click="mostrarFormularioAlta" class="alta-btn">Dar de alta</button>
       </div>
@@ -60,49 +60,72 @@
         </div>
         <div class="modal-body">
           <form @submit.prevent="guardarAlta" class="form-grid">
-            <!-- Primera fila -->
+            <!-- Primera fila: Información básica -->
             <div class="form-group">
               <label for="nombre">Nombre:</label>
               <input id="nombre" v-model="nuevoPaciente.nombre" required>
             </div>
             <div class="form-group">
-              <label for="situacion_personal">Situación Personal:</label>
-              <input id="situacion_personal" v-model="nuevoPaciente.situacion_personal">
-            </div>
-            <div class="form-group">
               <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-              <input id="fecha_nacimiento" type="date" v-model="nuevoPaciente.fecha_nacimiento">
+              <input id="fecha_nacimiento" type="date" v-model="nuevoPaciente.fecha_nacimiento" required>
             </div>
-            <div class="form-group">
-              <label for="direccion">Dirección:</label>
-              <input id="direccion" v-model="nuevoPaciente.direccion">
-            </div>
-            <!-- Segunda fila -->
             <div class="form-group">
               <label for="dni">DNI:</label>
-              <input id="dni" v-model="nuevoPaciente.dni">
-            </div>
-            <div class="form-group">
-              <label for="email">Email:</label>
-              <input id="email" type="email" v-model="nuevoPaciente.email">
-            </div>
-            <div class="form-group">
-              <label for="telefono">Teléfono:</label>
-              <input id="telefono" v-model="nuevoPaciente.telefono">
+              <input id="dni" v-model="nuevoPaciente.dni" required>
             </div>
             <div class="form-group">
               <label for="sip">SIP:</label>
-              <input id="sip" v-model="nuevoPaciente.sip">
+              <input id="sip" v-model="nuevoPaciente.sip" required>
             </div>
-            <!-- Tercera fila -->
+
+            <!-- Segunda fila: Contacto -->
             <div class="form-group">
-              <label for="situacion_economica">Situación Económica:</label>
-              <input id="situacion_economica" v-model="nuevoPaciente.situacion_economica">
+              <label for="telefono">Teléfono:</label>
+              <input id="telefono" v-model="nuevoPaciente.telefono" required>
             </div>
             <div class="form-group">
+              <label for="email">Email:</label>
+              <input id="email" type="email" v-model="nuevoPaciente.email" required>
+            </div>
+            <div class="form-group">
+              <label for="direccion">Dirección:</label>
+              <input id="direccion" v-model="nuevoPaciente.direccion" required>
+            </div>
+            <div class="form-group">
+              <label for="zona_id">Zona:</label>
+              <select id="zona_id" v-model="nuevoPaciente.zona_id" required>
+                <option v-for="zona in zonas" :key="zona.id" :value="zona.id">
+                  {{ zona.nombre }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Tercera fila: Situación personal y sanitaria -->
+            <div class="form-group full-width">
+              <label for="situacion_personal">Situación Personal:</label>
+              <textarea id="situacion_personal" v-model="nuevoPaciente.situacion_personal"></textarea>
+            </div>
+            <div class="form-group full-width">
               <label for="situacion_sanitaria">Situación Sanitaria:</label>
-              <input id="situacion_sanitaria" v-model="nuevoPaciente.situacion_sanitaria">
+              <textarea id="situacion_sanitaria" v-model="nuevoPaciente.situacion_sanitaria"></textarea>
             </div>
+
+            <!-- Cuarta fila: Situación de hábitat y autonomía -->
+            <div class="form-group full-width">
+              <label for="situacion_habitage">Situación de Hábitat:</label>
+              <textarea id="situacion_habitage" v-model="nuevoPaciente.situacion_habitage"></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label for="autonomia">Autonomía:</label>
+              <textarea id="autonomia" v-model="nuevoPaciente.autonomia"></textarea>
+            </div>
+
+            <!-- Quinta fila: Situación económica -->
+            <div class="form-group full-width">
+              <label for="situacion_economica">Situación Económica:</label>
+              <textarea id="situacion_economica" v-model="nuevoPaciente.situacion_economica"></textarea>
+            </div>
+
             <!-- Botones -->
             <div class="form-actions">
               <button type="submit" class="btn btn-primary">Guardar</button>
@@ -116,106 +139,124 @@
 </template>
 
 <script>
-import { useApiStore } from '@/stores/api'
-import { usePacientesStore } from '@/stores/pacientesStore'
-import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { useApiStore } from '@/stores/api';
+import { useRouter, useRoute } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume } from '@fortawesome/free-solid-svg-icons';
-
 import { library } from '@fortawesome/fontawesome-svg-core';
 
 // Añade los iconos a la librería
 library.add(faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume);
+
 export default {
   components: {
     FontAwesomeIcon,
   },
 
-  data(){
+  data() {
     return {
       faUser,
       faCalendar,
       faFileAlt,
       faPhone,
       faPhoneAlt,
-    }
+    };
   },
+
   name: 'AppMenu',
+
   setup() {
-    const apiStore = useApiStore()
-    const pacientesStore = usePacientesStore()
-    const router = useRouter()
-    const searchQuery = ref('')
-    const modalAlta = ref(false)
+    const apiStore = useApiStore();
+    const router = useRouter();
+    const route = useRoute();
+
+    const modalAlta = ref(false);
+    const zonas = ref([]); // Lista de zonas
+    const searchQuery = ref('');
+
     const nuevoPaciente = ref({
       nombre: '',
-      situacion_personal: '',
       fecha_nacimiento: '',
       direccion: '',
       dni: '',
-      email: '',
-      telefono: '',
       sip: '',
-      situacion_economica: '',
-      situacion_sanitaria: ''
-    })
+      telefono: '',
+      email: '',
+      zona_id: '',
+      situacion_personal: '',
+      situacion_sanitaria: '',
+      situacion_habitage: '',
+      autonomia: '',
+      situacion_economica: ''
+    });
+
+    // Comprobar si la ruta actual es la de login
+    const isLoginRoute = computed(() => route.name === 'login');
+
+    // Cargar zonas al montar el componente
+    onMounted(async () => {
+      await apiStore.fetchZonas();
+      zonas.value = apiStore.zonas;
+    });
 
     const logout = () => {
-      apiStore.logout()
-      router.push('/')
-    }
+      localStorage.removeItem('token');
+      router.push({ name: 'login' });
+    };
 
     const mostrarFormularioAlta = () => {
-      modalAlta.value = true
-      document.body.style.overflow = 'hidden'
-    }
+      modalAlta.value = true;
+      document.body.style.overflow = 'hidden';
+    };
 
     const cerrarModal = () => {
-      modalAlta.value = false
-      document.body.style.overflow = 'auto'
-    }
+      modalAlta.value = false;
+      document.body.style.overflow = 'auto';
+    };
 
     const guardarAlta = async () => {
       try {
-        await pacientesStore.addPaciente(nuevoPaciente.value)
-        cerrarModal()
+        await apiStore.addPaciente(nuevoPaciente.value);
+        cerrarModal();
         nuevoPaciente.value = {
           nombre: '',
-          situacion_personal: '',
           fecha_nacimiento: '',
           direccion: '',
           dni: '',
-          email: '',
-          telefono: '',
           sip: '',
-          situacion_economica: '',
-          situacion_sanitaria: ''
-        }
+          telefono: '',
+          email: '',
+          zona_id: '',
+          situacion_personal: '',
+          situacion_sanitaria: '',
+          situacion_habitage: '',
+          autonomia: '',
+          situacion_economica: ''
+        };
       } catch (error) {
-        console.error('Error al agregar el paciente:', error)
+        console.error('Error al agregar el paciente:', error);
       }
-    }
+    };
 
     const buscarPacientes = () => {
-      pacientesStore.buscarPacientes(searchQuery.value)
-    }
+      apiStore.buscarPacientes(searchQuery.value);
+    };
 
     return {
-      apiStore,
-      logout,
-      searchQuery,
       modalAlta,
       nuevoPaciente,
+      zonas,
+      searchQuery,
+      isLoginRoute,
       mostrarFormularioAlta,
       cerrarModal,
       guardarAlta,
       buscarPacientes,
-      
-      
-    }
-  }
-}
+      logout,
+    };
+  },
+};
 </script>
 
 <style scoped>
@@ -340,9 +381,9 @@ ul {
 
 .modal-container {
   background-color: white;
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 12px;
-  width: 800px;
+  width: 700px;
   max-width: 90%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
@@ -351,7 +392,7 @@ ul {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .modal-header h2 {
@@ -373,35 +414,43 @@ ul {
   color: #343a40;
 }
 
-/* Estilos del formulario en cuadrícula */
+/* Estilos del formulario */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   font-weight: 500;
   color: #2c3e50;
   font-size: 0.9rem;
 }
 
-.form-group input {
+.form-group input,
+.form-group select,
+.form-group textarea {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.5rem;
   font-size: 0.9rem;
   border: 1px solid #ddd;
   border-radius: 6px;
   transition: border-color 0.3s ease;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
   border-color: #3498db;
   outline: none;
 }
@@ -411,12 +460,12 @@ ul {
   grid-column: span 2;
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: 0.75rem;
+  margin-top: 1rem;
 }
 
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   border: none;
   border-radius: 6px;
   cursor: pointer;

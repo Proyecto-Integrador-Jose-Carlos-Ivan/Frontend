@@ -1,9 +1,10 @@
 <template>
-    <div class="reports-container">
-      <h2>Generar Informes</h2>
-  
-      <!-- Filtros para generar informes -->
+  <div class="reports-container">
+    <!-- Columna izquierda: Filtros -->
+    <div class="filters-column">
       <div class="filters">
+        <h2>Filtros del Informe</h2>
+
         <label for="report-type">Tipo de informe:</label>
         <select id="report-type" v-model="reportType">
           <option value="emergencias">Emergencias por Zona</option>
@@ -12,13 +13,18 @@
           <option value="llamadas-realizadas">Llamadas Realizadas</option>
           <option value="historico">Histórico de Llamadas</option>
         </select>
-  
+
         <!-- Filtros adicionales según el tipo de informe -->
         <div v-if="reportType === 'emergencias'">
           <label for="zona">Zona:</label>
-          <input type="text" id="zona" v-model="zona" placeholder="Nombre de la zona">
+          <select id="zona" v-model="zona">
+            <option value="">Todas las zonas</option> <!-- Opción para todas las zonas -->
+            <option v-for="zonaItem in zonas" :key="zonaItem.id" :value="zonaItem.nombre">
+              {{ zonaItem.nombre }}
+            </option>
+          </select>
         </div>
-  
+
         <div v-if="reportType === 'llamadas-previstas' || reportType === 'llamadas-realizadas'">
           <label for="fecha">Fecha:</label>
           <input type="date" id="fecha" v-model="fecha">
@@ -29,12 +35,17 @@
             <option value="seguimiento">Seguimiento</option>
           </select>
           <label for="zona">Zona:</label>
-          <input type="text" id="zona" v-model="zona" placeholder="Nombre de la zona">
+          <select id="zona" v-model="zona">
+            <option value="">Todas las zonas</option> <!-- Opción para todas las zonas -->
+            <option v-for="zonaItem in zonas" :key="zonaItem.id" :value="zonaItem.nombre">
+              {{ zonaItem.nombre }}
+            </option>
+          </select>
         </div>
-  
+
         <div v-if="reportType === 'historico'">
           <label for="paciente">Paciente:</label>
-          <select id="paciente" v-model="pacientes">
+          <select id="paciente" v-model="pacienteId">
             <option v-for="paciente in pacientes" :key="paciente.id" :value="paciente.id">
               {{ paciente.nombre }}
             </option>
@@ -46,120 +57,158 @@
             <option value="seguimiento">Seguimiento</option>
           </select>
         </div>
-  
+
         <button @click="generateReport" class="btn btn-primary">Generar Informe</button>
+        <button @click="showAllEmergencies" class="btn btn-secondary">Mostrar Todas las Emergencias</button>
       </div>
-  
+    </div>
+
+    <!-- Columna derecha: Contenido principal -->
+    <div class="main-content">
+      <h2>Generar Informes</h2>
+
       <!-- Mensaje de carga -->
       <div v-if="loading" class="loading">Cargando informe...</div>
-  
+
       <!-- Resultados del informe -->
       <div v-else-if="informes.length > 0" class="report-content">
         <h3>Vista Previa del Informe</h3>
         <pre>{{ informes }}</pre>
-  
+
         <!-- Botones para vista previa y descargar -->
         <div class="report-actions">
           <button @click="downloadReport" class="btn btn-download">Descargar Informe</button>
         </div>
       </div>
-  
+
       <!-- Mensaje si no hay resultados -->
       <div v-else class="no-results">No se encontraron resultados.</div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script>
-  import { ref, onMounted } from 'vue';
-  import { useInformesStore } from '@/stores/informesStore';
-  import { usePacientesStore } from '@/stores/pacientesStore';
-  
-  export default {
-    setup() {
-      const informesStore = useInformesStore();
-      const pacientesStore = usePacientesStore();
-  
-      const reportType = ref('emergencias');
-      const zona = ref('');
-      const fecha = ref('');
-      const tipo = ref('');
-      const pacienteId = ref('');
-      const informes = ref([]);
-      const loading = ref(false);
-  
-      // Cargar pacientes al montar el componente
-      onMounted(async () => {
-        await pacientesStore.fetchPacientes();
-      });
-  
-      const generateReport = async () => {
-        loading.value = true;
-        informes.value = [];
-  
-        try {
-          switch (reportType.value) {
-            case 'emergencias':
-              await informesStore.fetchEmergenciesByZone(zona.value, fecha.value, fecha.value);
-              break;
-            case 'pacientes':
-              await informesStore.fetchPacientesOrdenados();
-              break;
-            case 'llamadas-previstas':
-              await informesStore.fetchLlamadasPrevistas(fecha.value, tipo.value, zona.value);
-              break;
-            case 'llamadas-realizadas':
-              await informesStore.fetchLlamadasRealizadas(fecha.value, tipo.value, zona.value);
-              break;
-            case 'historico':
-              await informesStore.fetchHistoricoLlamadas(pacienteId.value, tipo.value);
-              break;
-          }
-  
-          informes.value = informesStore.informes;
-        } catch (error) {
-          console.error('Error al generar el informe:', error);
-        } finally {
-          loading.value = false;
+
+import { ref, onMounted } from 'vue';
+import { useApiStore } from '@/stores/api';
+
+export default {
+  setup() {
+    const informesStore = useApiStore();
+    const pacientesStore = useApiStore();
+
+    const reportType = ref('emergencias');
+    const zona = ref('');
+    const fecha = ref('');
+    const tipo = ref('');
+    const pacienteId = ref('');
+    const informes = ref([]);
+    const loading = ref(false);
+
+    // Cargar pacientes y zonas al montar el componente
+    onMounted(async () => {
+      await pacientesStore.fetchPacientes();
+      await informesStore.fetchZonas();
+    });
+
+    const generateReport = async () => {
+      loading.value = true;
+      informes.value = [];
+
+      try {
+        switch (reportType.value) {
+          case 'emergencias':
+            await informesStore.fetchEmergenciesByZone(zona.value, fecha.value, fecha.value);
+            break;
+          case 'pacientes':
+            await informesStore.fetchPacientesOrdenados();
+            break;
+          case 'llamadas-previstas':
+            await informesStore.fetchLlamadasPrevistas(fecha.value, tipo.value, zona.value);
+            break;
+          case 'llamadas-realizadas':
+            await informesStore.fetchLlamadasRealizadas(fecha.value, tipo.value, zona.value);
+            break;
+          case 'historico':
+            await informesStore.fetchHistoricoLlamadas(pacienteId.value, tipo.value);
+            break;
         }
-      };
-  
-      const downloadReport = () => {
-        const blob = new Blob([JSON.stringify(informes.value, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `informe-${reportType.value}.json`;
-        link.click();
-        URL.revokeObjectURL(url);
-      };
-  
-      return {
-        reportType,
-        zona,
-        fecha,
-        tipo,
-        pacienteId,
-        informes,
-        loading,
-        pacientes: pacientesStore.pacientes,
-        generateReport,
-        downloadReport,
-      };
-    },
-  };
+
+        informes.value = informesStore.informes;
+      } catch (error) {
+        console.error('Error al generar el informe:', error);
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    const showAllEmergencies = async () => {
+      loading.value = true;
+      informes.value = [];
+
+      try {
+        await informesStore.fetchEmergenciesByZone('', '', ''); // Sin filtros
+        informes.value = informesStore.emergencies;
+      } catch (error) {
+        console.error('Error al cargar todas las emergencias:', error);
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    const downloadReport = () => {
+      const blob = new Blob([JSON.stringify(informes.value, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `informe-${reportType.value}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    };
+
+    return {
+      reportType,
+      zona,
+      fecha,
+      tipo,
+      pacienteId,
+      informes,
+      loading,
+      pacientes: pacientesStore.pacientes,
+      zonas: informesStore.zonas,
+      generateReport,
+      showAllEmergencies,
+      downloadReport,
+    };
+  },
+};
+
   </script>
   
-  <style scoped>
+<style scoped>
   .reports-container {
+    display: grid;
+    grid-template-columns: 400px 1fr; /* Filtros más anchos a la izquierda */
+    gap: 2rem;
     padding: 2rem;
-    padding-top: 120px; /* Ajusta este valor según la altura del segundo header */
+    padding-top: 120px;
+  }
+  
+  .filters-column {
+    grid-column: 1;
+    position: sticky;
+    top: 120px;
+    height: fit-content;
   }
   
   .filters {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 1rem;
-    margin-bottom: 1rem;
+    background-color: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
   .filters label {
@@ -171,6 +220,7 @@
     padding: 0.5rem;
     border: 1px solid #ddd;
     border-radius: 4px;
+    width: 100%; /* Asegura que los inputs y selects ocupen todo el ancho */
   }
   
   .btn {
@@ -180,7 +230,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin-right: 0.5rem;
+    margin-top: 1rem;
   }
   
   .btn:hover {
@@ -216,5 +266,16 @@
   .report-actions {
     margin-top: 1rem;
     text-align: right;
+  }
+  
+  @media (max-width: 768px) {
+    .reports-container {
+      grid-template-columns: 1fr; /* Una sola columna en móviles */
+    }
+  
+    .filters-column {
+      grid-column: 1;
+      position: static;
+    }
   }
   </style>

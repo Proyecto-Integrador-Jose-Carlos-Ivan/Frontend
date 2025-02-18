@@ -134,15 +134,15 @@
 </template>
 
 <script>
-import { useCallsStore } from '@/stores/callsStore'; // Importar el store de llamadas
-import { usePacientesStore } from '@/stores/pacientesStore';
+import { useApiStore } from '@/stores/api'; // Importar el store de llamadas
+
 import { computed, ref, onMounted } from 'vue';
 
 export default {
   
   setup() {
-    const pacientesStore = usePacientesStore();
-    const callsStore = useCallsStore();
+    const pacientesStore = useApiStore();
+    const callsStore = useApiStore();
     const date = ref(null); // Fecha seleccionada en el calendario (null por defecto)
     const mostrarDetalles = ref(false);
     const pacienteSeleccionado = ref({});

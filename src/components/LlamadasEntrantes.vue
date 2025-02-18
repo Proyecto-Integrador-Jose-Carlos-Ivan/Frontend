@@ -60,16 +60,15 @@
 </template>
 
 <script>
-import { useCallsStore } from '@/stores/callsStore';
-import { usePacientesStore } from '@/stores/pacientesStore';
-import { useOperadoresStore } from '@/stores/operadoresStore';
+import { useApiStore } from '@/stores/api';
+
 import { ref, onMounted } from 'vue';
 
 export default {
   setup() {
-    const callStore = useCallsStore();
-    const pacienteStore = usePacientesStore();
-    const operadorStore = useOperadoresStore();
+    const callStore = useApiStore();
+    const pacienteStore = useApiStore();
+    const operadorStore = useApiStore();
 
     const llamadaActual = ref({
       fecha_hora: '',

@@ -58,12 +58,12 @@
 </template>
 
 <script>
-import { usePacientesStore } from '@/stores/pacientesStore';
+import { useApiStore } from '@/stores/api';
 import { ref, onMounted } from "vue";
 
 export default {
   setup() {
-    const pacientesStore = usePacientesStore();
+    const pacientesStore = useApiStore();
     const showModal = ref(false); // Controla la visibilidad del modal
     const selectedPaciente = ref(null); // Almacena el paciente seleccionado
 
