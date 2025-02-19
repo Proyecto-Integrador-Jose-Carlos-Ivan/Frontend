@@ -40,11 +40,10 @@ export default class AuthRepository {
     return new Promise((resolve) => {
       const messageHandler = (event) => {
         console.log('Received message:', event);
-        if (event.origin !== origin) {
+        if (event.origin !== 'http://localhost') {
           console.warn(`Origin mismatch: expected ${origin}, got ${event.origin}`);
           return;
         }
-        console.log('Google login success:', event.success);
         window.removeEventListener('message', messageHandler);
         resolve(event.data);
       };
