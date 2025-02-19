@@ -47,7 +47,7 @@ export default {
         const result = await authRepository.loginWithCredentials(payload);
         if (result.success) {
           authStore.setToken(result.data.token);
-          authStore.setUser(result.data.user);
+          authStore.setUser(result.data.data);
           router.push({ name: 'home' });
         } else {
           console.error('Login with credentials failed:', result.error);
@@ -60,9 +60,12 @@ export default {
     const loginWithGoogle = async () => {
       try {
         const result = await authRepository.loginWithGoogle();
+        console.log('Google login successful:', result.data);
+
         if (result.success) {
           authStore.setToken(result.data.token);
-          authStore.setUser(result.data.user);
+          authStore.setUser(result.data.data);
+          console.log('Google login successful:', result.data);
           router.push({ name: 'home' });
         } else {
           console.error('Google login failed:', result.error);

@@ -21,6 +21,7 @@ export const useApiStore = defineStore('apiStore', {
     socials: [], // Informes de llamadas sociales
     seguiment: [], // Lista de seguimientos
     errors: null, // Errores
+    llamadasPrevistas: [], // Informe de llamadas previstas
   }),
 
   getters: {
@@ -30,7 +31,7 @@ export const useApiStore = defineStore('apiStore', {
     // Getters para contar elementos (opcional)
     totalPacientes: (state) => state.pacientes.length,
     totalContactos: (state) => state.contactos.length,
-    totalLlamadas: (state) => state.llamadas.length,
+    totalLlamadas: (state) => state.llamadas.length ? state.llamadas.length : 0,
     totalOperadores: (state) => state.operadores.length,
     totalZonas: (state) => state.zonas.length,
     totalInformes: (state) => state.informes.length,
@@ -339,10 +340,13 @@ export const useApiStore = defineStore('apiStore', {
     async fetchPacientesOrdenados() {
       this.loading = true;
       try {
-        const response = await axios.get(`${API_BASE_URL}/reports/patients-list`, {
+        const response = await axios.get(`${API_BASE_URL}/api/reports/patients-list`, {
           headers: { Authorization: `Bearer ${this.token}` },
+          responseType: 'blob'
         });
-        this.informes = response.data.data;
+        // Create a PDF URL from the blob
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+        this.informes = url;
       } catch (error) {
         this.errors = 'Error cargando pacientes: ' + error.message;
       } finally {
@@ -354,13 +358,15 @@ export const useApiStore = defineStore('apiStore', {
     async fetchLlamadasPrevistas(fecha, tipo, zona) {
       this.loading = true;
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/calls/previstas`, {
-          params: { fecha, tipo, zona },
+        const response = await axios.get(`${API_BASE_URL}/api/reports/scheduled-calls-by-date/${fecha}`, {
+          params: { tipo, zona },
           headers: { Authorization: `Bearer ${this.token}` },
+          responseType: 'blob'
         });
-        this.informes = response.data.data;
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+        this.llamadasPrevistas = url;
       } catch (error) {
-        this.errors = 'Error cargando llamadas previstas: ' + error.message;
+        this.errors = 'Error cargando llamadas programadas: ' + error.message;
       } finally {
         this.loading = false;
       }

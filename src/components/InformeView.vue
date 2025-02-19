@@ -19,8 +19,8 @@
           <label for="zona">Zona:</label>
           <select id="zona" v-model="zona">
             <option value="">Todas las zonas</option> <!-- Opción para todas las zonas -->
-            <option v-for="zonaItem in zonas" :key="zonaItem.id" :value="zonaItem.nombre">
-              {{ zonaItem.nombre }}
+            <option v-for="zonaItem in zonas" :key="zonaItem.id" :value="zonaItem.id">
+              {{ zonaItem.name }}
             </option>
           </select>
         </div>
@@ -37,8 +37,8 @@
           <label for="zona">Zona:</label>
           <select id="zona" v-model="zona">
             <option value="">Todas las zonas</option> <!-- Opción para todas las zonas -->
-            <option v-for="zonaItem in zonas" :key="zonaItem.id" :value="zonaItem.nombre">
-              {{ zonaItem.nombre }}
+            <option v-for="zonaItem in zonas" :key="zonaItem.id" :value="zonaItem.id">
+              {{ zonaItem.name }}
             </option>
           </select>
         </div>
@@ -96,14 +96,12 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useApiStore } from '@/stores/api';
 import PdfPopup from './PdfPopup.vue';
 
 export default {
-  components: {
-    PdfPopup
-  },
+  components: { PdfPopup },
   setup() {
     const informesStore = useApiStore();
     const pacientesStore = useApiStore();
@@ -117,11 +115,16 @@ export default {
     const loading = ref(false);
     const emergenciesUrl = ref(null);
     const showPopup = ref(false);
+    const llamadasPrevistas = ref([]);
+
+    // Remove local zonas declaration and use computed instead
+    const zonas = computed(() => informesStore.zonas);
 
     // Cargar pacientes y zonas al montar el componente
     onMounted(async () => {
       await pacientesStore.fetchPacientes();
       await informesStore.fetchZonas();
+      console.log('Zonas fetched:', informesStore.zonas); // Add this line to check if zonas are fetched
     });
 
     const generateReport = async () => {
@@ -137,15 +140,24 @@ export default {
             break;
           case 'pacientes':
             await informesStore.fetchPacientesOrdenados();
+            // Set the PDF URL from informes and open popup
+            emergenciesUrl.value = informesStore.informes;
+            showPopup.value = true;
             break;
           case 'llamadas-previstas':
             await informesStore.fetchLlamadasPrevistas(fecha.value, tipo.value, zona.value);
+            emergenciesUrl.value = informesStore.llamadasPrevistas;
+            showPopup.value = true;
             break;
           case 'llamadas-realizadas':
             await informesStore.fetchLlamadasRealizadas(fecha.value, tipo.value, zona.value);
+            emergenciesUrl.value = informesStore.informes;
+            showPopup.value = true;
             break;
           case 'historico':
             await informesStore.fetchHistoricoLlamadas(pacienteId.value, tipo.value);
+            emergenciesUrl.value = informesStore.informes;
+            showPopup.value = true;
             break;
         }
 
@@ -198,7 +210,7 @@ export default {
       informes,
       loading,
       pacientes: pacientesStore.pacientes,
-      zonas: informesStore.zonas,
+      zonas,
       generateReport,
       showAllEmergencies,
       downloadReport,
@@ -206,6 +218,7 @@ export default {
       openPdfInPopup,
       showPopup,
       closePopup,
+      llamadasPrevistas,
     };
   },
 };

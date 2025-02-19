@@ -1,16 +1,15 @@
-const server = import.meta.env.VITE_URL_API
-const origin = import.meta.env.VITE_ORIGIN_URL
+const server = import.meta.env.VITE_URL_API;
+const origin = import.meta.env.VITE_ORIGIN_URL;
 
 export default class AuthRepository {
   async login(email, password) {
-    const body = JSON.stringify({ email: email, password: password })
+    const body = JSON.stringify({ email, password });
     const response = await fetch(server + 'api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: body
-    })
-
-    return await response.json()
+    });
+    return await response.json();
   }
 
   async loginWithCredentials(payload) {
@@ -19,38 +18,37 @@ export default class AuthRepository {
   }
 
   async loginWithGoogle() {
-    const width = 500
-    const height = 600
-    const left = screen.width / 2 - width / 2
-    const top = screen.height / 2 - height / 2
+    console.log('Opening Google login popup...');
+    const width = 500;
+    const height = 600;
+    const left = screen.width / 2 - width / 2;
+    const top = screen.height / 2 - height / 2;
 
-     window.open(
+    const popup = window.open(
       server + 'api/login/google',
       'Iniciar sesión con Google',
       `width=${width},height=${height},top=${top},left=${left}`
-    )
+    );
+    
+    if (!popup) {
+      console.error('Popup blocked');
+      return;
+    }
+
+    console.log('Popup opened. Waiting for message...');
 
     return new Promise((resolve) => {
-      // const checkPopup = setInterval(() => {
-      //   if (!authWindow || authWindow.closed) {
-      //     clearInterval(checkPopup)
-      //     reject(new Error('Popup cerrado'))
-      //   }
-      // }, 500)
-  
-      window.addEventListener('message', (event) => {
-        console.log(event.origin + ' ' + origin)
-        if (event.origin !== origin) return
-        console.log('message')
-        console.log(event.data.success)
-        // if(event.data.success){
-          resolve(event.data)
-        // }else{
-        //   reject(new Error(event.data.error ?? 'Error al iniciar sesión con Google'))
-        // }
-
-       
-      })
-    })
+      const messageHandler = (event) => {
+        console.log('Received message:', event);
+        if (event.origin !== origin) {
+          console.warn(`Origin mismatch: expected ${origin}, got ${event.origin}`);
+          return;
+        }
+        console.log('Google login success:', event.success);
+        window.removeEventListener('message', messageHandler);
+        resolve(event.data);
+      };
+      window.addEventListener('message', messageHandler);
+    });
   }
 }
