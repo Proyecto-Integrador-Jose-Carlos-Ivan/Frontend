@@ -58,7 +58,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/patients`, {
           headers: {
-            Authorization: `Bearer ${this.token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         console.log('Pacientes obtenidos:', response.data.data); // Verificar los datos
@@ -74,7 +74,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.post(`${API_BASE_URL}/api/patients`, paciente, {
           headers: {
-            Authorization: `Bearer ${this.token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         this.pacientes.push(response.data.data); // Agregar el nuevo paciente a la lista
@@ -88,7 +88,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.put(`${API_BASE_URL}/api/patients/${id}`, paciente, {
           headers: {
-            Authorization: `Bearer ${this.token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         const index = this.pacientes.findIndex((p) => p.id === id);
@@ -105,7 +105,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         await axios.delete(`${API_BASE_URL}/api/patients/${id}`, {
           headers: {
-            Authorization: `Bearer ${this.token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         this.pacientes = this.pacientes.filter((p) => p.id !== id); // Eliminar el paciente de la lista
@@ -118,7 +118,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/contacts`, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.contactos = response.data;
@@ -131,7 +131,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.post(`${API_BASE_URL}/api/contacts`, contacto, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.contactos.push(response.data);
@@ -144,7 +144,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.put(`${API_BASE_URL}/api/contacts/${id}`, contacto, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         const index = this.contactos.findIndex((c) => c.id === id);
@@ -160,7 +160,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         await axios.delete(`${API_BASE_URL}/api/contacts/${id}`, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.contactos = this.contactos.filter(c => c.id !== id);
@@ -176,7 +176,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(API_BASE_URL + '/api/calls',{
             headers: {
-              Authorization: `Bearer ${this.token}`,
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           });
         console.log('Llamadas obtenidas:', response.data.data); // Ajusta la URL de la API
@@ -192,7 +192,7 @@ export const useApiStore = defineStore('apiStore', {
         try {
           const response = await axios.post(API_BASE_URL + '/api/calls', newCall, {
             headers: {
-              Authorization: `Bearer ${this.token}`,
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           });
           this.calls.push(response.data.data)
@@ -206,7 +206,7 @@ export const useApiStore = defineStore('apiStore', {
         try {
           const response = await axios.put(`${API_BASE_URL}/api/calls/${id}`, call, {
             headers: {
-              Authorization: `Bearer ${this.token}`,
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           });
           const index = this.calls.findIndex((p) => p.id === id);
@@ -222,7 +222,7 @@ export const useApiStore = defineStore('apiStore', {
         try {
           await axios.delete(`${API_BASE_URL}/api/calls/${id}`, {
             headers: {
-              Authorization: `Bearer ${this.token}`,
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           });
           this.calls = this.calls.filter((p) => p.id !== id); // Eliminar el paciente de la lista
@@ -236,7 +236,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(API_BASE_URL + '/api/operators' ,{
             headers: {
-              Authorization: `Bearer ${this.token}`,
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           });
         console.log('Operadores obtenidos:', response.data.data);
@@ -252,7 +252,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.post(API_BASE_URL + '/api/operators', operador, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.operadores.push(response.data.data)
@@ -267,7 +267,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.put(`${API_BASE_URL}/api/operators/${id}`, operador, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         const index = this.operadores.findIndex((o) => o.id === id)
@@ -285,7 +285,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         await axios.delete(`${API_BASE_URL}/api/operators/${id}` ,{
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.operadores = this.operadores.filter((o) => o.id !== id)
@@ -300,7 +300,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/zones`, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.zonas = response.data.data;
@@ -320,7 +320,7 @@ export const useApiStore = defineStore('apiStore', {
             endDate: endDate || new Date().toISOString().split('T')[0],
           },
           headers: { 
-            Authorization: `Bearer ${this.token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
           responseType: 'blob'
         });
@@ -341,7 +341,7 @@ export const useApiStore = defineStore('apiStore', {
       this.loading = true;
       try {
         const response = await axios.get(`${API_BASE_URL}/api/reports/patients-list`, {
-          headers: { Authorization: `Bearer ${this.token}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
           responseType: 'blob'
         });
         // Create a PDF URL from the blob
@@ -360,7 +360,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/reports/scheduled-calls-by-date/${fecha}`, {
           params: { tipo, zona },
-          headers: { Authorization: `Bearer ${this.token}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
           responseType: 'blob'
         });
         const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
@@ -378,7 +378,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/calls/realizadas`, {
           params: { fecha, tipo, zona },
-          headers: { Authorization: `Bearer ${this.token}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         this.informes = response.data.data;
       } catch (error) {
@@ -394,7 +394,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/calls/historico`, {
           params: { pacienteId, tipo },
-          headers: { Authorization: `Bearer ${this.token}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         this.informes = response.data.data;
       } catch (error) {
@@ -408,7 +408,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/reports`, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.informes = response.data.data;
@@ -421,7 +421,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/reports/emergencies?data_inici=${data_inici}&data_fi=${data_fi}`, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.emergencies = response.data.data;
@@ -434,7 +434,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/reports/socials?data_inici=${data_inici}&data_fi=${data_fi}`, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.socials = response.data.data;
@@ -447,7 +447,7 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/reports/seguiment?data_inici=${data_inici}&data_fi=${data_fi}`, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.seguiment = response.data.data;
