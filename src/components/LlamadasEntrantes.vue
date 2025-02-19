@@ -37,15 +37,23 @@
           </select>
         </div>
         <div class="form-group">
+          <label for="tipo">Categoria:</label>
+          <select id="tipo" v-model="llamadaActual.categoria" required>
+            <option value="planificada">Planificada</option>
+            <option value="no_planificada">No Planificada</option>
+            <option value="atencion_emergencias">Atencion Emergencias</option>
+            <option value="comunicaciones_no_urgentes">Comunicaciones No Urgentes</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label for="subtipo">Subtipo:</label>
           <select id="subtipo" v-model="llamadaActual.subtipo" required>
-            <option value="emergencia_sanitaria">Emergencia Sanitaria</option>
-            <option value="cita_medica">Cita Médica</option>
-            <option value="crisis_soledad">Crisis de Soledad</option>
-            <option value="alarma_sin_respuesta">Alarma sin Respuesta</option>
-            <option value="informacion">Petición de Información</option>
-            <option value="sugerencia">Sugerencia, Queja o Reclamación</option>
-            <option value="social">Llamada Social</option>
+            <option value="emergencias_sanitarias">Emergencia Sanitaria</option>
+            <option value="llamadas_accidentales">Llamada Accidental</option>
+            <option value="emergencias_crisis_soledad">Crisis de Soledad</option>
+            <option value="emergencias_alarma_sin_respuesta">Alarma sin Respuesta</option>
+            <option value="notificar_ausencias">Notificación Ausencia</option>
+            <option value="otros">Otros</option>
           </select>
         </div>
         <button type="submit" class="btn btn-primary">Añadir Llamada</button>
@@ -77,6 +85,7 @@ export default {
       descripcion: '',
       tipo: '',
       subtipo: '',
+      categoria: '', // Ensure this field is included
       sentido: 'entrante' // Siempre será "entrante"
     });
 
@@ -84,7 +93,13 @@ export default {
 
     const guardarLlamada = async () => {
       try {
-        await callStore.addCall(llamadaActual.value);
+        console.log('Subtipo value:', llamadaActual.value.subtipo); // Log the subtipo value
+        await callStore.addCall(llamadaActual.value, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'), // Ensure CSRF token is included
+          }
+        });
         mostrarMensaje.value = true;
         resetFormulario();
 
@@ -104,6 +119,7 @@ export default {
         descripcion: '',
         tipo: '',
         subtipo: '',
+        categoria: '', // Ensure this field is included
         sentido: 'entrante'
       };
     };

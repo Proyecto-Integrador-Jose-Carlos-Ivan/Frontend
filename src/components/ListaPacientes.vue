@@ -253,7 +253,7 @@ export default {
 
     // Restablecer el filtrado
     const resetFiltro = () => {
-      date.value = new Date(); // Restablece la fecha seleccionada a la fecha actual
+      date.value = null; // Restablece la fecha seleccionada a null
     };
 
     // Manejar el cambio de fecha en el calendario

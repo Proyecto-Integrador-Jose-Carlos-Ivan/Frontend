@@ -210,60 +210,63 @@ export const useApiStore = defineStore('apiStore', {
     },
 
     async addCall(newCall) {
-        try {
-          const response = await axios.post(API_BASE_URL + '/api/calls', newCall, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          });
-          this.calls.push(response.data.data)
-        } catch (error) {
-          this.errors = 'Error adding operador: ' + error.message
-          console.error(this.errors)
-        }
-      },
+      console.log('Adding call with data:', newCall); // Log the data being sent
+      try {
+        const response = await axios.post(`${API_BASE_URL}/api/calls`, newCall, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'), // Ensure CSRF token is included
+          },
+        });
+        console.log('Response from server:', response); // Log the response from the server
+        this.calls.push(response.data.data);
+      } catch (error) {
+        this.errors = 'Error adding call: ' + error.message;
+        console.error('Error adding call:', error.response.data); // Log the error response
+      }
+    },
 
-      async updateCall(id, call) {
-        try {
-          const response = await axios.put(`${API_BASE_URL}/api/calls/${id}`, call, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          });
-          const index = this.calls.findIndex((p) => p.id === id);
-          if (index !== -1) {
-            this.calls[index] = response.data.data; // Actualizar el paciente en la lista
-          }
-        } catch (error) {
-          this.errors = 'Error al actualizar el paciente: ' + error.message;
+    async updateCall(id, call) {
+      try {
+        const response = await axios.put(`${API_BASE_URL}/api/calls/${id}`, call, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const index = this.calls.findIndex((p) => p.id === id);
+        if (index !== -1) {
+          this.calls[index] = response.data.data; // Actualizar el paciente en la lista
         }
-      },
+      } catch (error) {
+        this.errors = 'Error al actualizar el paciente: ' + error.message;
+      }
+    },
 
-      async removeCall(id) {
-        try {
-          await axios.delete(`${API_BASE_URL}/api/calls/${id}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          });
-          this.calls = this.calls.filter((p) => p.id !== id); // Eliminar el paciente de la lista
-        } catch (error) {
-          this.errors = 'Error al eliminar el paciente: ' + error.message;
-        }
-      },
+    async removeCall(id) {
+      try {
+        await axios.delete(`${API_BASE_URL}/api/calls/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        this.calls = this.calls.filter((p) => p.id !== id); // Eliminar el paciente de la lista
+      } catch (error) {
+        this.errors = 'Error al eliminar el paciente: ' + error.message;
+      }
+    },
 
-      async deleteCall(id) {
-        try {
-          await axios.delete(`${API_BASE_URL}/api/calls/${id}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          });
-          this.calls = this.calls.filter((call) => call.id !== id); // Remove the call from the list
-        } catch (error) {
-          this.errors = 'Error al eliminar la llamada: ' + error.message;
-        }
-      },
+    async deleteCall(id) {
+      try {
+        await axios.delete(`${API_BASE_URL}/api/calls/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        this.calls = this.calls.filter((call) => call.id !== id); // Remove the call from the list
+      } catch (error) {
+        this.errors = 'Error al eliminar la llamada: ' + error.message;
+      }
+    },
 
     // Acciones para manejar operadores
     async fetchOperadores() {
