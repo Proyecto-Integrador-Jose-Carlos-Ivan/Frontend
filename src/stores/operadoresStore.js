@@ -7,9 +7,6 @@ import axios from 'axios'
 axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
-// Token de autenticación
-const token = '1|E3CKHEQ1chLIwQSBTLQv4aGrX0EmCZcGJCHIjG4L11bf2a48';
-
 // URL base de la API
 const API_BASE_URL = 'http://localhost'
 
@@ -27,11 +24,11 @@ export const useOperadoresStore = defineStore('operadores', {
     // Cargar los operadores desde la API
     async fetchOperadores() {
       try {
-        const response = await axios.get(API_BASE_URL + '/api/operators' ,{
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+        const response = await axios.get(API_BASE_URL + '/api/operators', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
         console.log('Operadores obtenidos:', response.data.data);
         this.operadores = response.data.data
       } catch (error) {
@@ -43,7 +40,11 @@ export const useOperadoresStore = defineStore('operadores', {
     // Agregar un nuevo operador
     async addOperador(operador) {
       try {
-        const response = await axios.post(API_BASE_URL + '/api/operators', operador)
+        const response = await axios.post(API_BASE_URL + '/api/operators', operador, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
         this.operadores.push(response.data.data)
       } catch (error) {
         this.errors = 'Error adding operador: ' + error.message
@@ -54,7 +55,11 @@ export const useOperadoresStore = defineStore('operadores', {
     // Actualizar un operador existente
     async updateOperador(id, operador) {
       try {
-        const response = await axios.put(`${API_BASE_URL}/api/operators/${id}`, operador)
+        const response = await axios.put(`${API_BASE_URL}/api/operators/${id}`, operador, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
         const index = this.operadores.findIndex((o) => o.id === id)
         if (index !== -1) {
           this.operadores[index] = response.data.data
@@ -68,7 +73,11 @@ export const useOperadoresStore = defineStore('operadores', {
     // Eliminar un operador
     async deleteOperador(id) {
       try {
-        await axios.delete(`${API_BASE_URL}/api/operators/${id}`)
+        await axios.delete(`${API_BASE_URL}/api/operators/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
         this.operadores = this.operadores.filter((o) => o.id !== id)
       } catch (error) {
         this.errors = 'Error deleting operador: ' + error.message

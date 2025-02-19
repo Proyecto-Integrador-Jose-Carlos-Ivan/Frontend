@@ -5,9 +5,6 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
-// Token de autenticación
-const token = '1|E3CKHEQ1chLIwQSBTLQv4aGrX0EmCZcGJCHIjG4L11bf2a48';
-
 // URL base de la API
 const API_BASE_URL = 'http://localhost';
 
@@ -33,7 +30,7 @@ export const usePacientesStore = defineStore('pacientesStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/patients`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         console.log('Pacientes obtenidos:', response.data.data); // Verificar los datos
@@ -49,7 +46,7 @@ export const usePacientesStore = defineStore('pacientesStore', {
       try {
         const response = await axios.post(`${API_BASE_URL}/api/patients`, paciente, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         this.pacientes.push(response.data.data); // Agregar el nuevo paciente a la lista
@@ -63,7 +60,7 @@ export const usePacientesStore = defineStore('pacientesStore', {
       try {
         const response = await axios.put(`${API_BASE_URL}/api/patients/${id}`, paciente, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         const index = this.pacientes.findIndex((p) => p.id === id);
@@ -80,7 +77,7 @@ export const usePacientesStore = defineStore('pacientesStore', {
       try {
         await axios.delete(`${API_BASE_URL}/api/patients/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         this.pacientes = this.pacientes.filter((p) => p.id !== id); // Eliminar el paciente de la lista

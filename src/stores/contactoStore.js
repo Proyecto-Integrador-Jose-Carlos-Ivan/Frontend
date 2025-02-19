@@ -4,7 +4,7 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
-const token = '1|E3CKHEQ1chLIwQSBTLQv4aGrX0EmCZcGJCHIjG4L11bf2a48';
+// const token = '1|E3CKHEQ1chLIwQSBTLQv4aGrX0EmCZcGJCHIjG4L11bf2a48';
 
 const API_BASE_URL = 'http://localhost';
 
@@ -23,7 +23,7 @@ export const useContactoStore = defineStore('contactoStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/contacts`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.contactos = response.data;
@@ -36,7 +36,7 @@ export const useContactoStore = defineStore('contactoStore', {
       try {
         const response = await axios.post(`${API_BASE_URL}/api/contacts`, contacto, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.contactos.push(response.data);
@@ -49,7 +49,7 @@ export const useContactoStore = defineStore('contactoStore', {
       try {
         const response = await axios.put(`${API_BASE_URL}/api/contacts/${id}`, contacto, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         const index = this.contactos.findIndex((c) => c.id === id);
@@ -65,7 +65,7 @@ export const useContactoStore = defineStore('contactoStore', {
       try {
         await axios.delete(`${API_BASE_URL}/api/contacts/${id}`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.contactos = this.contactos.filter(c => c.id !== id);

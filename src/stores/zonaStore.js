@@ -18,7 +18,7 @@ export const useZonaStore = defineStore('zonaStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/zones`, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.zonas = response.data.data;
