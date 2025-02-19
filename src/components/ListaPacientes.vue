@@ -19,6 +19,7 @@
               <th>Hora</th>
               <th>Categoría</th>
               <th>Subtipo</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -59,6 +60,14 @@
                 <div v-if="paciente.llamadas.length > 0">
                   <div v-for="llamada in paciente.llamadas" :key="llamada.id">
                     {{ formatSubtipo(llamada.subtipo) }}
+                  </div>
+                </div>
+                <span v-else>No hay llamadas</span>
+              </td>
+              <td>
+                <div v-if="paciente.llamadas.length > 0">
+                  <div v-for="llamada in paciente.llamadas" :key="llamada.id">
+                    <button @click.stop="confirmDeleteCall(llamada.id)" class="delete-button">Borrar</button>
                   </div>
                 </div>
                 <span v-else>No hay llamadas</span>
@@ -254,6 +263,18 @@ export default {
       date.value = newDate;
     };
 
+    // Método para confirmar y borrar una llamada
+    const confirmDeleteCall = (id) => {
+      if (confirm("¿Estás seguro de que deseas borrar esta llamada?")) {
+        deleteCall(id);
+      }
+    };
+
+    // Método para borrar una llamada
+    const deleteCall = async (id) => {
+      await callsStore.deleteCall(id);
+    };
+
     return {
       pacientesStore,
       callsStore,
@@ -271,6 +292,8 @@ export default {
       moveToday,
       resetFiltro,
       onDateChange,
+      confirmDeleteCall,
+      deleteCall,
     };
   },
 };
@@ -424,6 +447,21 @@ export default {
 
 .custom-button:hover {
   background-color: #2980b9;
+}
+
+.delete-button {
+  background-color: #e74c3c;
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
 }
 
 @media (max-width: 768px) {

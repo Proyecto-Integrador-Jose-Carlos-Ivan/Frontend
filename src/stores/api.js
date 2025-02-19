@@ -77,6 +77,7 @@ export const useApiStore = defineStore('apiStore', {
         const response = await axios.post(`${API_BASE_URL}/api/patients`, paciente, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'), // Add CSRF token
           },
         });
         this.pacientes.push(response.data.data); // Agregar el nuevo paciente a la lista
@@ -115,6 +116,24 @@ export const useApiStore = defineStore('apiStore', {
         this.errors = 'Error al eliminar el paciente: ' + error.message;
       }
     },
+
+    async buscarPacientes(nombre) {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/patients`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const pacientes = response.data.data;
+        this.pacientes = pacientes.filter(paciente =>
+          paciente.nombre.toLowerCase().includes(nombre.toLowerCase())
+        );
+      } catch (error) {
+        this.errors = 'Error al buscar los pacientes: ' + error.message;
+        console.error(this.errors);
+      }
+    },
+
     // Acciones para manejar contactos
     async fetchContactos() {
       try {
@@ -230,6 +249,19 @@ export const useApiStore = defineStore('apiStore', {
           this.calls = this.calls.filter((p) => p.id !== id); // Eliminar el paciente de la lista
         } catch (error) {
           this.errors = 'Error al eliminar el paciente: ' + error.message;
+        }
+      },
+
+      async deleteCall(id) {
+        try {
+          await axios.delete(`${API_BASE_URL}/api/calls/${id}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+          this.calls = this.calls.filter((call) => call.id !== id); // Remove the call from the list
+        } catch (error) {
+          this.errors = 'Error al eliminar la llamada: ' + error.message;
         }
       },
 

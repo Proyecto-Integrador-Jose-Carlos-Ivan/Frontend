@@ -30,23 +30,23 @@
           </router-link>
         </li>
         <li>
-        <div class="user-dropdown">
-          <button class="nav-link user-btn">
-            <font-awesome-icon :icon="['fas', 'user-circle']" class="w-6 h-6 text-white" />
-          </button>
-          <div class="dropdown-content">
-            <router-link to="/user-details" class="dropdown-item">Detalles</router-link>
-            <button @click="logout" class="dropdown-item">Cerrar sesión</button>
+          <div class="user-dropdown">
+            <button class="nav-link user-btn">
+              <font-awesome-icon :icon="['fas', 'user-circle']" class="w-8 h-8 text-white" />
+            </button>
+            <div class="dropdown-content">
+              <router-link to="/operador-info" class="dropdown-item">Detalles</router-link>
+              <router-link to="/" @click="logout" class="dropdown-item">Cerrar sesión</router-link>
+            </div>
           </div>
-        </div>
-      </li>
+        </li>
       </ul>
     </nav>
 
     <!-- Header secundario (buscador y botón de alta) -->
     <header v-if="!isLoginRoute" class="secondary-header">
       <div>
-        <button @click="mostrarFormularioAlta" class="alta-btn">Dar de alta</button>
+        <router-link to="/alta" class="alta-btn">Dar de alta</router-link>
       </div>
       <div class="search-container">
         <input
@@ -58,91 +58,6 @@
         />
       </div>
     </header>
-
-    <!-- Modal para dar de alta un paciente -->
-    <div v-if="modalAlta" class="modal-overlay">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Dar de Alta a un Paciente</h2>
-          <button @click="cerrarModal" class="close-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-          <form @submit.prevent="guardarAlta" class="form-grid">
-            <!-- Primera fila: Información básica -->
-            <div class="form-group">
-              <label for="nombre">Nombre:</label>
-              <input id="nombre" v-model="nuevoPaciente.nombre" required>
-            </div>
-            <div class="form-group">
-              <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-              <input id="fecha_nacimiento" type="date" v-model="nuevoPaciente.fecha_nacimiento" required>
-            </div>
-            <div class="form-group">
-              <label for="dni">DNI:</label>
-              <input id="dni" v-model="nuevoPaciente.dni" required>
-            </div>
-            <div class="form-group">
-              <label for="sip">SIP:</label>
-              <input id="sip" v-model="nuevoPaciente.sip" required>
-            </div>
-
-            <!-- Segunda fila: Contacto -->
-            <div class="form-group">
-              <label for="telefono">Teléfono:</label>
-              <input id="telefono" v-model="nuevoPaciente.telefono" required>
-            </div>
-            <div class="form-group">
-              <label for="email">Email:</label>
-              <input id="email" type="email" v-model="nuevoPaciente.email" required>
-            </div>
-            <div class="form-group">
-              <label for="direccion">Dirección:</label>
-              <input id="direccion" v-model="nuevoPaciente.direccion" required>
-            </div>
-            <div class="form-group">
-              <label for="zona_id">Zona:</label>
-              <select id="zona_id" v-model="nuevoPaciente.zona_id" required>
-                <option v-for="zona in zonas" :key="zona.id" :value="zona.id">
-                  {{ zona.nombre }}
-                </option>
-              </select>
-            </div>
-
-            <!-- Tercera fila: Situación personal y sanitaria -->
-            <div class="form-group full-width">
-              <label for="situacion_personal">Situación Personal:</label>
-              <textarea id="situacion_personal" v-model="nuevoPaciente.situacion_personal"></textarea>
-            </div>
-            <div class="form-group full-width">
-              <label for="situacion_sanitaria">Situación Sanitaria:</label>
-              <textarea id="situacion_sanitaria" v-model="nuevoPaciente.situacion_sanitaria"></textarea>
-            </div>
-
-            <!-- Cuarta fila: Situación de hábitat y autonomía -->
-            <div class="form-group full-width">
-              <label for="situacion_habitage">Situación de Hábitat:</label>
-              <textarea id="situacion_habitage" v-model="nuevoPaciente.situacion_habitage"></textarea>
-            </div>
-            <div class="form-group full-width">
-              <label for="autonomia">Autonomía:</label>
-              <textarea id="autonomia" v-model="nuevoPaciente.autonomia"></textarea>
-            </div>
-
-            <!-- Quinta fila: Situación económica -->
-            <div class="form-group full-width">
-              <label for="situacion_economica">Situación Económica:</label>
-              <textarea id="situacion_economica" v-model="nuevoPaciente.situacion_economica"></textarea>
-            </div>
-
-            <!-- Botones -->
-            <div class="form-actions">
-              <button type="submit" class="btn btn-primary">Guardar</button>
-              <button type="button" @click="cerrarModal" class="btn btn-secondary">Cancelar</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -521,6 +436,8 @@ ul {
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .dropdown-content .dropdown-item {
@@ -529,6 +446,7 @@ ul {
   text-decoration: none;
   display: block;
   text-align: left;
+  transition: background-color 0.3s ease;
 }
 
 .dropdown-content .dropdown-item:hover {

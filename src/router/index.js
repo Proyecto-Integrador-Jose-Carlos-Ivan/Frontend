@@ -8,6 +8,8 @@ import LlamadasSalientes from '@/components/LlamadasSalientes.vue';
 import LoginView from '@/components/LoginView.vue';
 import { useApiStore } from '@/stores/api';
 import GoogleCallback from '@/components/GoogleCallback.vue';
+import AltaPaciente from '../components/AltaPaciente.vue';
+import OperadorInfo from '@/components/OperadorInfo.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,6 +60,18 @@ const router = createRouter({
       path: '/informes',
       name: 'informes',
       component: InformeView,
+      meta: { requiresAuth: true }, // Requiere autenticación
+    },
+    {
+      path: '/alta',
+      name: 'alta',
+      component: AltaPaciente,
+      meta: { requiresAuth: true }, // Requiere autenticación
+    },
+    {
+      path: '/operador-info',
+      name: 'operador-info',
+      component: OperadorInfo,
       meta: { requiresAuth: true }, // Requiere autenticación
     },
   ],
