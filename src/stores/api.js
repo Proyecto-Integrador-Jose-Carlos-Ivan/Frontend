@@ -43,6 +43,8 @@ export const useApiStore = defineStore('apiStore', {
   actions: {
 
     async login (payload) {
+      console.log('dasdasdads:', payload);
+
       try {
         const response = await axios.post(`${API_BASE_URL}/api/login`, payload);
         const token = response.data.data.token;

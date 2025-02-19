@@ -58,6 +58,27 @@ export const useAuthStore = defineStore('authStore', {
 
     },
 
+    async loginWithCredentials(payload) {
+      const authRepository = new AuthRepository()
+      try {
+        const response = await authRepository.loginWithCredentials(payload)
+
+        if (response.success) {
+          this.token = response.data.token
+          this.user = response.data.user
+          localStorage.setItem("token", response.data.token)
+          localStorage.setItem("user", JSON.stringify(response.data.user))
+          return true
+        } else {
+          console.error('Login failed:', response.error);
+          return false
+        }
+      } catch (error) {
+        console.error('Error during login:', error);
+        return false
+      }
+    },
+
     logout() {
       this.user = null
       this.token = null

@@ -1,15 +1,19 @@
 const server = import.meta.env.VITE_URL_API;
 const origin = import.meta.env.VITE_ORIGIN_URL;
+import axios from 'axios';
 
 export default class AuthRepository {
   async login(email, password) {
-    const body = JSON.stringify({ email, password });
-    const response = await fetch(server + 'api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: body
-    });
-    return await response.json();
+    const body = { email, password };
+    try {
+      const response = await axios.post(server + 'api/login', body, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error during login:', error);
+      throw error; // Re-throw the error so it can be caught in the component
+    }
   }
 
   async loginWithCredentials(payload) {

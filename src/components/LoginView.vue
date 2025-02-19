@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { ref, watch} from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import AuthRepository from '../repositories/auth.repository';
@@ -44,13 +44,14 @@ export default {
           email: email.value,
           password: password.value,
         };
+        console.log(payload);
         const result = await authRepository.loginWithCredentials(payload);
         if (result.success) {
-          authStore.setToken(result.token);
-          authStore.setUser(result.user);
+          authStore.setToken(result.data.token);
+          authStore.setUser(result.data.user);
           router.push({ name: 'home' });
         } else {
-          console.error('Login with credentials failed:', result.error);
+          console.error('Login with credentials failed:', result);
         }
       } catch (error) {
         console.error('Error al iniciar sesión:', error);
