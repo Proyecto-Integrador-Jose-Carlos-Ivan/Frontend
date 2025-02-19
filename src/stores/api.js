@@ -6,7 +6,7 @@ axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
 // URL base de la API
-const API_BASE_URL = 'http://localhost'
+const API_BASE_URL = import.meta.env.VITE_URL_API
 
 export const useApiStore = defineStore('apiStore', {
   state: () => ({
