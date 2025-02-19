@@ -2,7 +2,7 @@
   <div class="main-container">
     <div class="container">
       <div class="pacientes">
-        <h2>Lista de Pacientes</h2>
+        <h2>Lista de Pacientes PRUEBA</h2>
 
         <table class="styled-table">
           <thead>
