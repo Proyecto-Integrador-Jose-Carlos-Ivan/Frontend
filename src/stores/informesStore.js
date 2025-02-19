@@ -41,12 +41,22 @@ export const useInformesStore = defineStore('informesStore', {
     async fetchPacientesOrdenados() {
       this.loading = true;
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/pacientes/ordenados`, {
+        const response = await axios.get(`${API_BASE_URL}/api/reports/patients-list`, {
           headers: { Authorization: `Bearer ${token}` },
+          responseType: 'blob'
         });
-        this.informes = response.data.data;
+        // Check if the response returns a valid Blob
+        if (response.data && response.data.size > 0) {
+          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+          this.informes = url;
+        } else {
+          console.error("Response data is not a valid blob");
+          this.informes = ""; // Ensure informes is a string
+        }
       } catch (error) {
+        console.error("Error fetching pacientes ordenados:", error);
         this.errors = 'Error cargando pacientes: ' + error.message;
+        this.informes = ""; // Fallback value to ensure PDF URL is a string
       } finally {
         this.loading = false;
       }
