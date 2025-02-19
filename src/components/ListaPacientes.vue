@@ -135,11 +135,9 @@
 
 <script>
 import { useApiStore } from '@/stores/api'; // Importar el store de llamadas
-
 import { computed, ref, onMounted } from 'vue';
 
 export default {
-  
   setup() {
     const pacientesStore = useApiStore();
     const callsStore = useApiStore();
@@ -153,14 +151,11 @@ export default {
       await callsStore.fetchCalls();
     });
 
-    // Formatear la fecha actual
-    const formattedDate = computed(() => {
-      if (!date.value) return "No hay fecha seleccionada";
-      const day = String(date.value.getDate()).padStart(2, '0');
-      const month = String(date.value.getMonth() + 1).padStart(2, '0');
-      const year = date.value.getFullYear();
-      return `${day}/${month}/${year}`;
-    });
+    // Función para normalizar fechas (ignorar hora y zona horaria)
+    const normalizarFecha = (fecha) => {
+      const dateObj = new Date(fecha);
+      return new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+    };
 
     // Combinar datos de pacientes y llamadas, excluyendo pacientes sin llamadas
     const datosCombinados = computed(() => {
@@ -177,25 +172,27 @@ export default {
         })
         .filter((paciente) => paciente.llamadas.length > 0); // Excluir pacientes sin llamadas
     });
+
     // Filtrar pacientes por la fecha seleccionada en el calendario y ordenar por hora
     const datosCombinadosFiltrados = computed(() => {
       if (!date.value) return datosCombinados.value; // Si no hay fecha seleccionada, mostrar todos
-      const fechaSeleccionada = new Date(date.value).toISOString().split('T')[0]; // Formato YYYY-MM-DD
-      return datosCombinados.value.filter((paciente) =>
-        paciente.llamadas.some((llamada) =>
-          new Date(llamada.fecha_hora).toISOString().split('T')[0] === fechaSeleccionada
-        )
-      ).sort((a, b) => {
-        const horaA = new Date(a.llamadas[0].fecha_hora).getTime();
-        const horaB = new Date(b.llamadas[0].fecha_hora).getTime();
-        return horaA - horaB;
-      });
-    });
-    // Obtener la fecha actual
-    const currentDate = new Date();
 
-    // Establecer la fecha actual como valor predeterminado
-    date.value = currentDate;
+      const fechaSeleccionada = normalizarFecha(date.value); // Normalizar la fecha seleccionada
+
+      return datosCombinados.value
+        .filter((paciente) =>
+          paciente.llamadas.some((llamada) => {
+            const fechaLlamada = normalizarFecha(llamada.fecha_hora); // Normalizar la fecha de la llamada
+            return fechaLlamada.getTime() === fechaSeleccionada.getTime(); // Comparar fechas
+          })
+        )
+        .sort((a, b) => {
+          const horaA = new Date(a.llamadas[0].fecha_hora).getTime();
+          const horaB = new Date(b.llamadas[0].fecha_hora).getTime();
+          return horaA - horaB;
+        });
+    });
+
     // Formatear la fecha
     const formatFecha = (fechaHora) => {
       if (!fechaHora) return "No disponible";
@@ -217,7 +214,7 @@ export default {
       });
     };
 
-    // Formatear la categoría (ejemplo: "llamadas_sociales" -> "Llamadas Sociales")
+    // Formatear la categoría
     const formatCategoria = (categoria) => {
       if (!categoria) return "No disponible";
       return categoria
@@ -226,7 +223,7 @@ export default {
         .join(' ');
     };
 
-    // Formatear el subtipo (ejemplo: "llamada_social" -> "Llamada Social")
+    // Formatear el subtipo
     const formatSubtipo = (subtipo) => {
       if (!subtipo) return "No disponible";
       return subtipo
@@ -253,31 +250,9 @@ export default {
 
     // Restablecer el filtrado
     const resetFiltro = () => {
-      date.value = null; // Restablece la fecha seleccionada a null
+      date.value = null; // Restablece la fecha seleccionada a null (mostrar todos)
     };
 
-    // Manejar el cambio de fecha en el calendario
-   
-
-    // Filtrar pacientes por la fecha seleccionada en el calendario
-    computed(() => {
-      return pacientesStore.pacientes
-        .filter(paciente => {
-          return paciente.llamadas.some(llamada => {
-            const llamadaFecha = new Date(llamada.fecha_hora).toLocaleDateString("es-ES", {
-              year: "numeric",
-              month: "long",
-              day: "numeric"
-            });
-            return llamadaFecha === formattedDate.value;
-          });
-        })
-        .sort((a, b) => {
-          const horaA = new Date(a.llamadas[0].fecha_hora).getTime();
-          const horaB = new Date(b.llamadas[0].fecha_hora).getTime();
-          return horaA - horaB;
-        });
-    });
     // Manejar el cambio de fecha en el calendario
     const onDateChange = (newDate) => {
       date.value = new Date(newDate); // Asegurarse de que la fecha se maneje correctamente
@@ -287,7 +262,6 @@ export default {
       pacientesStore,
       callsStore,
       date,
-      formattedDate,
       datosCombinadosFiltrados,
       formatFecha,
       formatHora,
