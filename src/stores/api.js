@@ -46,7 +46,7 @@ export const useApiStore = defineStore('apiStore', {
       console.log('dasdasdads:', payload);
 
       try {
-        const response = await axios.post(`${API_BASE_URL}/api/login`, payload);
+        const response = await axios.post(`${API_BASE_URL}api/login`, payload);
         const token = response.data.data.token;
         localStorage.setItem("token", token);
         this.token = token; // Actualizar el estado del store
@@ -58,7 +58,7 @@ export const useApiStore = defineStore('apiStore', {
     // Acciones para manejar pacientes
     async fetchPacientes() {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/patients`, {
+        const response = await axios.get(`${API_BASE_URL}api/patients`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -74,7 +74,7 @@ export const useApiStore = defineStore('apiStore', {
     // Agregar un nuevo paciente
     async addPaciente(paciente) {
       try {
-        const response = await axios.post(`${API_BASE_URL}/api/patients`, paciente, {
+        const response = await axios.post(`${API_BASE_URL}api/patients`, paciente, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
             'X-CSRF-TOKEN': localStorage.getItem('csrf_token'), // Add CSRF token
@@ -89,7 +89,7 @@ export const useApiStore = defineStore('apiStore', {
     // Actualizar un paciente existente
     async updatePaciente(id, paciente) {
       try {
-        const response = await axios.put(`${API_BASE_URL}/api/patients/${id}`, paciente, {
+        const response = await axios.put(`${API_BASE_URL}api/patients/${id}`, paciente, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -106,7 +106,7 @@ export const useApiStore = defineStore('apiStore', {
     // Eliminar un paciente
     async deletePaciente(id) {
       try {
-        await axios.delete(`${API_BASE_URL}/api/patients/${id}`, {
+        await axios.delete(`${API_BASE_URL}api/patients/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -119,7 +119,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async buscarPacientes(nombre) {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/patients`, {
+        const response = await axios.get(`${API_BASE_URL}api/patients`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -137,7 +137,7 @@ export const useApiStore = defineStore('apiStore', {
     // Acciones para manejar contactos
     async fetchContactos() {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/contacts`, {
+        const response = await axios.get(`${API_BASE_URL}api/contacts`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -150,7 +150,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async addContacto(contacto) {
       try {
-        const response = await axios.post(`${API_BASE_URL}/api/contacts`, contacto, {
+        const response = await axios.post(`${API_BASE_URL}api/contacts`, contacto, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -163,7 +163,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async updateContacto(id, contacto) {
       try {
-        const response = await axios.put(`${API_BASE_URL}/api/contacts/${id}`, contacto, {
+        const response = await axios.put(`${API_BASE_URL}api/contacts/${id}`, contacto, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -179,7 +179,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async deleteContacto(id) {
       try {
-        await axios.delete(`${API_BASE_URL}/api/contacts/${id}`, {
+        await axios.delete(`${API_BASE_URL}api/contacts/${id}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -195,7 +195,7 @@ export const useApiStore = defineStore('apiStore', {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.get(API_BASE_URL + '/api/calls',{
+        const response = await axios.get(API_BASE_URL + 'api/calls',{
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
@@ -212,7 +212,7 @@ export const useApiStore = defineStore('apiStore', {
     async addCall(newCall) {
       console.log('Adding call with data:', newCall); // Log the data being sent
       try {
-        const response = await axios.post(`${API_BASE_URL}/api/calls`, newCall, {
+        const response = await axios.post(`${API_BASE_URL}api/calls`, newCall, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
             'X-CSRF-TOKEN': localStorage.getItem('csrf_token'), // Ensure CSRF token is included
@@ -228,7 +228,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async updateCall(id, call) {
       try {
-        const response = await axios.put(`${API_BASE_URL}/api/calls/${id}`, call, {
+        const response = await axios.put(`${API_BASE_URL}api/calls/${id}`, call, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -244,7 +244,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async removeCall(id) {
       try {
-        await axios.delete(`${API_BASE_URL}/api/calls/${id}`, {
+        await axios.delete(`${API_BASE_URL}api/calls/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -257,7 +257,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async deleteCall(id) {
       try {
-        await axios.delete(`${API_BASE_URL}/api/calls/${id}`, {
+        await axios.delete(`${API_BASE_URL}api/calls/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -271,7 +271,7 @@ export const useApiStore = defineStore('apiStore', {
     // Acciones para manejar operadores
     async fetchOperadores() {
       try {
-        const response = await axios.get(API_BASE_URL + '/api/operators' ,{
+        const response = await axios.get(API_BASE_URL + 'api/operators' ,{
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
@@ -287,7 +287,7 @@ export const useApiStore = defineStore('apiStore', {
     // Agregar un nuevo operador
     async addOperador(operador) {
       try {
-        const response = await axios.post(API_BASE_URL + '/api/operators', operador, {
+        const response = await axios.post(API_BASE_URL + 'api/operators', operador, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -302,7 +302,7 @@ export const useApiStore = defineStore('apiStore', {
     // Actualizar un operador existente
     async updateOperador(id, operador) {
       try {
-        const response = await axios.put(`${API_BASE_URL}/api/operators/${id}`, operador, {
+        const response = await axios.put(`${API_BASE_URL}api/operators/${id}`, operador, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -320,7 +320,7 @@ export const useApiStore = defineStore('apiStore', {
     // Eliminar un operador
     async deleteOperador(id) {
       try {
-        await axios.delete(`${API_BASE_URL}/api/operators/${id}` ,{
+        await axios.delete(`${API_BASE_URL}api/operators/${id}` ,{
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -335,7 +335,7 @@ export const useApiStore = defineStore('apiStore', {
     // Acciones para manejar zonas
     async fetchZonas() {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/zones`, {
+        const response = await axios.get(`${API_BASE_URL}api/zones`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -350,7 +350,7 @@ export const useApiStore = defineStore('apiStore', {
     async fetchEmergenciesByZone(zona, startDate, endDate) {
       this.loading = true;
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/reports/emergencies`, {
+        const response = await axios.get(`${API_BASE_URL}api/reports/emergencies`, {
           params: { 
             zona: zona || null, // Si no hay zona, no se envía el parámetro
             startDate: startDate || '2014-01-01',
@@ -377,7 +377,7 @@ export const useApiStore = defineStore('apiStore', {
     async fetchPacientesOrdenados() {
       this.loading = true;
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/reports/patients-list`, {
+        const response = await axios.get(`${API_BASE_URL}api/reports/patients-list`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
           responseType: 'blob'
         });
@@ -395,7 +395,7 @@ export const useApiStore = defineStore('apiStore', {
     async fetchLlamadasPrevistas(fecha, tipo, zona) {
       this.loading = true;
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/reports/scheduled-calls-by-date/${fecha}`, {
+        const response = await axios.get(`${API_BASE_URL}api/reports/scheduled-calls-by-date/${fecha}`, {
           params: { tipo, zona },
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
           responseType: 'blob'
@@ -413,7 +413,7 @@ export const useApiStore = defineStore('apiStore', {
     async fetchLlamadasRealizadas(fecha, tipo, zona) {
       this.loading = true;
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/calls/realizadas`, {
+        const response = await axios.get(`${API_BASE_URL}api/calls/realizadas`, {
           params: { fecha, tipo, zona },
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
@@ -429,7 +429,7 @@ export const useApiStore = defineStore('apiStore', {
     async fetchHistoricoLlamadas(pacienteId, tipo) {
       this.loading = true;
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/calls/historico`, {
+        const response = await axios.get(`${API_BASE_URL}api/calls/historico`, {
           params: { pacienteId, tipo },
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
@@ -443,7 +443,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async fetchInformes() {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/reports`, {
+        const response = await axios.get(`${API_BASE_URL}api/reports`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -456,7 +456,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async fetchInformeEmergencies(data_inici, data_fi) {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/reports/emergencies?data_inici=${data_inici}&data_fi=${data_fi}`, {
+        const response = await axios.get(`${API_BASE_URL}api/reports/emergencies?data_inici=${data_inici}&data_fi=${data_fi}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -469,7 +469,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async fetchInformeSocials(data_inici, data_fi) {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/reports/socials?data_inici=${data_inici}&data_fi=${data_fi}`, {
+        const response = await axios.get(`${API_BASE_URL}api/reports/socials?data_inici=${data_inici}&data_fi=${data_fi}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -482,7 +482,7 @@ export const useApiStore = defineStore('apiStore', {
 
     async fetchInformeSeguiment(data_inici, data_fi) {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/reports/seguiment?data_inici=${data_inici}&data_fi=${data_fi}`, {
+        const response = await axios.get(`${API_BASE_URL}api/reports/seguiment?data_inici=${data_inici}&data_fi=${data_fi}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
