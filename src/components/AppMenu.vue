@@ -30,8 +30,16 @@
           </router-link>
         </li>
         <li>
-          <button @click="logout" class="nav-link logout-btn">Cerrar sesión</button>
-        </li>
+        <div class="user-dropdown">
+          <button class="nav-link user-btn">
+            <font-awesome-icon :icon="['fas', 'user-circle']" class="w-6 h-6 text-white" />
+          </button>
+          <div class="dropdown-content">
+            <router-link to="/user-details" class="dropdown-item">Detalles</router-link>
+            <button @click="logout" class="dropdown-item">Cerrar sesión</button>
+          </div>
+        </div>
+      </li>
       </ul>
     </nav>
 
@@ -143,12 +151,12 @@ import { useApiStore } from '@/stores/api';
 import { useRouter, useRoute } from 'vue-router';
 import { ref, computed, onMounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { useAuthStore } from '@/stores/authStore';
 
 // Añade los iconos a la librería
-library.add(faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume);
+library.add(faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume, faUserCircle);
 
 export default {
   components: {
@@ -492,5 +500,42 @@ ul {
 
 .btn-secondary:hover {
   background-color: #5a6268;
+}
+.user-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.user-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #2c3e50;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content .dropdown-item {
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content .dropdown-item:hover {
+  background-color: #34495e;
+}
+
+.user-dropdown:hover .dropdown-content {
+  display: block;
 }
 </style>
