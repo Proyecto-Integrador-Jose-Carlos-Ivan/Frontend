@@ -19,7 +19,6 @@
               <th>Hora</th>
               <th>Categoría</th>
               <th>Subtipo</th>
-              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -60,14 +59,6 @@
                 <div v-if="paciente.llamadas.length > 0">
                   <div v-for="llamada in paciente.llamadas" :key="llamada.id">
                     {{ formatSubtipo(llamada.subtipo) }}
-                  </div>
-                </div>
-                <span v-else>No hay llamadas</span>
-              </td>
-              <td>
-                <div v-if="paciente.llamadas.length > 0">
-                  <div v-for="llamada in paciente.llamadas" :key="llamada.id">
-                    <button @click.stop="confirmDeleteCall(llamada.id)" class="delete-button">Borrar</button>
                   </div>
                 </div>
                 <span v-else>No hay llamadas</span>
@@ -186,18 +177,25 @@ export default {
         })
         .filter((paciente) => paciente.llamadas.length > 0); // Excluir pacientes sin llamadas
     });
-
-    // Filtrar pacientes por la fecha seleccionada en el calendario
+    // Filtrar pacientes por la fecha seleccionada en el calendario y ordenar por hora
     const datosCombinadosFiltrados = computed(() => {
       if (!date.value) return datosCombinados.value; // Si no hay fecha seleccionada, mostrar todos
-      const fechaSeleccionada = date.value.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+      const fechaSeleccionada = new Date(date.value).toISOString().split('T')[0]; // Formato YYYY-MM-DD
       return datosCombinados.value.filter((paciente) =>
         paciente.llamadas.some((llamada) =>
           new Date(llamada.fecha_hora).toISOString().split('T')[0] === fechaSeleccionada
         )
-      );
+      ).sort((a, b) => {
+        const horaA = new Date(a.llamadas[0].fecha_hora).getTime();
+        const horaB = new Date(b.llamadas[0].fecha_hora).getTime();
+        return horaA - horaB;
+      });
     });
+    // Obtener la fecha actual
+    const currentDate = new Date();
 
+    // Establecer la fecha actual como valor predeterminado
+    date.value = currentDate;
     // Formatear la fecha
     const formatFecha = (fechaHora) => {
       if (!fechaHora) return "No disponible";
@@ -255,24 +253,34 @@ export default {
 
     // Restablecer el filtrado
     const resetFiltro = () => {
-      date.value = null; // Restablece la fecha seleccionada
+      date.value = new Date(); // Restablece la fecha seleccionada a la fecha actual
     };
 
     // Manejar el cambio de fecha en el calendario
+   
+
+    // Filtrar pacientes por la fecha seleccionada en el calendario
+    computed(() => {
+      return pacientesStore.pacientes
+        .filter(paciente => {
+          return paciente.llamadas.some(llamada => {
+            const llamadaFecha = new Date(llamada.fecha_hora).toLocaleDateString("es-ES", {
+              year: "numeric",
+              month: "long",
+              day: "numeric"
+            });
+            return llamadaFecha === formattedDate.value;
+          });
+        })
+        .sort((a, b) => {
+          const horaA = new Date(a.llamadas[0].fecha_hora).getTime();
+          const horaB = new Date(b.llamadas[0].fecha_hora).getTime();
+          return horaA - horaB;
+        });
+    });
+    // Manejar el cambio de fecha en el calendario
     const onDateChange = (newDate) => {
-      date.value = newDate;
-    };
-
-    // Método para confirmar y borrar una llamada
-    const confirmDeleteCall = (id) => {
-      if (confirm("¿Estás seguro de que deseas borrar esta llamada?")) {
-        deleteCall(id);
-      }
-    };
-
-    // Método para borrar una llamada
-    const deleteCall = async (id) => {
-      await callsStore.deleteCall(id);
+      date.value = new Date(newDate); // Asegurarse de que la fecha se maneje correctamente
     };
 
     return {
@@ -292,8 +300,6 @@ export default {
       moveToday,
       resetFiltro,
       onDateChange,
-      confirmDeleteCall,
-      deleteCall,
     };
   },
 };
@@ -447,21 +453,6 @@ export default {
 
 .custom-button:hover {
   background-color: #2980b9;
-}
-
-.delete-button {
-  background-color: #e74c3c;
-  color: white;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.delete-button:hover {
-  background-color: #c0392b;
 }
 
 @media (max-width: 768px) {
