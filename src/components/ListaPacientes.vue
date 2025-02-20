@@ -4,11 +4,15 @@
       <div class="pacientes">
         <!-- Header con "Mis Pacientes" y la fecha -->
         <div class="header-container">
-          <h2>Llamadas Programadas de Pacientes</h2>
+          <h2>Llamadas y Avisos de Pacientes</h2>
+          <div class="filter-buttons">
+            <button @click="mostrarLlamadas = true" :class="{ active: mostrarLlamadas }">Mostrar Llamadas</button>
+            <button @click="mostrarLlamadas = false" :class="{ active: !mostrarLlamadas }">Mostrar Avisos</button>
+          </div>
         </div>
 
         <!-- Tabla de pacientes y llamadas -->
-        <table v-if="datosCombinadosFiltrados.length > 0" class="styled-table">
+        <table v-if="mostrarLlamadas && datosCombinadosLlamadasFiltrados.length > 0" class="styled-table">
           <thead>
             <tr>
               <th>Nombre</th>
@@ -22,7 +26,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="paciente in datosCombinadosFiltrados"
+              v-for="paciente in datosCombinadosLlamadasFiltrados"
               :key="paciente.id"
               @click="mostrarDetallesPaciente(paciente)"
               class="clickable-row"
@@ -65,7 +69,58 @@
             </tr>
           </tbody>
         </table>
-        <p v-else>No hay llamadas este día</p>
+        <p v-else-if="mostrarLlamadas">No hay llamadas este día</p>
+
+        <!-- Tabla de pacientes y avisos -->
+        <table v-if="!mostrarLlamadas && datosCombinadosAvisosFiltrados.length > 0" class="styled-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Teléfono</th>
+              <th>DNI</th>
+              <th>Fecha</th>
+              <th>Tipo de Aviso</th>
+              <th>Descripción del Aviso</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="paciente in datosCombinadosAvisosFiltrados"
+              :key="paciente.id"
+              @click="mostrarDetallesPaciente(paciente)"
+              class="clickable-row"
+            >
+              <td>{{ paciente.nombre || "No disponible" }}</td>
+              <td>{{ paciente.telefono || "No disponible" }}</td>
+              <td>{{ paciente.dni || "No disponible" }}</td>
+              <td>
+                <div v-if="paciente.avisos.length > 0">
+                  <div v-for="aviso in paciente.avisos" :key="aviso.id">
+                    {{ formatFecha(aviso.fecha) }}
+                  </div>
+                </div>
+                <span v-else>No hay avisos</span>
+              </td>
+              <td>
+                <div v-if="paciente.avisos.length > 0">
+                  <div v-for="aviso in paciente.avisos" :key="aviso.id">
+                    {{ aviso.tipo }}
+                  </div>
+                </div>
+                <span v-else>No hay avisos</span>
+              </td>
+              <td>
+                <div v-if="paciente.avisos.length > 0">
+                  <div v-for="aviso in paciente.avisos" :key="aviso.id">
+                    {{ aviso.descripcion }}
+                  </div>
+                </div>
+                <span v-else>No hay avisos</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p v-else-if="!mostrarLlamadas">No hay avisos este día</p>
       </div>
 
       <!-- Calendario o detalles del paciente -->
@@ -133,21 +188,24 @@
 </template>
 
 <script>
-import { useApiStore } from '@/stores/api'; // Importar el store de llamadas
+import { useApiStore } from '@/stores/api'; // Importar el store de llamadas y avisos
 import { computed, ref, onMounted } from 'vue';
 
 export default {
   setup() {
     const pacientesStore = useApiStore();
     const callsStore = useApiStore();
+    const avisosStore = useApiStore();
     const date = ref(null); // Fecha seleccionada en el calendario (null por defecto)
     const mostrarDetalles = ref(false);
     const pacienteSeleccionado = ref({});
+    const mostrarLlamadas = ref(true); // Estado para alternar entre llamadas y avisos
 
-    // Obtener pacientes y llamadas al montar el componente
+    // Obtener pacientes, llamadas y avisos al montar el componente
     onMounted(async () => {
       await pacientesStore.fetchPacientes();
       await callsStore.fetchCalls();
+      await avisosStore.fetchAvisos();
     });
 
     // Función para normalizar fechas (ignorar hora y zona horaria)
@@ -157,7 +215,7 @@ export default {
     };
 
     // Combinar datos de pacientes y llamadas, excluyendo pacientes sin llamadas
-    const datosCombinados = computed(() => {
+    const datosCombinadosLlamadas = computed(() => {
       return pacientesStore.pacientes
         .map((paciente) => {
           const llamadasPaciente = callsStore.calls.filter(
@@ -172,13 +230,29 @@ export default {
         .filter((paciente) => paciente.llamadas.length > 0); // Excluir pacientes sin llamadas
     });
 
-    // Filtrar pacientes por la fecha seleccionada en el calendario y ordenar por hora
-    const datosCombinadosFiltrados = computed(() => {
-      if (!date.value) return datosCombinados.value; // Si no hay fecha seleccionada, mostrar todos
+    // Combinar datos de pacientes y avisos, excluyendo pacientes sin avisos
+    const datosCombinadosAvisos = computed(() => {
+      return pacientesStore.pacientes
+        .map((paciente) => {
+          const avisosPaciente = avisosStore.avisos.filter(
+            (aviso) => aviso.paciente_id === paciente.id
+          );
+
+          return {
+            ...paciente,
+            avisos: avisosPaciente,
+          };
+        })
+        .filter((paciente) => paciente.avisos.length > 0); // Excluir pacientes sin avisos
+    });
+
+    // Filtrar pacientes por la fecha seleccionada en el calendario y ordenar por hora (llamadas)
+    const datosCombinadosLlamadasFiltrados = computed(() => {
+      if (!date.value) return datosCombinadosLlamadas.value; // Si no hay fecha seleccionada, mostrar todos
 
       const fechaSeleccionada = normalizarFecha(date.value); // Normalizar la fecha seleccionada
 
-      return datosCombinados.value
+      return datosCombinadosLlamadas.value
         .filter((paciente) =>
           paciente.llamadas.some((llamada) => {
             const fechaLlamada = normalizarFecha(llamada.fecha_hora); // Normalizar la fecha de la llamada
@@ -188,6 +262,26 @@ export default {
         .sort((a, b) => {
           const horaA = new Date(a.llamadas[0].fecha_hora).getTime();
           const horaB = new Date(b.llamadas[0].fecha_hora).getTime();
+          return horaA - horaB;
+        });
+    });
+
+    // Filtrar pacientes por la fecha seleccionada en el calendario y ordenar por hora (avisos)
+    const datosCombinadosAvisosFiltrados = computed(() => {
+      if (!date.value) return datosCombinadosAvisos.value; // Si no hay fecha seleccionada, mostrar todos
+
+      const fechaSeleccionada = normalizarFecha(date.value); // Normalizar la fecha seleccionada
+
+      return datosCombinadosAvisos.value
+        .filter((paciente) =>
+          paciente.avisos.some((aviso) => {
+            const fechaAviso = normalizarFecha(aviso.fecha); // Normalizar la fecha del aviso
+            return fechaAviso.getTime() === fechaSeleccionada.getTime(); // Comparar fechas
+          })
+        )
+        .sort((a, b) => {
+          const horaA = new Date(a.avisos[0].fecha).getTime();
+          const horaB = new Date(b.avisos[0].fecha).getTime();
           return horaA - horaB;
         });
     });
@@ -260,8 +354,11 @@ export default {
     return {
       pacientesStore,
       callsStore,
+      avisosStore,
       date,
-      datosCombinadosFiltrados,
+      mostrarLlamadas,
+      datosCombinadosLlamadasFiltrados,
+      datosCombinadosAvisosFiltrados,
       formatFecha,
       formatHora,
       formatCategoria,
@@ -298,6 +395,25 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem; /* Reducir el margen inferior */
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.filter-buttons button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #3498db;
+  color: white;
+  font-weight: 600;
+}
+
+.filter-buttons button.active {
+  background-color: #2980b9;
 }
 
 .pacientes {

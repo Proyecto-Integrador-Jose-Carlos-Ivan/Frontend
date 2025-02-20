@@ -14,6 +14,7 @@ export const useApiStore = defineStore('apiStore', {
     pacientes: [], // Lista de pacientes
     contactos: [], // Lista de contactos
     calls: [], // Lista de llamadas
+    avisos: [],
     operadores: [], // Lista de operadores
     zonas: [], // Lista de zonas
     informes: [], // Lista de informes
@@ -265,6 +266,40 @@ export const useApiStore = defineStore('apiStore', {
         this.calls = this.calls.filter((call) => call.id !== id); // Remove the call from the list
       } catch (error) {
         this.errors = 'Error al eliminar la llamada: ' + error.message;
+      }
+    },
+
+    async fetchAvisos() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await axios.get(API_BASE_URL + 'api/alerts',{
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+        console.log('Llamadas obtenidas:', response.data.data); // Ajusta la URL de la API
+        this.avisos = response.data.data;
+      } catch (error) {
+        this.error = error.message || 'Error al obtener llamadas';
+      } finally {
+        this.loading = false;
+      }
+    },
+    async addAviso(newAviso) {
+      console.log('Adding call with data:', newAviso); // Log the data being sent
+      try {
+        const response = await axios.post(`${API_BASE_URL}api/alerts`, newAviso, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'), // Ensure CSRF token is included
+          },
+        });
+        console.log('Response from server:', response); // Log the response from the server
+        this.calls.push(response.data.data);
+      } catch (error) {
+        this.errors = 'Error adding alerts: ' + error.message;
+        console.error('Error adding alerts:', error.response.data); // Log the error response
       }
     },
 

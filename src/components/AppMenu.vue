@@ -30,6 +30,11 @@
           </router-link>
         </li>
         <li>
+          <router-link to="/avisos" class="nav-link">
+            <font-awesome-icon :icon="['fas', 'exclamation-triangle']" class="w-6 h-6 text-white" />
+          </router-link>
+        </li>
+        <li>
           <div class="user-dropdown">
             <button class="nav-link user-btn">
               <font-awesome-icon :icon="['fas', 'user-circle']" class="w-8 h-8 text-white" />
@@ -66,12 +71,12 @@ import { useApiStore } from '@/stores/api';
 import { useRouter, useRoute } from 'vue-router';
 import { ref, computed, onMounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume, faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume, faUserCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { useAuthStore } from '@/stores/authStore';
 
 // Añade los iconos a la librería
-library.add(faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume, faUserCircle);
+library.add(faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume, faUserCircle, faExclamationTriangle);
 
 export default {
   components: {

@@ -187,18 +187,18 @@ h2 {
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   width: 90%;
-  max-width: 500px;
+  max-width: 600px; /* Ajustar el ancho máximo */
   max-height: 90vh;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 1.5rem; /* Ajustar el padding */
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
-  background-color: #f8f9fa;
+  padding: 1rem; /* Ajustar el padding */
+  background-color: #34495e; /* Cambiar el color de fondo */
   border-bottom: 1px solid #e9ecef;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -206,17 +206,17 @@ h2 {
 
 .modal-header h2 {
   margin: 0;
-  color: #343a40;
-  font-size: 1.5rem;
+  color: #ffffff; /* Cambiar el color del texto */
+  font-size: 1.5rem; /* Ajustar el tamaño de fuente */
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.5rem; /* Ajustar el tamaño de fuente */
   color: #6c757d;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease; /* Añadir transición */
 }
 
 .close-btn:hover {
@@ -224,14 +224,14 @@ h2 {
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 1rem; /* Ajustar el padding */
   flex-grow: 1;
   overflow-y: auto;
 }
 
 .modal-body p {
   margin-bottom: 1rem;
-  font-size: 1rem;
+  font-size: 1rem; /* Ajustar el tamaño de fuente */
   color: #2c3e50;
 }
 
@@ -256,6 +256,7 @@ h2 {
 
   .modal-container {
     width: 95%;
+    padding: 1rem; /* Ajustar el padding para móviles */
   }
 }
 </style>

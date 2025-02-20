@@ -3,7 +3,7 @@
     <h1>Información del Operador</h1>
     <div class="info-container" v-if="operador">
       <div class="avatar-container">
-        <img :src="operador.avatar || '@/assets/default-avatar.png'" alt="Avatar" class="avatar" />
+        <img :src="operador.avatar || defaultAvatar" alt="Avatar" class="avatar" />
       </div>
       <div class="details-container">
         <p><strong>Nombre:</strong> {{ operador.name }}</p>
@@ -14,7 +14,6 @@
         <p><strong>Lenguas:</strong> {{ operador.lenguas }}</p>
         <p><strong>Fecha de Contratación:</strong> {{ operador.fecha_contratacion }}</p>
         <p><strong>Fecha de Baja:</strong> {{ operador.fecha_baja }}</p>
-        <p><strong>Username:</strong> {{ operador.username }}</p>
       </div>
     </div>
     <div v-else>
@@ -44,16 +43,20 @@ export default {
 
 <style scoped>
 .operador-info {
-  padding: 2rem;
+  padding: 1.5rem;
   background-color: #ecf0f1;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
-  margin: 2rem auto;
+  max-width: 700px;
+  margin: 12rem auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .operador-info h1 {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: #2c3e50;
   text-align: center;
 }
@@ -67,16 +70,17 @@ export default {
   flex: 1;
   display: flex;
   justify-content: center;
+  margin-right: 1.5rem;
 }
 
 .avatar {
-  max-width: 150px;
+  max-width: 120px;
   border-radius: 50%;
 }
 
 .details-container {
   flex: 2;
-  padding-left: 2rem;
+  padding-left: 1.5rem;
 }
 
 .details-container p {
