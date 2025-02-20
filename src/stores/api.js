@@ -11,6 +11,7 @@ const API_BASE_URL = import.meta.env.VITE_URL_API
 export const useApiStore = defineStore('apiStore', {
   state: () => ({
     token: localStorage.getItem('token') || null,
+    searchQuery: '',
     pacientes: [], // Lista de pacientes
     contactos: [], // Lista de contactos
     calls: [], // Lista de llamadas
@@ -120,13 +121,17 @@ export const useApiStore = defineStore('apiStore', {
 
     async buscarPacientes(nombre) {
       try {
-        const response = await axios.get(`${API_BASE_URL}api/patients`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        const pacientes = response.data.data;
-        this.pacientes = pacientes.filter(paciente =>
+        // Guarda el término de búsqueda en el estado
+        this.searchQuery = nombre;
+    
+        // Si no hay término de búsqueda, carga todos los pacientes
+        if (!nombre) {
+          await this.fetchPacientes();
+          return;
+        }
+    
+        // Filtra los pacientes localmente
+        this.pacientes = this.pacientes.filter(paciente =>
           paciente.nombre.toLowerCase().includes(nombre.toLowerCase())
         );
       } catch (error) {

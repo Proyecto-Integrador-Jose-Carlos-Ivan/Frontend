@@ -17,7 +17,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="paciente in pacientesStore.pacientes" :key="paciente.id" @click="showPacienteDetails(paciente)">
+            <tr v-for="paciente in displayedPacientes" :key="paciente.id" @click="showPacienteDetails(paciente)">
               <td>{{ paciente.nombre }}</td>
               <td>{{ paciente.situacion_personal || "No disponible" }}</td>
               <td>{{ paciente.direccion }}</td>
@@ -28,6 +28,32 @@
             </tr>
           </tbody>
         </table>
+
+        <div v-if="!isSearching" class="pagination">
+          <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
+          <span
+            v-for="page in pagesToShow"
+            :key="page"
+            @click="page === '...' ? toggleInput() : goToPage(page)"
+            :class="{ active: currentPage === page }"
+          >
+            <template v-if="page === '...'">
+              <input
+                v-if="showInput"
+                type="number"
+                v-model.number="inputPage"
+                @blur="goToInputPage"
+                @keyup.enter="goToInputPage"
+                autofocus
+              />
+              <span v-else>...</span>
+            </template>
+            <template v-else>
+              {{ page }}
+            </template>
+          </span>
+          <button @click="nextPage" :disabled="currentPage === totalPages">Siguiente</button>
+        </div>
       </div>
     </div>
 
@@ -59,13 +85,18 @@
 
 <script>
 import { useApiStore } from '@/stores/api';
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 
 export default {
   setup() {
     const pacientesStore = useApiStore();
     const showModal = ref(false); // Controla la visibilidad del modal
     const selectedPaciente = ref(null); // Almacena el paciente seleccionado
+    const currentPage = ref(1);
+    const itemsPerPage = 10;
+    const showInput = ref(false);
+    const inputPage = ref(null);
+    const isSearching = ref(false);
 
     const formatFecha = (fecha) => {
       if (!fecha) return "Fecha no disponible";
@@ -86,8 +117,85 @@ export default {
       selectedPaciente.value = null;
     };
 
+    const paginatedPacientes = computed(() => {
+      const pacientes = isSearching.value ? pacientesStore.filteredPacientes : pacientesStore.pacientes;
+      const start = (currentPage.value - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      return pacientes.slice(start, end);
+    });
+
+    const totalPages = computed(() => {
+      const pacientes = isSearching.value ? pacientesStore.filteredPacientes : pacientesStore.pacientes;
+      return Math.ceil(pacientes.length / itemsPerPage);
+    });
+
+    const prevPage = () => {
+      if (currentPage.value > 1) {
+        currentPage.value--;
+      }
+    };
+
+    const nextPage = () => {
+      if (currentPage.value < totalPages.value) {
+        currentPage.value++;
+      }
+    };
+
+    const goToPage = (page) => {
+      currentPage.value = page;
+    };
+
+    const toggleInput = () => {
+      showInput.value = !showInput.value;
+    };
+
+    const goToInputPage = () => {
+      if (inputPage.value >= 1 && inputPage.value <= totalPages.value) {
+        currentPage.value = inputPage.value;
+      }
+      showInput.value = false;
+    };
+
+    const pagesToShow = computed(() => {
+      const total = totalPages.value;
+      const current = currentPage.value;
+      const pages = [];
+
+      // Si hay 4 o menos páginas, mostrar todas
+      if (total <= 4) {
+        for (let i = 1; i <= total; i++) {
+          pages.push(i);
+        }
+        return pages;
+      }
+    
+      // Si la página actual está cerca del inicio
+      if (current <= 2) {
+        pages.push(1, 2, 3, '...', total);
+      }
+      // Si la página actual está cerca del final
+      else if (current >= total - 1) {
+        pages.push(1, '...', total - 2, total - 1, total);
+      }
+      // Si la página actual está en el medio
+      else {
+        pages.push(1, '...', current - 1, current, current + 1, '...', total);
+      }
+    
+      return pages;
+    });
+
+    const displayedPacientes = computed(() => {
+      return paginatedPacientes.value;
+    });
+
     onMounted(async () => {
       await pacientesStore.fetchPacientes();
+    });
+
+    watch(() => pacientesStore.searchQuery, (newQuery) => {
+      isSearching.value = newQuery.length < 0;
+      currentPage.value = 1;
     });
 
     return {
@@ -97,6 +205,18 @@ export default {
       selectedPaciente,
       showPacienteDetails,
       closeModal,
+      displayedPacientes,
+      currentPage,
+      totalPages,
+      prevPage,
+      nextPage,
+      goToPage,
+      pagesToShow,
+      showInput,
+      inputPage,
+      toggleInput,
+      goToInputPage,
+      isSearching,
     };
   }
 };
@@ -167,6 +287,54 @@ h2 {
 
 .styled-table tbody tr:last-of-type {
   border-bottom: 2px solid #ffffff;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.pagination button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  margin: 0 0.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.pagination span.active {
+  background-color: #3498db;
+  color: white;
+}
+
+.pagination span:hover {
+  background-color: #e9ecef;
+}
+
+.pagination input {
+  width: 50px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.25rem;
 }
 
 .modal-overlay {
