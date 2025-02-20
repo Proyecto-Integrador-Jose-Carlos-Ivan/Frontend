@@ -456,8 +456,10 @@ export const useApiStore = defineStore('apiStore', {
         const response = await axios.get(`${API_BASE_URL}api/calls/realizadas`, {
           params: { fecha, tipo, zona },
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          responseType: 'blob'
         });
-        this.informes = response.data.data;
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+        this.informes = url;
       } catch (error) {
         this.errors = 'Error cargando llamadas realizadas: ' + error.message;
       } finally {
@@ -472,8 +474,10 @@ export const useApiStore = defineStore('apiStore', {
         const response = await axios.get(`${API_BASE_URL}api/calls/historico`, {
           params: { pacienteId, tipo },
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          responseType: 'blob'
         });
-        this.informes = response.data.data;
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+        this.informes = url;
       } catch (error) {
         this.errors = 'Error cargando histórico de llamadas: ' + error.message;
       } finally {

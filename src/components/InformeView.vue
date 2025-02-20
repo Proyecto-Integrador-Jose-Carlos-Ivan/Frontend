@@ -130,22 +130,27 @@ export default {
       try {
         switch (reportType.value) {
           case 'emergencias':
+          informes.value = [];
             await informesStore.fetchEmergenciesByZone(zona.value, fecha.value, fecha.value);
             emergenciesUrl.value = informesStore.emergencies;
             break;
           case 'pacientes':
+          informes.value = [];
             await informesStore.fetchPacientesOrdenados();
             emergenciesUrl.value = informesStore.informes;
             break;
           case 'llamadas-previstas':
+          informes.value = [];
             await informesStore.fetchLlamadasPrevistas(fecha.value, zona.value);
             emergenciesUrl.value = informesStore.informes;
             break;
           case 'llamadas-realizadas':
+          informes.value = [];
             await informesStore.fetchLlamadasRealizadas(fecha.value, tipo.value, zona.value);
             emergenciesUrl.value = informesStore.informes;
             break;
           case 'historico':
+          informes.value = [];
             await informesStore.fetchHistoricoLlamadas(pacienteId.value, tipo.value);
             emergenciesUrl.value = informesStore.informes;
             break;
