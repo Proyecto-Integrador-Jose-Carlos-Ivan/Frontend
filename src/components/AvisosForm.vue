@@ -205,11 +205,11 @@ h2 {
 }
 
 .btn {
-  padding: 10px 20px;
+  padding: 7px 15px; /* Reduce the padding */
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 1em;
+  font-size: 1em; /* Reduce the font size */
   transition: background-color 0.3s ease;
 }
 

@@ -170,7 +170,14 @@ export default {
     };
 
     const buscarPacientes = () => {
-      apiStore.buscarPacientes(searchQuery.value);
+      const query = searchQuery.value.toLowerCase();
+      if (query) {
+        apiStore.buscarPacientes(query);
+      } else {
+        apiStore.fetchPacientes(); // Fetch all patients if the search query is empty
+      }
+      router.push('/home'); // Ensure the user is redirected to the home page where the search results are displayed
+      apiStore.setCurrentPage(1); // Reset pagination to the first page
     };
 
     return {
