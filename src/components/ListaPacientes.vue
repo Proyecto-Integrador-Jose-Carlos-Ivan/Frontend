@@ -5,7 +5,6 @@
         <!-- Header con "Mis Pacientes" y la fecha -->
         <div class="header-container">
           <h2>Llamadas Programadas de Pacientes</h2>
-          
         </div>
 
         <!-- Tabla de pacientes y llamadas -->
@@ -298,14 +297,14 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem; /* Ajusta el margen inferior según sea necesario */
+  margin-bottom: 1rem; /* Reducir el margen inferior */
 }
 
 .pacientes {
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+  padding: 1rem; /* Reducir el padding */
   overflow-x: auto;
   max-width: 100%;
 }

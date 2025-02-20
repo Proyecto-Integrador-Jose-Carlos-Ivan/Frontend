@@ -1,0 +1,29 @@
+/* src/assets/css/tables.css */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0; /* Reducir el margen superior e inferior */
+  font-size: 16px;
+  text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 8px 10px; /* Reducir el padding */
+  border-bottom: 1px solid #ddd;
+}
+
+.styled-table th {
+  background-color: #34495e;
+  color: #fff;
+}
+
+.styled-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+@media (max-width: 768px) {
+  .styled-table th, .styled-table td {
+    padding: 6px 8px; /* Reducir el padding para móviles */
+  }
+}

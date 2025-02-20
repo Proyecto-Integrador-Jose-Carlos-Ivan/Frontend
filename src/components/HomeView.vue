@@ -104,14 +104,14 @@ export default {
 
 <style scoped>
 .main-container {
-  padding-top: 80px; /* Asegura que el contenido no se solape con el header secundario */
+  padding-top: 90px; /* Reducir el padding superior */
 }
 
 .container {
   display: grid;
   grid-template-columns: 1fr;
   justify-content: center;
-  padding: 80px 20px 20px;
+  padding: 5px 20px 20px; /* Reducir el padding superior */
 }
 
 .pacientes {
@@ -120,7 +120,7 @@ export default {
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+  padding: 1rem; /* Reducir el padding */
   overflow-x: auto;
 }
 
@@ -128,7 +128,7 @@ h2 {
   font-size: 1.5rem;
   color: #2c3e50;
   margin-top: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem; /* Reducir el margen inferior */
   text-align: center;
 }
 
@@ -147,8 +147,13 @@ h2 {
 
 .styled-table th,
 .styled-table td {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem; /* Reducir el padding */
   text-align: left;
+}
+
+.styled-table thead th {
+  padding-top: 0.25rem; /* Reducir el padding superior */
+  padding-bottom: 0.25rem; /* Reducir el padding inferior */
 }
 
 .styled-table tbody tr:nth-child(even) {
@@ -232,7 +237,7 @@ h2 {
 
 @media (max-width: 768px) {
   .container {
-    padding: 80px 10px 10px;
+    padding: 60px 10px 10px; /* Reducir el padding para móviles */
   }
 
   .pacientes {

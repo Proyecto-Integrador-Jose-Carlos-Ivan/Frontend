@@ -77,8 +77,6 @@
 
     <!-- Columna derecha: Contenido principal -->
     <div class="main-content">
-      <h2>Generar Informes</h2>
-
       <!-- Mensaje de carga -->
       <div v-if="loading" class="loading">Cargando informe...</div>
 
@@ -93,8 +91,7 @@
         </div>
       </div>
 
-      <!-- Mensaje si no hay resultados -->
-      <div v-else class="no-results">No se encontraron resultados.</div>
+
     </div>
   </div>
 </template>
@@ -206,13 +203,13 @@ export default {
   grid-template-columns: 400px 1fr;
   gap: 2rem;
   padding: 2rem;
-  padding-top: 120px;
+  padding-top: 140px; /* Ajustar el padding superior */
 }
 
 .filters-column {
   grid-column: 1;
   position: sticky;
-  top: 120px;
+  top: 140px; /* Ajustar la posición sticky */
   height: fit-content;
 }
 
@@ -295,5 +292,26 @@ export default {
 .pdf-content ::v-deep .vue-pdf-embed {
   width: 800px;
   height: 500px;
+}
+
+@media (max-width: 768px) {
+  .reports-container {
+    grid-template-columns: 1fr;
+    padding: 80px 10px 10px; /* Ajustar el padding para móviles */
+  }
+
+  .filters-column {
+    position: static;
+    margin-bottom: 1rem;
+  }
+
+  .filters {
+    padding: 1rem;
+  }
+
+  .pdf-content ::v-deep .vue-pdf-embed {
+    width: 100%;
+    height: auto;
+  }
 }
 </style>

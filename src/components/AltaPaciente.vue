@@ -136,10 +136,10 @@ export default {
 
 <style scoped>
 .main-container {
-  padding-top: 80px; /* Asegura que el contenido no se solape con el header secundario */
+  padding-top: 80px; /* Reducir el padding superior */
 }
 .container {
-  padding: 80px 20px 20px;
+  padding: 20px 20px 20px; /* Reducir el padding superior */
   max-width: 800px;
   margin: 0 auto;
 }
@@ -151,13 +151,13 @@ h2 {
 
 .form-container {
   background-color: #ffffff;
-  padding: 20px;
+  padding: 1rem; /* Reducir el padding */
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 10px; /* Reducir el margen inferior */
 }
 
 .form-group label {
@@ -180,6 +180,13 @@ h2 {
 .form-group textarea {
   resize: vertical;
   min-height: 100px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding-top: 4px; /* Reducir el padding superior */
+  padding-bottom: 4px; /* Reducir el padding inferior */
 }
 
 .btn {
