@@ -130,7 +130,7 @@ export default {
             break;
           case 'llamadas-previstas':
             await informesStore.fetchLlamadasPrevistas(fecha.value, tipo.value, zona.value);
-            emergenciesUrl.value = informesStore.llamadasPrevistas;
+            emergenciesUrl.value = informesStore.informes;
             break;
           case 'llamadas-realizadas':
             await informesStore.fetchLlamadasRealizadas(fecha.value, tipo.value, zona.value);

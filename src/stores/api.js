@@ -353,7 +353,7 @@ export const useApiStore = defineStore('apiStore', {
         const response = await axios.get(`${API_BASE_URL}api/reports/emergencies`, {
           params: { 
             zona: zona || null, // Si no hay zona, no se envía el parámetro
-            startDate: startDate || '2014-01-01',
+            startDate: startDate || '1800-01-01',
             endDate: endDate || new Date().toISOString().split('T')[0],
           },
           headers: { 
@@ -395,13 +395,13 @@ export const useApiStore = defineStore('apiStore', {
     async fetchLlamadasPrevistas(fecha, tipo, zona) {
       this.loading = true;
       try {
-        const response = await axios.get(`${API_BASE_URL}api/reports/scheduled-calls-by-date/${fecha}`, {
-          params: { tipo, zona },
+        const response = await axios.get(`${API_BASE_URL}api/reports/scheduled-calls`, {
+          params: { tipo, zona, fecha },
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
           responseType: 'blob'
         });
         const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-        this.llamadasPrevistas = url;
+        this.informes = url;
       } catch (error) {
         this.errors = 'Error cargando llamadas programadas: ' + error.message;
       } finally {
