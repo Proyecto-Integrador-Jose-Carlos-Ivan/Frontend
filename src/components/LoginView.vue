@@ -1,25 +1,28 @@
 <template>
-  <div class="login-container">
-    <h1>Iniciar Sesión</h1>
+  <div class="login-wrapper">
+    <div class="login-container">
+      <h1>Iniciar Sesión</h1>
 
-    <!-- Formulario de inicio de sesión -->
-    <form @submit.prevent="loginWithCredentials" class="login-form">
-      <div class="form-group">
-        <label for="email">Correo electrónico:</label>
-        <input type="email" id="email" v-model="email" required />
-      </div>
-      <div class="form-group">
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" v-model="password" required />
-      </div>
-      <button type="submit" class="login-btn">Iniciar sesión</button>
-    </form>
+      <!-- Formulario de inicio de sesión -->
+      <form @submit.prevent="loginWithCredentials" class="login-form">
+        <div class="form-group">
+          <label for="email">Correo electrónico:</label>
+          <input type="email" id="email" v-model="email" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Contraseña:</label>
+          <input type="password" id="password" v-model="password" required />
+        </div>
+        <button type="submit" class="login-btn">Iniciar sesión</button>
+      </form>
 
-    <!-- Botón de inicio de sesión con Google -->
-    <button @click="loginWithGoogle" class="google-login-btn">
-      <img src="/google.svg" alt="Google Logo" class="google-logo" />
-      Iniciar sesión con Google
-    </button>
+      <!-- Botón de inicio de sesión con Google -->
+      <button @click="loginWithGoogle" class="google-login-btn">
+        <img src="/google.svg" alt="Google Logo" class="google-logo" />
+        Iniciar sesión con Google
+      </button>
+    </div>
+    <div class="login-image"></div>
   </div>
 </template>
 
@@ -97,13 +100,20 @@ export default {
 </script>
 
 <style scoped>
+.login-wrapper {
+  display: flex;
+  height: 100vh;
+}
+
 .login-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background-color: #f4f4f4;
+  width: 40%;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-right: 1px solid #ccc;
 }
 
 h1 {
@@ -175,5 +185,12 @@ h1 {
   width: 20px;
   height: 20px;
   margin-right: 10px;
+}
+
+.login-image {
+  width: 60%;
+  background-image: url('/vue-background.jpg');
+  background-size: cover;
+  background-position: center;
 }
 </style>

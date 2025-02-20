@@ -42,7 +42,7 @@
           <label for="zona_id">Zona:</label>
           <select id="zona_id" v-model="nuevoPaciente.zona_id" required>
             <option v-for="zona in zonas" :key="zona.id" :value="zona.id">
-              {{ zona.nombre }}
+              {{ zona.name }}
             </option>
           </select>
         </div>

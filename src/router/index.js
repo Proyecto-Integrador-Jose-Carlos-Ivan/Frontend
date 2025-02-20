@@ -11,6 +11,7 @@ import GoogleCallback from '@/components/GoogleCallback.vue';
 import AltaPaciente from '../components/AltaPaciente.vue';
 import OperadorInfo from '@/components/OperadorInfo.vue';
 import AvisosForm from '@/components/AvisosForm.vue';
+import ZonesView from '@/components/ZonesView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -79,6 +80,12 @@ const router = createRouter({
       path: '/avisos',
       name: 'avisos',
       component: AvisosForm,
+      meta: { requiresAuth: true }, // Requiere autenticación
+    },
+    {
+      path: '/zones',
+      name: 'zones',
+      component: ZonesView,
       meta: { requiresAuth: true }, // Requiere autenticación
     },
   ],

@@ -1,41 +1,27 @@
 <template>
   <div class="main-container">
     <div class="container">
-      <div class="pacientes">
+      <div class="zonas">
         <div class="header">
-          <h2>Lista de Pacientes</h2>
-          <button @click="goToZones">Ver Zonas</button>
+          <h2>Lista de Zonas</h2>
+          <button @click="goToHome">Ver Pacientes</button>
         </div>
 
         <table class="styled-table">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Situación Personal</th>
-              <th>Dirección</th>
-              <th>Email</th>
-              <th>Teléfono</th>
-              <th>SIP</th>
-              <th>Situación Sanitaria</th>
-              <th>Contacto</th>
-              <th>Acciones</th>
+              <th class="text-center">Nombre</th>
+              <th class="text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="paciente in displayedPacientes" :key="paciente.id" @click="showPacienteDetails(paciente)">
-              <td>{{ paciente.nombre }}</td>
-              <td>{{ paciente.situacion_personal || "No disponible" }}</td>
-              <td>{{ paciente.direccion }}</td>
-              <td>{{ paciente.email }}</td>
-              <td>{{ paciente.telefono }}</td>
-              <td>{{ paciente.sip }}</td>
-              <td>{{ paciente.situacion_sanitaria || "No disponible" }}</td>
-              <td>{{ paciente.contacto ? paciente.contacto.nombre : "No tiene" }}</td>
+            <tr v-for="zona in displayedZonas" :key="zona.id" @click="showZonaDetails(zona)">
+              <td>{{ zona.name }}</td>
               <td class="actions-cell">
-                <button @click.stop="editPaciente(paciente)" class="edit-btn">
+                <button @click.stop="editZona(zona)" class="edit-btn">
                   <font-awesome-icon :icon="['fas', 'edit']" />
                 </button>
-                <button @click.stop="confirmDelete(paciente.id)" class="delete-btn">
+                <button @click.stop="confirmDelete(zona.id)" class="delete-btn">
                   <font-awesome-icon :icon="['fas', 'trash']" />
                 </button>
               </td>
@@ -71,82 +57,38 @@
       </div>
     </div>
 
-    <!-- Modal para mostrar detalles del paciente -->
+    <!-- Modal para mostrar detalles de la zona -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-container">
         <div class="modal-header">
-          <h2>Detalles del Paciente</h2>
+          <h2>Detalles de la Zona</h2>
           <button @click="closeModal" class="close-btn">&times;</button>
         </div>
         <div class="modal-body">
-          <div v-if="selectedPaciente">
-            <p><strong>Nombre:</strong> {{ selectedPaciente.nombre }}</p>
-            <p><strong>Situación Personal:</strong> {{ selectedPaciente.situacion_personal || "No disponible" }}</p>
-            <p><strong>Dirección:</strong> {{ selectedPaciente.direccion }}</p>
-            <p><strong>Email:</strong> {{ selectedPaciente.email }}</p>
-            <p><strong>Teléfono:</strong> {{ selectedPaciente.telefono }}</p>
-            <p><strong>Contacto:</strong> {{ selectedPaciente.contacto }}</p>
-            <p><strong>SIP:</strong> {{ selectedPaciente.sip }}</p>
-            <p><strong>Situación Sanitaria:</strong> {{ selectedPaciente.situacion_sanitaria || "No disponible" }}</p>
-            <p><strong>Fecha de Nacimiento:</strong> {{ formatFecha(selectedPaciente.fecha_nacimiento) }}</p>
-            <p><strong>DNI:</strong> {{ selectedPaciente.dni || "No disponible" }}</p>
-            <p><strong>Situación Económica:</strong> {{ selectedPaciente.situacion_economica || "No disponible" }}</p>
-            <p><strong>Contacto:</strong> {{ selectedPaciente.contacto ? selectedPaciente.contacto.nombre : "No disponible" }}</p>
-            <p v-if="selectedPaciente.contacto"><strong>Teléfono del Contacto:</strong> {{ selectedPaciente.contacto.telefono }}</p>
-            <p v-if="selectedPaciente.contacto"><strong>Relación:</strong> {{ selectedPaciente.contacto.relacion }}</p>
+          <div v-if="selectedZona">
+            <p><strong>Nombre:</strong> {{ selectedZona.nombre }}</p>
+            <p><strong>Descripción:</strong> {{ selectedZona.descripcion || "No disponible" }}</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal para editar paciente -->
+    <!-- Modal para editar zona -->
     <div v-if="showEditModal" class="modal-overlay" @click.self="closeEditModal">
       <div class="modal-container">
         <div class="modal-header">
-          <h2>Editar Paciente</h2>
+          <h2>Editar Zona</h2>
           <button @click="closeEditModal" class="close-btn">&times;</button>
         </div>
         <div class="modal-body">
-          <form @submit.prevent="updatePaciente">
+          <form @submit.prevent="updateZona">
             <div>
               <label>Nombre:</label>
-              <input v-model="editPacienteData.nombre" required />
+              <input v-model="editZonaData.nombre" required />
             </div>
             <div>
-              <label>Situación Personal:</label>
-              <input v-model="editPacienteData.situacion_personal" />
-            </div>
-            <div>
-              <label>Dirección:</label>
-              <input v-model="editPacienteData.direccion" />
-            </div>
-            <div>
-              <label>Email:</label>
-              <input v-model="editPacienteData.email" type="email" />
-            </div>
-            <div>
-              <label>Teléfono:</label>
-              <input v-model="editPacienteData.telefono" type="tel" />
-            </div>
-            <div>
-              <label>SIP:</label>
-              <input v-model="editPacienteData.sip" />
-            </div>
-            <div>
-              <label>Situación Sanitaria:</label>
-              <input v-model="editPacienteData.situacion_sanitaria" />
-            </div>
-            <div>
-              <label>Fecha de Nacimiento:</label>
-              <input v-model="editPacienteData.fecha_nacimiento" type="date" />
-            </div>
-            <div>
-              <label>DNI:</label>
-              <input v-model="editPacienteData.dni" />
-            </div>
-            <div>
-              <label>Situación Económica:</label>
-              <input v-model="editPacienteData.situacion_economica" />
+              <label>Descripción:</label>
+              <input v-model="editZonaData.descripcion" />
             </div>
             <button type="submit">Guardar</button>
           </form>
@@ -162,8 +104,8 @@
           <button @click="closeDeleteModal" class="close-btn">&times;</button>
         </div>
         <div class="modal-body">
-          <p>¿Estás seguro de que deseas eliminar este paciente?</p>
-          <button @click="deletePaciente(deletePacienteId)" class="confirm-btn">Sí, eliminar</button>
+          <p>¿Estás seguro de que deseas eliminar esta zona?</p>
+          <button @click="deleteZona(deleteZonaId)" class="confirm-btn">Sí, eliminar</button>
           <button @click="closeDeleteModal" class="cancel-btn">Cancelar</button>
         </div>
       </div>
@@ -186,9 +128,9 @@ export default {
     FontAwesomeIcon,
   },
   setup() {
-    const pacientesStore = useApiStore();
+    const zonasStore = useApiStore();
     const showModal = ref(false); // Controla la visibilidad del modal
-    const selectedPaciente = ref(null); // Almacena el paciente seleccionado
+    const selectedZona = ref(null); // Almacena la zona seleccionada
     const currentPage = ref(1);
     const itemsPerPage = 10;
     const showInput = ref(false);
@@ -196,43 +138,28 @@ export default {
     const isSearching = ref(false);
     const router = useRouter();
 
-    const formatFecha = (fecha) => {
-      if (!fecha) return "Fecha no disponible";
-      const fechaValida = fecha.includes("T") ? fecha : `${fecha}T00:00:00`;
-      const date = new Date(fechaValida);
-      return date.toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" });
-    };
-
-    // Muestra el modal con los detalles del paciente
-    const showPacienteDetails = async (paciente) => {
-      selectedPaciente.value = paciente;
-      if (paciente.contacto_id) {
-        try {
-          const response = await pacientesStore.fetchContacto(paciente.contacto_id);
-          selectedPaciente.value.contacto = response.data;
-        } catch (error) {
-          console.error('Error fetching contact:', error);
-        }
-      }
+    // Muestra el modal con los detalles de la zona
+    const showZonaDetails = (zona) => {
+      selectedZona.value = zona;
       showModal.value = true;
     };
 
     // Cierra el modal
     const closeModal = () => {
       showModal.value = false;
-      selectedPaciente.value = null;
+      selectedZona.value = null;
     };
 
-    const paginatedPacientes = computed(() => {
-      const pacientes = isSearching.value ? pacientesStore.filteredPacientes : pacientesStore.pacientes;
+    const paginatedZonas = computed(() => {
+      const zonas = isSearching.value ? zonasStore.filteredZonas : zonasStore.zonas;
       const start = (currentPage.value - 1) * itemsPerPage;
       const end = start + itemsPerPage;
-      return pacientes.slice(start, end);
+      return zonas.slice(start, end);
     });
 
     const totalPages = computed(() => {
-      const pacientes = isSearching.value ? pacientesStore.filteredPacientes : pacientesStore.pacientes;
-      return Math.ceil(pacientes.length / itemsPerPage);
+      const zonas = isSearching.value ? zonasStore.filteredZonas : zonasStore.zonas;
+      return Math.ceil(zonas.length / itemsPerPage);
     });
 
     const prevPage = () => {
@@ -291,67 +218,66 @@ export default {
       return pages;
     });
 
-    const displayedPacientes = computed(() => {
-      return paginatedPacientes.value;
+    const displayedZonas = computed(() => {
+      return paginatedZonas.value;
     });
 
-    const goToZones = () => {
-      router.push({ name: 'zones' });
+    const goToHome = () => {
+      router.push({ name: 'home' });
     };
 
-    const showEditModal = ref(false);
-    const editPacienteData = ref({});
+    onMounted(async () => {
+      await zonasStore.fetchZonas();
+    });
 
-    const editPaciente = (paciente) => {
-      editPacienteData.value = { ...paciente };
+    watch(() => zonasStore.searchQuery, (newQuery) => {
+      isSearching.value = newQuery.length < 0;
+      currentPage.value = 1;
+    });
+
+    const showEditModal = ref(false);
+    const editZonaData = ref({});
+
+    const editZona = (zona) => {
+      editZonaData.value = { ...zona };
       showEditModal.value = true;
     };
 
     const closeEditModal = () => {
       showEditModal.value = false;
-      editPacienteData.value = {};
+      editZonaData.value = {};
     };
 
-    const updatePaciente = async () => {
-      await pacientesStore.updatePaciente(editPacienteData.value.id, editPacienteData.value);
+    const updateZona = async () => {
+      await zonasStore.updateZona(editZonaData.value.id, editZonaData.value);
       closeEditModal();
     };
 
     const showDeleteModal = ref(false);
-    const deletePacienteId = ref(null);
+    const deleteZonaId = ref(null);
 
     const confirmDelete = (id) => {
-      deletePacienteId.value = id;
+      deleteZonaId.value = id;
       showDeleteModal.value = true;
     };
 
     const closeDeleteModal = () => {
       showDeleteModal.value = false;
-      deletePacienteId.value = null;
+      deleteZonaId.value = null;
     };
 
-    const deletePaciente = async (id) => {
-      await pacientesStore.deletePaciente(id);
+    const deleteZona = async (id) => {
+      await zonasStore.deleteZona(id);
       closeDeleteModal();
     };
 
-    onMounted(async () => {
-      await pacientesStore.fetchPacientes();
-    });
-
-    watch(() => pacientesStore.searchQuery, (newQuery) => {
-      isSearching.value = newQuery.length < 0;
-      currentPage.value = 1;
-    });
-
     return {
-      pacientesStore,
-      formatFecha,
+      zonasStore,
       showModal,
-      selectedPaciente,
-      showPacienteDetails,
+      selectedZona,
+      showZonaDetails,
       closeModal,
-      displayedPacientes,
+      displayedZonas,
       currentPage,
       totalPages,
       prevPage,
@@ -363,17 +289,17 @@ export default {
       toggleInput,
       goToInputPage,
       isSearching,
-      goToZones,
+      goToHome,
       showEditModal,
-      editPacienteData,
-      editPaciente,
+      editZonaData,
+      editZona,
       closeEditModal,
-      updatePaciente,
+      updateZona,
       showDeleteModal,
-      deletePacienteId,
+      deleteZonaId,
       confirmDelete,
       closeDeleteModal,
-      deletePaciente,
+      deleteZona,
     };
   }
 };
@@ -391,7 +317,7 @@ export default {
   padding: 5px 20px 20px; /* Reducir el padding superior */
 }
 
-.pacientes {
+.zonas {
   width: auto;
   max-width: 90vw;
   background-color: #ffffff;
@@ -445,31 +371,7 @@ h2 {
 .styled-table th,
 .styled-table td {
   padding: 0.5rem 0.75rem; /* Reducir el padding */
-  text-align: left;
-}
-
-.styled-table td button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  transition: color 0.3s ease;
-}
-
-.styled-table td .edit-btn {
-  color: #3498db;
-}
-
-.styled-table td .edit-btn:hover {
-  color: #2980b9;
-}
-
-.styled-table td .delete-btn {
-  color: #e74c3c;
-}
-
-.styled-table td .delete-btn:hover {
-  color: #c0392b;
+  text-align: center; /* Centrar el texto */
 }
 
 .styled-table thead th {
@@ -604,6 +506,31 @@ h2 {
   color: #2c3e50;
 }
 
+.styled-table td button {
+  margin-right: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+.styled-table td .edit-btn {
+  color: #3498db;
+}
+
+.styled-table td .edit-btn:hover {
+  color: #2980b9;
+}
+
+.styled-table td .delete-btn {
+  color: #e74c3c;
+}
+
+.styled-table td .delete-btn:hover {
+  color: #c0392b;
+}
+
 .modal-body form div {
   margin-bottom: 1rem;
 }
@@ -666,8 +593,11 @@ h2 {
 .actions-cell {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100%; /* Asegura que los botones estén centrados verticalmente */
+  gap: 0.5rem;
+}
+
+.styled-table td {
+  text-align: center; /* Centrar el texto */
 }
 
 @media (max-width: 768px) {
@@ -675,7 +605,7 @@ h2 {
     padding: 60px 10px 10px; /* Reducir el padding para móviles */
   }
 
-  .pacientes {
+  .zonas {
     padding: 1rem;
   }
 

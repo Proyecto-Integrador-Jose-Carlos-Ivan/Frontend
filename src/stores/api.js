@@ -196,6 +196,20 @@ export const useApiStore = defineStore('apiStore', {
       }
     },
 
+    async fetchContacto(id) {
+      try {
+        const response = await axios.get(`${API_BASE_URL}api/contacts/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        return response;
+      } catch (error) {
+        this.errors = 'Error fetching contact: ' + error.message;
+        console.error(this.errors);
+      }
+    },
+
     // Acciones para manejar llamadas
     async fetchCalls() {
       this.loading = true;
