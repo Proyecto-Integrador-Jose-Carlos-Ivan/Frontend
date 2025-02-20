@@ -25,7 +25,7 @@
           </select>
         </div>
 
-        <div v-if="reportType === 'llamadas-previstas' || reportType === 'llamadas-realizadas'">
+        <div v-if="reportType === 'llamadas-realizadas'">
           <label for="fecha">Fecha:</label>
           <input type="date" id="fecha" v-model="fecha">
           <label for="tipo">Tipo de llamada:</label>
@@ -34,6 +34,18 @@
             <option value="social">Social</option>
             <option value="seguimiento">Seguimiento</option>
           </select>
+          <label for="zona">Zona:</label>
+          <select id="zona" v-model="zona">
+            <option value="">Todas las zonas</option>
+            <option v-for="zonaItem in zonas" :key="zonaItem.id" :value="zonaItem.id">
+              {{ zonaItem.name }}
+            </option>
+          </select>
+        </div>
+
+        <div v-if="reportType === 'llamadas-previstas'">
+          <label for="fecha">Fecha:</label>
+          <input type="date" id="fecha" v-model="fecha">
           <label for="zona">Zona:</label>
           <select id="zona" v-model="zona">
             <option value="">Todas las zonas</option>
@@ -129,7 +141,7 @@ export default {
             emergenciesUrl.value = informesStore.informes;
             break;
           case 'llamadas-previstas':
-            await informesStore.fetchLlamadasPrevistas(fecha.value, tipo.value, zona.value);
+            await informesStore.fetchLlamadasPrevistas(fecha.value, zona.value);
             emergenciesUrl.value = informesStore.informes;
             break;
           case 'llamadas-realizadas':

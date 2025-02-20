@@ -392,11 +392,11 @@ export const useApiStore = defineStore('apiStore', {
     },
 
     // Obtener llamadas previstas para un día específico
-    async fetchLlamadasPrevistas(fecha, tipo, zona) {
+    async fetchLlamadasPrevistas(fecha, zona) {
       this.loading = true;
       try {
         const response = await axios.get(`${API_BASE_URL}api/reports/scheduled-calls`, {
-          params: { tipo, zona, fecha },
+          params: { zona, fecha },
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
           responseType: 'blob'
         });
