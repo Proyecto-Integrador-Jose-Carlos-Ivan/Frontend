@@ -113,7 +113,7 @@ export default {
     const subtipos = ref([]);
     const mostrarMensaje = ref(false);
 
-    const guardarAviso = async () => {
+    const guardarAviso = async (values, { setErrors, resetForm }) => {
       try {
         await avisoStore.addAviso(avisoActual.value, {
           headers: {
@@ -123,12 +123,16 @@ export default {
         });
         mostrarMensaje.value = true;
         resetFormulario();
+        resetForm(); // Clear validation errors
 
         setTimeout(() => {
           mostrarMensaje.value = false;
         }, 3000);
       } catch (error) {
         console.error('Error al añadir el aviso:', error);
+        if (error.response && error.response.data && error.response.data.errors) {
+          setErrors(error.response.data.errors);
+        }
       }
     };
 
