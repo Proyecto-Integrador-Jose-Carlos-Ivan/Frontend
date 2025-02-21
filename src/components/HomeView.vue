@@ -441,7 +441,7 @@ h2 {
 
 .styled-table th,
 .styled-table td {
-  padding: 0.5rem 0.75rem; /* Reducir el padding */
+  padding: 0.5rem 0.75rem;
   text-align: left;
 }
 
@@ -454,12 +454,12 @@ h2 {
 }
 
 .styled-table td .edit-btn {
-  color: #fff; /* White icon color */
-  background-color: #f39c12; /* Slightly less intense yellow background */
-  border: 1px solid #e67e22; /* Slightly less intense yellow border */
+  color: #fff;
+  background-color: #f39c12;
+  border: 1px solid #e67e22; 
   border-radius: 4px;
-  padding: 0.3rem; /* Reduce padding */
-  margin-right: 0.3rem; /* Add spacing between buttons */
+  padding: 0.3rem;
+  margin-right: 0.3rem;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -469,11 +469,11 @@ h2 {
 }
 
 .styled-table td .delete-btn {
-  color: #fff; /* White icon color */
-  background-color: #c0392b; /* Slightly less intense red background */
-  border: 1px solid #e74c3c; /* Slightly less intense red border */
+  color: #fff; 
+  background-color: #c0392b; 
+  border: 1px solid #e74c3c;
   border-radius: 4px;
-  padding: 0.3rem; /* Reduce padding */
+  padding: 0.3rem; 
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 

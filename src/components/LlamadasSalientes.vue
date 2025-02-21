@@ -96,20 +96,20 @@
         descripcion: '',
         tipo: '',
         subtipo: '',
-        categoria: '', // Ensure this field is included
-        sentido: 'saliente' // Siempre será "saliente"
+        categoria: '',
+        sentido: 'saliente'
       });
   
       const mostrarMensaje = ref(false);
   
       const guardarLlamada = async () => {
         try {
-          console.log('Subtipo value:', llamadaActual.value.subtipo); // Log the subtipo value
-          const token = localStorage.getItem('authToken'); // Obtener el token de autenticación
+          console.log('Subtipo value:', llamadaActual.value.subtipo);
+          const token = localStorage.getItem('authToken');
           await callStore.addCall(llamadaActual.value, {
             headers: {
               Authorization: `Bearer ${token}`,
-              'X-CSRF-TOKEN': localStorage.getItem('csrf_token'), // Ensure CSRF token is included
+              'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
             }
           });
           mostrarMensaje.value = true;
@@ -131,7 +131,7 @@
           descripcion: '',
           tipo: '',
           subtipo: '',
-          categoria: '', // Ensure this field is included
+          categoria: '', 
           sentido: 'saliente'
         };
       };
@@ -166,7 +166,7 @@
   
   <style scoped>
   .main-container {
-    padding-top: 80px; /* Asegura que el contenido no se solape con el header secundario */
+    padding-top: 80px;
   }
   .container {
     padding: 20px 20px 20px;

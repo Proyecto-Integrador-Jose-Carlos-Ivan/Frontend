@@ -282,7 +282,7 @@ export const useApiStore = defineStore('apiStore', {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        this.calls = this.calls.filter((call) => call.id !== id); // Remove the call from the list
+        this.calls = this.calls.filter((call) => call.id !== id);
       } catch (error) {
         this.errors = 'Error al eliminar la llamada: ' + error.message;
       }
@@ -306,19 +306,19 @@ export const useApiStore = defineStore('apiStore', {
       }
     },
     async addAviso(newAviso) {
-      console.log('Adding call with data:', newAviso); // Log the data being sent
+      console.log('Adding call with data:', newAviso); 
       try {
         const response = await axios.post(`${API_BASE_URL}api/alerts`, newAviso, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
-            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'), // Ensure CSRF token is included
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'), 
           },
         });
-        console.log('Response from server:', response); // Log the response from the server
+        console.log('Response from server:', response);
         this.calls.push(response.data.data);
       } catch (error) {
         this.errors = 'Error adding alerts: ' + error.message;
-        console.error('Error adding alerts:', error.response.data); // Log the error response
+        console.error('Error adding alerts:', error.response.data); 
       }
     },
 
@@ -329,7 +329,7 @@ export const useApiStore = defineStore('apiStore', {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        this.avisos = this.avisos.filter((aviso) => aviso.id !== id); // Remove the aviso from the list
+        this.avisos = this.avisos.filter((aviso) => aviso.id !== id); 
       } catch (error) {
         this.errors = 'Error al eliminar el aviso: ' + error.message;
       }

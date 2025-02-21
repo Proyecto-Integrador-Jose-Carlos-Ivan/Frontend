@@ -138,7 +138,7 @@ export default {
         await apiStore.addPaciente(nuevoPaciente.value);
         router.push('/home');
       } catch (error) {
-        console.error('Error al agregar el paciente:', error);
+        console.error('Error al agregar el paciente:', error.response ? error.response.data : error.message);
       }
     };
 

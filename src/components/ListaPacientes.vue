@@ -144,7 +144,7 @@
 </template>
 
 <script>
-import { useApiStore } from '@/stores/api'; // Importar el store de llamadas y avisos
+import { useApiStore } from '@/stores/api';
 import { computed, ref, onMounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -341,7 +341,7 @@ export default {
     });
 
     const currentPage = ref(1);
-    const itemsPerPage = 4; // Show only 4 patients per page
+    const itemsPerPage = 4;
 
     const totalPages = computed(() => {
       return Math.ceil(datosFiltrados.value.length / itemsPerPage);
@@ -366,7 +366,7 @@ export default {
     };
 
     const changeFilter = (filter) => {
-      currentPage.value = 1; // Reset pagination to page 1
+      currentPage.value = 1; 
       if (filter === 'llamadas') {
         mostrarLlamadas.value = true;
         mostrarTodos.value = false;
@@ -376,7 +376,7 @@ export default {
       } else if (filter === 'todo') {
         mostrarLlamadas.value = false;
         mostrarTodos.value = true;
-        date.value = null; // Reset the date selector
+        date.value = null; 
       }
     };
 
@@ -577,12 +577,12 @@ export default {
   align-self: start;
   position: sticky;
   top: 90px;
-  max-height: 70vh; /* Decrease the max height */
+  max-height: 70vh;
   overflow-y: auto;
   width: 100%;
-  max-width: 1000px; /* Increase the max width */
-  margin: 0 auto; /* Center the details window */
-  transition: transform 0.3s ease, opacity 0.3s ease; /* Add smooth animation */
+  max-width: 1000px;
+  margin: 0 auto; 
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .detalles-paciente-enter-active,

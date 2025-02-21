@@ -174,10 +174,10 @@ export default {
       if (query) {
         apiStore.buscarPacientes(query);
       } else {
-        apiStore.fetchPacientes(); // Fetch all patients if the search query is empty
+        apiStore.fetchPacientes(); 
       }
-      router.push('/home'); // Ensure the user is redirected to the home page where the search results are displayed
-      apiStore.setCurrentPage(1); // Reset pagination to the first page
+      router.push('/home'); 
+      apiStore.setCurrentPage(1); 
     };
 
     return {
