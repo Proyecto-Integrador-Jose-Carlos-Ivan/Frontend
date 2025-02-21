@@ -44,7 +44,7 @@ export default class AuthRepository {
     return new Promise((resolve) => {
       const messageHandler = (event) => {
         console.log('Received message:', event);
-        if (event.origin !== 'http://localhost') {
+        if (event.origin !== 'https://frontend.projectogb4.ddaw.es/') {
           console.warn(`Origin mismatch: expected ${origin}, got ${event.origin}`);
           return;
         }
