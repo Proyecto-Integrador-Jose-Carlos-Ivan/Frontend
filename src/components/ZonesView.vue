@@ -477,7 +477,7 @@ h2 {
 
 .modal-header h2 {
   margin: 0;
-  color: #ffffff; /* Cambiar el color del texto */
+  color: #ffffff;
   font-size: 1.5rem; /* Ajustar el tamaño de fuente */
 }
 
@@ -516,12 +516,12 @@ h2 {
 }
 
 .styled-table td .edit-btn {
-  color: #fff; /* White icon color */
-  background-color: #f39c12; /* Slightly less intense yellow background */
-  border: 1px solid #e67e22; /* Slightly less intense yellow border */
+  color: #fff;
+  background-color: #f39c12;
+  border: 1px solid #e67e22;
   border-radius: 4px;
-  padding: 0.3rem; /* Reduce padding */
-  margin-right: 0.3rem; /* Add spacing between buttons */
+  padding: 0.3rem;
+  margin-right: 0.3rem;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -531,11 +531,11 @@ h2 {
 }
 
 .styled-table td .delete-btn {
-  color: #fff; /* White icon color */
-  background-color: #c0392b; /* Slightly less intense red background */
-  border: 1px solid #e74c3c; /* Slightly less intense red border */
+  color: #fff;
+  background-color: #c0392b;
+  border: 1px solid #e74c3c;
   border-radius: 4px;
-  padding: 0.3rem; /* Reduce padding */
+  padding: 0.3rem;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -607,16 +607,16 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%; /* Ensure the buttons are vertically centered */
+  height: 100%;
 }
 
 .styled-table td {
-  text-align: center; /* Centrar el texto */
+  text-align: center;
 }
 
 @media (max-width: 768px) {
   .container {
-    padding: 60px 10px 10px; /* Reducir el padding para móviles */
+    padding: 60px 10px 10px;
   }
 
   .zonas {
@@ -635,7 +635,7 @@ h2 {
 
   .modal-container {
     width: 95%;
-    padding: 1rem; /* Ajustar el padding para móviles */
+    padding: 1rem;
   }
 }
 </style>

@@ -72,7 +72,7 @@ export default {
   width: 100%;
 }
 
-/* Make the embedded PDF occupy full space */
+
 .pdf-content ::v-deep .vue-pdf-embed {
   width: 800px;
   height: 500px;

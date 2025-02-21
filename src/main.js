@@ -1,5 +1,3 @@
-// import './assets/main.css'
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import VCalendar from 'v-calendar';
@@ -20,5 +18,3 @@ app.mount('#app')
 
 
 
-
-// Use plugin with optional defaults

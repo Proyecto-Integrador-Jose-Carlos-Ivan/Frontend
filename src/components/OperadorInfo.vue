@@ -24,13 +24,13 @@
 
 <script>
 import { useAuthStore } from '@/stores/authStore';
-import defaultAvatar from '@/assets/default-avatar.png'; // Ensure this path is correct
+import defaultAvatar from '@/assets/default-avatar.png';
 
 export default {
   name: 'OperadorInfo',
   setup() {
     const authStore = useAuthStore();
-    authStore.initializeAuth(); // Ensure the auth state is initialized
+    authStore.initializeAuth(); 
     const operador = authStore.user;
 
     return {

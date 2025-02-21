@@ -13,7 +13,7 @@
           <div class="form-group">
             <label for="operador">Operador:</label>
             <Field as="select" id="operador" name="operador_id" v-model="llamadaActual.operador_id">
-              <option v-for="operador in operadorStore.operadores" :key="operador.id" :value="operador.id">
+              <option v-for="operador in filteredOperadores" :key="operador.id" :value="operador.id">
                 {{ operador.name }}
               </option>
             </Field>
@@ -74,7 +74,7 @@
   
   <script>
   import { useApiStore } from '@/stores/api';
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, computed } from 'vue';
   import { Form, Field, ErrorMessage } from 'vee-validate';
   import * as yup from 'yup';
   
@@ -96,20 +96,20 @@
         descripcion: '',
         tipo: '',
         subtipo: '',
-        categoria: '', // Ensure this field is included
-        sentido: 'saliente' // Siempre será "saliente"
+        categoria: '',
+        sentido: 'saliente'
       });
   
       const mostrarMensaje = ref(false);
   
       const guardarLlamada = async () => {
         try {
-          console.log('Subtipo value:', llamadaActual.value.subtipo); // Log the subtipo value
-          const token = localStorage.getItem('authToken'); // Obtener el token de autenticación
+          console.log('Subtipo value:', llamadaActual.value.subtipo);
+          const token = localStorage.getItem('authToken');
           await callStore.addCall(llamadaActual.value, {
             headers: {
               Authorization: `Bearer ${token}`,
-              'X-CSRF-TOKEN': localStorage.getItem('csrf_token'), // Ensure CSRF token is included
+              'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
             }
           });
           mostrarMensaje.value = true;
@@ -131,7 +131,7 @@
           descripcion: '',
           tipo: '',
           subtipo: '',
-          categoria: '', // Ensure this field is included
+          categoria: '', 
           sentido: 'saliente'
         };
       };
@@ -139,6 +139,10 @@
       onMounted(async () => {
         await operadorStore.fetchOperadores();
         await pacienteStore.fetchPacientes();
+      });
+
+      const filteredOperadores = computed(() => {
+        return operadorStore.operadores.filter(operador => operador.role !== 'admin' && operador.name !== 'Admin');
       });
   
       const schema = yup.object({
@@ -158,7 +162,8 @@
         llamadaActual,
         mostrarMensaje,
         guardarLlamada,
-        schema
+        schema,
+        filteredOperadores
       };
     }
   };
@@ -166,7 +171,7 @@
   
   <style scoped>
   .main-container {
-    padding-top: 80px; /* Asegura que el contenido no se solape con el header secundario */
+    padding-top: 80px;
   }
   .container {
     padding: 20px 20px 20px;
@@ -246,4 +251,3 @@
     margin-top: 0.25em;
   }
   </style>
-  

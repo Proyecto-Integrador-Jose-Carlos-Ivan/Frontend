@@ -54,7 +54,7 @@
         <div class="form-group">
           <label for="operador_id">Operador:</label>
           <Field as="select" id="operador_id" name="operador_id" v-model="nuevoPaciente.operador_id">
-            <option v-for="operador in operadores" :key="operador.id" :value="operador.id">
+            <option v-for="operador in filteredOperadores" :key="operador.id" :value="operador.id">
               {{ operador.name }}
             </option>
           </Field>
@@ -92,7 +92,7 @@
 <script>
 import { useApiStore } from '@/stores/api';
 import { useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Form, Field, ErrorMessage } from 'vee-validate';
 import * as yup from 'yup';
 
@@ -138,7 +138,7 @@ export default {
         await apiStore.addPaciente(nuevoPaciente.value);
         router.push('/home');
       } catch (error) {
-        console.error('Error al agregar el paciente:', error);
+        console.error('Error al agregar el paciente:', error.response ? error.response.data : error.message);
       }
     };
 
@@ -154,10 +154,15 @@ export default {
       operador_id: yup.string().required('Operador es requerido')
     });
 
+    const filteredOperadores = computed(() => {
+      return operadores.value.filter(operador => operador.role !== 'admin' && operador.name !== 'Admin');
+    });
+
     return {
       nuevoPaciente,
       zonas,
       operadores,
+      filteredOperadores,
       guardarAlta,
       schema
     };

@@ -8,15 +8,7 @@ axios.defaults.withXSRFToken = true;
 export const useAuthStore = defineStore('authStore', {
   state: () => ({
     token: localStorage.getItem('token') || null,
-    // user: (() => {
-    //   try {
-    //     const storedUser = localStorage.getItem('user');
-    //     return storedUser ? JSON.parse(storedUser) : null;
-    //   } catch (error) {
-    //     console.error("Error parsing user from localStorage:", error);
-    //     return null;
-    //   }
-    // })(),
+
   }),
 
   getters: {
@@ -94,21 +86,7 @@ export const useAuthStore = defineStore('authStore', {
       }
     },
 
-    // async logout() {
-    //     try {
-    //       await axios.post('http://localhost/api/logout', {}, {
-    //         headers: {
-    //           Authorization: `Bearer ${this.token}`,
-    //         },
-    //       });
-    //       this.token = null;
-    //       this.user = null;
-    //       localStorage.removeItem('token');
-    //       localStorage.removeItem('user');
-    //     } catch (error) {
-    //       console.error('Error during logout:', error);
-    //     }
-    //   },
+
 
     clearAuth() {
       this.token = null;

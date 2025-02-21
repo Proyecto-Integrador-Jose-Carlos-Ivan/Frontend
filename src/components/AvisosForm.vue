@@ -16,7 +16,7 @@
         <div class="form-group">
           <label for="operador">Operador:</label>
           <Field as="select" id="operador" name="operador_id" v-model="avisoActual.operador_id">
-            <option v-for="operador in operadorStore.operadores" :key="operador.id" :value="operador.id">
+            <option v-for="operador in filteredOperadores" :key="operador.id" :value="operador.id">
               {{ operador.name }}
             </option>
           </Field>
@@ -82,7 +82,7 @@
 
 <script>
 import { useApiStore } from '@/stores/api';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Form, Field, ErrorMessage } from 'vee-validate';
 import * as yup from 'yup';
 
@@ -164,6 +164,10 @@ export default {
       return text.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
     };
 
+    const filteredOperadores = computed(() => {
+      return operadorStore.operadores.filter(operador => operador.role !== 'admin' && operador.name !== 'Admin');
+    });
+
     onMounted(async () => {
       await operadorStore.fetchOperadores();
       await pacienteStore.fetchPacientes();
@@ -193,6 +197,7 @@ export default {
       guardarAviso,
       updateSubtipos,
       formatText,
+      filteredOperadores,
       schema
     };
   }
@@ -248,11 +253,11 @@ h2 {
 }
 
 .btn {
-  padding: 7px 15px; /* Reduce the padding */
+  padding: 7px 15px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 1em; /* Reduce the font size */
+  font-size: 1em;
   transition: background-color 0.3s ease;
 }
 

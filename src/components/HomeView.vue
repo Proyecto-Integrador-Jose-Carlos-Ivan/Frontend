@@ -442,6 +442,7 @@ h2 {
 .styled-table th,
 .styled-table td {
   padding: 0.5rem 0.75rem;
+  padding: 0.5rem 0.75rem;
   text-align: left;
 }
 

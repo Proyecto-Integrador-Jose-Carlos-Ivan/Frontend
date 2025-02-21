@@ -1,8 +1,8 @@
 <template>
   <div class="login-wrapper">
     <div class="login-container">
-      <h1>TeleAsistencia Batoi</h1> <!-- Added title -->
-      <h2>Iniciar Sesión</h2> <!-- Changed to h2 -->
+      <h1>TeleAsistencia Batoi</h1>
+      <h2>Iniciar Sesión</h2> 
 
       <!-- Formulario de inicio de sesión -->
       <Form @submit="loginWithCredentials" :validation-schema="schema" class="login-form">
@@ -120,17 +120,17 @@ export default {
   justify-content: center;
   width: 40%;
   padding: 30px;
-  background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white background */
+  background-color: rgba(255, 255, 255, 0.95); 
   border-right: 1px solid #ccc;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for a professional look */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1;
-  margin-top: -120px; /* Move the container higher */
+  margin-top: -120px;
 }
 
 h1 {
-  margin-bottom: 90px; /* Adjusted margin */
-  font-size: 2.5rem; /* Increased font size */
-  color: #000; /* Black color */
+  margin-bottom: 90px;
+  font-size: 2.5rem;
+  color: #000; 
   font-weight: bold;
 }
 
@@ -161,16 +161,16 @@ h2 {
 
 .form-group input {
   width: 100%;
-  padding: 10px; /* Increased padding for better usability */
+  padding: 10px; 
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 5px;
-  transition: border-color 0.3s ease; /* Smooth transition for border color */
+  transition: border-color 0.3s ease; 
 }
 
 .form-group input:focus {
-  border-color: #007bff; /* Blue border on focus */
-  outline: none; /* Remove default outline */
+  border-color: #007bff; 
+  outline: none; 
 }
 
 .login-btn {
@@ -218,11 +218,11 @@ h2 {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('@/assets/fondo.jpg'); /* Updated path */
+  background-image: url('@/assets/fondo.jpg');
   background-size: cover;
   background-position: center;
   z-index: 0;
-  filter: brightness(0.7); /* Darken the background image for better contrast */
+  filter: brightness(0.7);
 }
 
 .error-message {
