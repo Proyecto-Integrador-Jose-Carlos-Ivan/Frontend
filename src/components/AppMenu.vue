@@ -75,7 +75,7 @@ import { faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPho
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { useAuthStore } from '@/stores/authStore';
 
-// Añade los iconos a la librería
+
 library.add(faUser, faCalendar, faFileAlt, faPhone, faPhoneAlt, faPhoneSlash, faPhoneVolume, faUserCircle, faExclamationTriangle);
 
 export default {
@@ -102,7 +102,7 @@ export default {
     const authStore = useAuthStore();
 
     const modalAlta = ref(false);
-    const zonas = ref([]); // Lista de zonas
+    const zonas = ref([]);
     const searchQuery = ref('');
 
     const nuevoPaciente = ref({
@@ -121,10 +121,8 @@ export default {
       situacion_economica: ''
     });
 
-    // Comprobar si la ruta actual es la de login
     const isLoginRoute = computed(() => route.name === 'login');
 
-    // Cargar zonas al montar el componente
     onMounted(async () => {
       await apiStore.fetchZonas();
       zonas.value = apiStore.zonas;
@@ -174,10 +172,9 @@ export default {
       if (query) {
         apiStore.buscarPacientes(query);
       } else {
-        apiStore.fetchPacientes(); // Fetch all patients if the search query is empty
+        apiStore.fetchPacientes();
       }
-      router.push('/home'); // Ensure the user is redirected to the home page where the search results are displayed
-      apiStore.setCurrentPage(1); // Reset pagination to the first page
+      router.push('/home');
     };
 
     return {
@@ -197,7 +194,6 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos del menú principal */
 .app-menu {
   background-color: #2c3e50;
   color: #ecf0f1;
@@ -251,7 +247,6 @@ ul {
   color: #3498db;
 }
 
-/* Estilos del header secundario */
 .secondary-header {
   background-color: #34495e;
   padding: 1rem 2rem;
@@ -302,7 +297,6 @@ ul {
   background-color: #2980b9;
 }
 
-/* Estilos del modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -351,7 +345,6 @@ ul {
   color: #343a40;
 }
 
-/* Estilos del formulario */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -468,4 +461,51 @@ ul {
 .user-dropdown:hover .dropdown-content {
   display: block;
 }
+
+@media (max-width: 768px) {
+  ul {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  ul li {
+    display: inline-block;
+  }
+
+  .app-menu {
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  h1 {
+    margin-bottom: 1rem;
+  }
+  
+  .secondary-header {
+    background-color: #34495e;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    position: fixed;
+    top: 100px;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .alta-btn {
+    width: 10px;
+  }
+  
+  .search-container {
+    flex-grow: 1;
+    width: 150px;
+  }
+
+}
+
 </style>

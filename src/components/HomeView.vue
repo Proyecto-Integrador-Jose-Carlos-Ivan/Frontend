@@ -184,8 +184,8 @@ export default {
   },
   setup() {
     const pacientesStore = useApiStore();
-    const showModal = ref(false); // Controla la visibilidad del modal
-    const selectedPaciente = ref(null); // Almacena el paciente seleccionado
+    const showModal = ref(false);
+    const selectedPaciente = ref(null);
     const currentPage = ref(1);
     const itemsPerPage = 10;
     const showInput = ref(false);
@@ -214,7 +214,6 @@ export default {
       showModal.value = true;
     };
 
-    // Cierra el modal
     const closeModal = () => {
       showModal.value = false;
       selectedPaciente.value = null;
@@ -229,7 +228,8 @@ export default {
 
     const totalPages = computed(() => {
       const pacientes = isSearching.value ? pacientesStore.filteredPacientes : pacientesStore.pacientes;
-      return Math.ceil(pacientes.length / itemsPerPage);
+      const total = Math.ceil(pacientes.length / itemsPerPage);
+      return total;
     });
 
     const prevPage = () => {
@@ -263,7 +263,7 @@ export default {
       const total = totalPages.value;
       const current = currentPage.value;
       const pages = [];
-
+        
       // Si hay 4 o menos páginas, mostrar todas
       if (total <= 4) {
         for (let i = 1; i <= total; i++) {
@@ -378,14 +378,14 @@ export default {
 
 <style scoped>
 .main-container {
-  padding-top: 90px; /* Reducir el padding superior */
+  padding-top: 90px;
 }
 
 .container {
   display: grid;
   grid-template-columns: 1fr;
   justify-content: center;
-  padding: 5px 20px 20px; /* Reducir el padding superior */
+  padding: 5px 20px 20px;
 }
 
 .pacientes {
@@ -394,7 +394,7 @@ export default {
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 1rem; /* Reducir el padding */
+  padding: 1rem;
   overflow-x: auto;
 }
 
@@ -422,7 +422,7 @@ h2 {
   font-size: 1.5rem;
   color: #2c3e50;
   margin-top: 1rem;
-  margin-bottom: 1rem; /* Reducir el margen inferior */
+  margin-bottom: 1rem;
   text-align: center;
 }
 
@@ -441,7 +441,7 @@ h2 {
 
 .styled-table th,
 .styled-table td {
-  padding: 0.5rem 0.75rem; /* Reducir el padding */
+  padding: 0.5rem 0.75rem;
   text-align: left;
 }
 
@@ -454,12 +454,12 @@ h2 {
 }
 
 .styled-table td .edit-btn {
-  color: #fff; /* White icon color */
-  background-color: #f39c12; /* Slightly less intense yellow background */
-  border: 1px solid #e67e22; /* Slightly less intense yellow border */
+  color: #fff;
+  background-color: #f39c12;
+  border: 1px solid #e67e22;
   border-radius: 4px;
-  padding: 0.3rem; /* Reduce padding */
-  margin-right: 0.3rem; /* Add spacing between buttons */
+  padding: 0.3rem; 
+  margin-right: 0.3rem;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -469,11 +469,11 @@ h2 {
 }
 
 .styled-table td .delete-btn {
-  color: #fff; /* White icon color */
-  background-color: #c0392b; /* Slightly less intense red background */
-  border: 1px solid #e74c3c; /* Slightly less intense red border */
+  color: #fff;
+  background-color: #c0392b;
+  border: 1px solid #e74c3c;
   border-radius: 4px;
-  padding: 0.3rem; /* Reduce padding */
+  padding: 0.3rem;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -483,8 +483,8 @@ h2 {
 }
 
 .styled-table thead th {
-  padding-top: 0.25rem; /* Reducir el padding superior */
-  padding-bottom: 0.25rem; /* Reducir el padding inferior */
+  padding-top: 0.25rem; 
+  padding-bottom: 0.25rem;
 }
 
 .styled-table tbody tr:nth-child(even) {
@@ -493,7 +493,7 @@ h2 {
 
 .styled-table tbody tr:hover {
   background-color: #e9ecef;
-  cursor: pointer; /* Cambia el cursor al pasar sobre una fila */
+  cursor: pointer;
 }
 
 .styled-table tbody tr:last-of-type {
@@ -566,18 +566,18 @@ h2 {
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   width: 90%;
-  max-width: 600px; /* Ajustar el ancho máximo */
+  max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  padding: 1.5rem; /* Ajustar el padding */
+  padding: 1.5rem;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem; /* Ajustar el padding */
-  background-color: #34495e; /* Cambiar el color de fondo */
+  padding: 1rem; 
+  background-color: #34495e;
   border-bottom: 1px solid #e9ecef;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -585,17 +585,17 @@ h2 {
 
 .modal-header h2 {
   margin: 0;
-  color: #ffffff; /* Cambiar el color del texto */
-  font-size: 1.5rem; /* Ajustar el tamaño de fuente */
+  color: #ffffff;
+  font-size: 1.5rem;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 1.5rem; /* Ajustar el tamaño de fuente */
+  font-size: 1.5rem;
   color: #6c757d;
   cursor: pointer;
-  transition: color 0.3s ease; /* Añadir transición */
+  transition: color 0.3s ease;
 }
 
 .close-btn:hover {
@@ -603,14 +603,14 @@ h2 {
 }
 
 .modal-body {
-  padding: 1rem; /* Ajustar el padding */
+  padding: 1rem;
   flex-grow: 1;
   overflow-y: auto;
 }
 
 .modal-body p {
   margin-bottom: 1rem;
-  font-size: 1rem; /* Ajustar el tamaño de fuente */
+  font-size: 1rem;
   color: #2c3e50;
 }
 
@@ -677,7 +677,63 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%; /* Asegura que los botones estén centrados verticalmente */
+  height: 100%;
+}
+
+@media (max-width: 1024px) {
+  .styled-table {
+    font-size: 14px;
+    min-width: 100%;
+  }
+
+  .styled-table th,
+  .styled-table td {
+    padding: 0.5rem;
+  }
+
+  .styled-table th:nth-child(3),
+  .styled-table td:nth-child(3) {
+    width: 26%; /* Ajusta este valor según lo necesites */
+    word-break: break-word;
+  }
+
+
+  .modal-container {
+    width: 95%;
+    padding: 1rem; /* Ajustar el padding */
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px; /* Reduce el espacio entre los números */
+    flex-wrap: wrap; /* Asegura que los elementos no causen scroll lateral */
+    padding: 10px 0;
+  }
+
+  .pagination span {
+    cursor: pointer;
+    padding: 5px 8px; /* Reduce el padding para que ocupen menos espacio */
+    border-radius: 5px;
+    transition: background 0.2s ease-in-out;
+  }
+
+  .pagination span.active {
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+  }
+
+  .pagination button {
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .pagination input {
+    width: 40px; /* Ajuste para que el input no sea tan ancho */
+    text-align: center;
+  }
 }
 
 @media (max-width: 768px) {
@@ -702,6 +758,48 @@ h2 {
   .modal-container {
     width: 95%;
     padding: 1rem; /* Ajustar el padding para móviles */
+  }
+  .styled-table th:nth-child(2),
+  .styled-table th:nth-child(3),
+  .styled-table th:nth-child(5),
+  .styled-table th:nth-child(6),
+  .styled-table td:nth-child(2),
+  .styled-table td:nth-child(3),
+  .styled-table td:nth-child(5),
+  .styled-table td:nth-child(6) {
+    display: none;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px; /* Reduce el espacio entre los números */
+    flex-wrap: wrap; /* Asegura que los elementos no causen scroll lateral */
+    padding: 10px 0;
+  }
+
+  .pagination span {
+    cursor: pointer;
+    padding: 5px 8px; /* Reduce el padding para que ocupen menos espacio */
+    border-radius: 5px;
+    transition: background 0.2s ease-in-out;
+  }
+
+  .pagination span.active {
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+  }
+
+  .pagination button {
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .pagination input {
+    width: 40px; /* Ajuste para que el input no sea tan ancho */
+    text-align: center;
   }
 }
 </style>
