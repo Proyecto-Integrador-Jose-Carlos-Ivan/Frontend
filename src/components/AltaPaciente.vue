@@ -2,91 +2,89 @@
   <div class="main-container">
     <div class="container">
       <h2>Dar de Alta a un Paciente</h2>
-      <form @submit.prevent="guardarAlta" class="form-container">
-        <!-- Primera fila: Información básica -->
+      <Form @submit="guardarAlta" :validation-schema="schema" class="form-container">
         <div class="form-group">
           <label for="nombre">Nombre:</label>
-          <input id="nombre" v-model="nuevoPaciente.nombre" required>
+          <Field id="nombre" name="nombre" v-model="nuevoPaciente.nombre" />
+          <ErrorMessage name="nombre" class="error-message" />
         </div>
         <div class="form-group">
           <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-          <input id="fecha_nacimiento" type="date" v-model="nuevoPaciente.fecha_nacimiento" required>
+          <Field id="fecha_nacimiento" type="date" name="fecha_nacimiento" v-model="nuevoPaciente.fecha_nacimiento" />
+          <ErrorMessage name="fecha_nacimiento" class="error-message" />
         </div>
         <div class="form-group">
           <label for="dni">DNI:</label>
-          <input id="dni" v-model="nuevoPaciente.dni" required>
+          <Field id="dni" name="dni" v-model="nuevoPaciente.dni" />
+          <ErrorMessage name="dni" class="error-message" />
         </div>
         <div class="form-group">
           <label for="sip">SIP:</label>
-          <input id="sip" v-model="nuevoPaciente.sip" required>
+          <Field id="sip" name="sip" v-model="nuevoPaciente.sip" />
+          <ErrorMessage name="sip" class="error-message" />
         </div>
-
-        <!-- Segunda fila: Contacto -->
         <div class="form-group">
           <label for="telefono">Teléfono:</label>
-          <input id="telefono" v-model="nuevoPaciente.telefono" required>
+          <Field id="telefono" name="telefono" v-model="nuevoPaciente.telefono" />
+          <ErrorMessage name="telefono" class="error-message" />
         </div>
         <div class="form-group">
           <label for="email">Email:</label>
-          <input id="email" type="email" v-model="nuevoPaciente.email" required>
+          <Field id="email" type="email" name="email" v-model="nuevoPaciente.email" />
+          <ErrorMessage name="email" class="error-message" />
         </div>
         <div class="form-group">
           <label for="direccion">Dirección:</label>
-          <input id="direccion" v-model="nuevoPaciente.direccion" required>
+          <Field id="direccion" name="direccion" v-model="nuevoPaciente.direccion" />
+          <ErrorMessage name="direccion" class="error-message" />
         </div>
         <div class="form-group">
           <label for="contacto">Contacto:</label>
-          <input id="contacto" v-model="nuevoPaciente.contacto">
+          <Field id="contacto" name="contacto" v-model="nuevoPaciente.contacto" />
         </div>
         <div class="form-group">
           <label for="zona_id">Zona:</label>
-          <select id="zona_id" v-model="nuevoPaciente.zona_id" required>
+          <Field as="select" id="zona_id" name="zona_id" v-model="nuevoPaciente.zona_id">
             <option v-for="zona in zonas" :key="zona.id" :value="zona.id">
               {{ zona.name }}
             </option>
-          </select>
+          </Field>
+          <ErrorMessage name="zona_id" class="error-message" />
         </div>
         <div class="form-group">
           <label for="operador_id">Operador:</label>
-          <select id="operador_id" v-model="nuevoPaciente.operador_id" required>
+          <Field as="select" id="operador_id" name="operador_id" v-model="nuevoPaciente.operador_id">
             <option v-for="operador in operadores" :key="operador.id" :value="operador.id">
               {{ operador.name }}
             </option>
-          </select>
+          </Field>
+          <ErrorMessage name="operador_id" class="error-message" />
         </div>
-
-        <!-- Tercera fila: Situación personal y sanitaria -->
         <div class="form-group">
           <label for="situacion_personal">Situación Personal:</label>
-          <textarea id="situacion_personal" v-model="nuevoPaciente.situacion_personal"></textarea>
+          <Field as="textarea" id="situacion_personal" name="situacion_personal" v-model="nuevoPaciente.situacion_personal" />
         </div>
         <div class="form-group">
           <label for="situacion_sanitaria">Situación Sanitaria:</label>
-          <textarea id="situacion_sanitaria" v-model="nuevoPaciente.situacion_sanitaria"></textarea>
+          <Field as="textarea" id="situacion_sanitaria" name="situacion_sanitaria" v-model="nuevoPaciente.situacion_sanitaria" />
         </div>
-
-        <!-- Cuarta fila: Situación de hábitat y autonomía -->
         <div class="form-group">
           <label for="situacion_habitage">Situación de Hábitat:</label>
-          <textarea id="situacion_habitage" v-model="nuevoPaciente.situacion_habitage"></textarea>
+          <Field as="textarea" id="situacion_habitage" name="situacion_habitage" v-model="nuevoPaciente.situacion_habitage" />
         </div>
         <div class="form-group">
           <label for="autonomia">Autonomía:</label>
-          <textarea id="autonomia" v-model="nuevoPaciente.autonomia"></textarea>
+          <Field as="textarea" id="autonomia" name="autonomia" v-model="nuevoPaciente.autonomia" />
         </div>
-
-        <!-- Quinta fila: Situación económica -->
         <div class="form-group">
           <label for="situacion_economica">Situación Económica:</label>
-          <textarea id="situacion_economica" v-model="nuevoPaciente.situacion_economica"></textarea>
+          <Field as="textarea" id="situacion_economica" name="situacion_economica" v-model="nuevoPaciente.situacion_economica" />
         </div>
-
-        <!-- Botones -->
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">Guardar</button>
           <router-link to="/home" class="btn btn-secondary">Cancelar</router-link>
         </div>
-      </form>
+      </Form>
     </div>
   </div>
 </template>
@@ -95,8 +93,15 @@
 import { useApiStore } from '@/stores/api';
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
+import { Form, Field, ErrorMessage } from 'vee-validate';
+import * as yup from 'yup';
 
 export default {
+  components: {
+    Form,
+    Field,
+    ErrorMessage
+  },
   setup() {
     const apiStore = useApiStore();
     const router = useRouter();
@@ -111,9 +116,9 @@ export default {
       sip: '',
       telefono: '',
       email: '',
-      contacto: '', // Nuevo campo de contacto
-      zona_id: '', // Campo de zona
-      operador_id: '', // Campo de operador
+      contacto: '',
+      zona_id: '',
+      operador_id: '',
       situacion_personal: '',
       situacion_sanitaria: '',
       situacion_habitage: '',
@@ -137,11 +142,24 @@ export default {
       }
     };
 
+    const schema = yup.object({
+      nombre: yup.string().required('Nombre es requerido'),
+      fecha_nacimiento: yup.string().required('Fecha de Nacimiento es requerida'),
+      dni: yup.string().required('DNI es requerido'),
+      sip: yup.string().required('SIP es requerido'),
+      telefono: yup.string().required('Teléfono es requerido'),
+      email: yup.string().email('Email no es válido').required('Email es requerido'),
+      direccion: yup.string().required('Dirección es requerida'),
+      zona_id: yup.string().required('Zona es requerida'),
+      operador_id: yup.string().required('Operador es requerido')
+    });
+
     return {
       nuevoPaciente,
       zonas,
       operadores,
       guardarAlta,
+      schema
     };
   },
 };
@@ -200,6 +218,10 @@ h2 {
 .form-group textarea {
   padding-top: 4px; /* Reducir el padding superior */
   padding-bottom: 4px; /* Reducir el padding inferior */
+}
+
+.error-message {
+  color: red;
 }
 
 .btn {

@@ -2,76 +2,77 @@
   <div class="main-container">
     <div class="container">
       <h2>Añadir Aviso</h2>
-
-      <!-- Formulario para añadir avisos -->
-      <form @submit.prevent="guardarAviso" class="form-container">
+      <Form @submit="guardarAviso" :validation-schema="schema" class="form-container">
         <div class="form-group">
           <label for="fecha">Fecha:</label>
-          <input type="date" id="fecha" v-model="avisoActual.fecha" required>
+          <Field type="date" id="fecha" name="fecha" v-model="avisoActual.fecha" />
+          <ErrorMessage name="fecha" class="error-message" />
         </div>
         <div class="form-group">
           <label for="dia_semana">Día de la Semana:</label>
-          <input type="text" id="dia_semana" v-model="avisoActual.dia_semana" required>
+          <Field type="text" id="dia_semana" name="dia_semana" v-model="avisoActual.dia_semana" />
+          <ErrorMessage name="dia_semana" class="error-message" />
         </div>
         <div class="form-group">
           <label for="operador">Operador:</label>
-          <select id="operador" v-model="avisoActual.operador_id" required>
+          <Field as="select" id="operador" name="operador_id" v-model="avisoActual.operador_id">
             <option v-for="operador in operadorStore.operadores" :key="operador.id" :value="operador.id">
               {{ operador.name }}
             </option>
-          </select>
+          </Field>
+          <ErrorMessage name="operador_id" class="error-message" />
         </div>
         <div class="form-group">
           <label for="paciente">Paciente:</label>
-          <select id="paciente" v-model="avisoActual.paciente_id" required>
+          <Field as="select" id="paciente" name="paciente_id" v-model="avisoActual.paciente_id">
             <option v-for="paciente in pacienteStore.pacientes" :key="paciente.id" :value="paciente.id">
               {{ paciente.nombre }}
             </option>
-          </select>
+          </Field>
+          <ErrorMessage name="paciente_id" class="error-message" />
         </div>
         <div class="form-group">
           <label for="zona">Zona:</label>
-          <select id="zona" v-model="avisoActual.zona_id" required>
+          <Field as="select" id="zona" name="zona_id" v-model="avisoActual.zona_id">
             <option v-for="zona in zonaStore.zonas" :key="zona.id" :value="zona.id">
               {{ zona.name }}
             </option>
-          </select>
+          </Field>
+          <ErrorMessage name="zona_id" class="error-message" />
         </div>
         <div class="form-group">
           <label for="tipo">Tipo de Aviso:</label>
-          <select id="tipo" v-model="avisoActual.tipo" required>
+          <Field as="select" id="tipo" name="tipo" v-model="avisoActual.tipo" @change="updateSubtipos">
             <option value="avisos">Avisos</option>
             <option value="protocolos">Protocolos</option>
-            <option value="ausencias_retornos">Ausencia de Retornos</option>
-          </select>
+            <option value="ausencias_retornos">Ausencias y Retornos</option>
+          </Field>
+          <ErrorMessage name="tipo" class="error-message" />
         </div>
-        <div class="form-group">
+        <div class="form-group" v-if="subtipos.length > 0">
           <label for="subtipo">Subtipo:</label>
-          <select id="subtipo" v-model="avisoActual.subtipo" required>
-            <option value="suspension">Suspension</option>
-            <option value="especial">Especial</option>
-            <option value="fi_ausencia">Fin de Ausencia</option>
-            <option value="retorn">Retorno</option>
-            <option value="alta_hospitalaria">Alta Hospitalaria</option>
-            <option value="duelo">Duelo</option>
-            <option value="medicacion">Medicacion</option>
-          </select>
+          <Field as="select" id="subtipo" name="subtipo" v-model="avisoActual.subtipo">
+            <option v-for="subtipo in subtipos" :key="subtipo" :value="subtipo">
+              {{ formatText(subtipo) }}
+            </option>
+          </Field>
+          <ErrorMessage name="subtipo" class="error-message" />
         </div>
         <div class="form-group">
           <label for="recurrencia">Recurrencia:</label>
-          <select id="recurrencia" v-model="avisoActual.recurrencia" required>
+          <Field as="select" id="recurrencia" name="recurrencia" v-model="avisoActual.recurrencia">
             <option value="puntual">Puntual</option>
             <option value="periodic">Periódico</option>
-          </select>
+          </Field>
+          <ErrorMessage name="recurrencia" class="error-message" />
         </div>
         <div class="form-group">
           <label for="descripcion">Descripción:</label>
-          <textarea id="descripcion" v-model="avisoActual.descripcion" required></textarea>
+          <Field as="textarea" id="descripcion" name="descripcion" v-model="avisoActual.descripcion" />
+          <ErrorMessage name="descripcion" class="error-message" />
         </div>
         <button type="submit" class="btn btn-primary">Añadir Aviso</button>
-      </form>
-
-      <!-- Mensaje de confirmación -->
+      </Form>
       <div v-if="mostrarMensaje" class="mensaje-exito">
         El aviso se ha añadido correctamente.
       </div>
@@ -82,8 +83,15 @@
 <script>
 import { useApiStore } from '@/stores/api';
 import { ref, onMounted } from 'vue';
+import { Form, Field, ErrorMessage } from 'vee-validate';
+import * as yup from 'yup';
 
 export default {
+  components: {
+    Form,
+    Field,
+    ErrorMessage
+  },
   setup() {
     const avisoStore = useApiStore();
     const pacienteStore = useApiStore();
@@ -99,9 +107,10 @@ export default {
       tipo: '',
       subtipo: '',
       descripcion: '',
-      recurrencia: '', // Add this field
+      recurrencia: '',
     });
 
+    const subtipos = ref([]);
     const mostrarMensaje = ref(false);
 
     const guardarAviso = async () => {
@@ -133,8 +142,26 @@ export default {
         tipo: '',
         subtipo: '',
         descripcion: '',
-        recurrencia: '', // Reset this field
+        recurrencia: '',
       };
+      subtipos.value = [];
+    };
+
+    const updateSubtipos = () => {
+      const tipo = avisoActual.value.tipo;
+      if (tipo === 'avisos') {
+        subtipos.value = ['medicacion', 'especial'];
+      } else if (tipo === 'protocolos') {
+        subtipos.value = ['emergencias', 'duelo', 'alta_hospitalaria'];
+      } else if (tipo === 'ausencias_retornos') {
+        subtipos.value = ['suspension', 'retorn', 'fi_ausencia'];
+      } else {
+        subtipos.value = [];
+      }
+    };
+
+    const formatText = (text) => {
+      return text.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
     };
 
     onMounted(async () => {
@@ -143,14 +170,30 @@ export default {
       await zonaStore.fetchZonas();
     });
 
+    const schema = yup.object({
+      fecha: yup.string().required('Fecha es requerida'),
+      dia_semana: yup.string().required('Día de la Semana es requerido'),
+      operador_id: yup.string().required('Operador es requerido'),
+      paciente_id: yup.string().required('Paciente es requerido'),
+      zona_id: yup.string().required('Zona es requerida'),
+      tipo: yup.string().required('Tipo de Aviso es requerido'),
+      subtipo: yup.string().required('Subtipo es requerido'),
+      recurrencia: yup.string().required('Recurrencia es requerida'),
+      descripcion: yup.string().required('Descripción es requerida')
+    });
+
     return {
       avisoStore,
       pacienteStore,
       operadorStore,
       zonaStore,
       avisoActual,
+      subtipos,
       mostrarMensaje,
-      guardarAviso
+      guardarAviso,
+      updateSubtipos,
+      formatText,
+      schema
     };
   }
 };
@@ -230,5 +273,11 @@ h2 {
   border: 1px solid #c3e6cb;
   border-radius: 4px;
   text-align: center;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.875em;
+  margin-top: 0.25em;
 }
 </style>

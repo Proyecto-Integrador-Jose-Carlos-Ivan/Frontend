@@ -322,6 +322,19 @@ export const useApiStore = defineStore('apiStore', {
       }
     },
 
+    async deleteAviso(id) {
+      try {
+        await axios.delete(`${API_BASE_URL}api/alerts/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        this.avisos = this.avisos.filter((aviso) => aviso.id !== id); // Remove the aviso from the list
+      } catch (error) {
+        this.errors = 'Error al eliminar el aviso: ' + error.message;
+      }
+    },
+
     // Acciones para manejar operadores
     async fetchOperadores() {
       try {

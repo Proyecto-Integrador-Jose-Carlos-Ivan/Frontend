@@ -16,6 +16,7 @@
         <table v-if="datosPaginados.length > 0" class="styled-table">
           <thead>
             <tr>
+              <th><input type="checkbox" @change="toggleSelectAll" :checked="allSelected" /></th>
               <th>Nombre</th>
               <th>Teléfono</th>
               <th>DNI</th>
@@ -25,6 +26,7 @@
               <th>Subtipo</th>
               <th>Tipo</th>
               <th v-if="!mostrarLlamadas">Recurrencia</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -34,6 +36,7 @@
               @click="mostrarDetallesPaciente(paciente)"
               class="clickable-row"
             >
+              <td><input type="checkbox" v-model="selectedItems" :value="paciente" /></td>
               <td>{{ paciente.nombre || "No disponible" }}</td>
               <td>{{ paciente.telefono || "No disponible" }}</td>
               <td>{{ paciente.dni || "No disponible" }}</td>
@@ -43,6 +46,11 @@
               <td>{{ paciente.subtipo ? formatSubtipo(paciente.subtipo) : "N/A" }}</td>
               <td>{{ paciente.tipo }}</td>
               <td v-if="!mostrarLlamadas">{{ paciente.recurrencia || "N/A" }}</td>
+              <td class="actions-cell">
+                <button @click.stop="confirmDelete(paciente)" class="delete-btn nav-link">
+                  <font-awesome-icon :icon="['fas', 'trash']" />
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -52,6 +60,7 @@
           <span>Página {{ currentPage }} de {{ totalPages }}</span>
           <button @click="nextPage" :disabled="currentPage === totalPages">Siguiente</button>
         </div>
+        <button v-if="selectedItems.length > 0" @click="deleteSelectedItems" class="delete-selected-btn">Eliminar Seleccionados</button>
       </div>
 
       <!-- Calendario o detalles del paciente -->
@@ -117,13 +126,36 @@
       </transition>
     </div>
   </div>
+
+  <!-- Modal para confirmar eliminación -->
+  <div v-if="showDeleteModal" class="modal-overlay" @click.self="closeDeleteModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Confirmar Eliminación</h2>
+        <button @click="closeDeleteModal" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar este {{ deleteItem.tipo }}?</p>
+        <button @click="deleteItemAction(deleteItem)" class="confirm-btn">Sí, eliminar</button>
+        <button @click="closeDeleteModal" class="cancel-btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import { useApiStore } from '@/stores/api'; // Importar el store de llamadas y avisos
 import { computed, ref, onMounted } from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+
+library.add(faTrash);
 
 export default {
+  components: {
+    FontAwesomeIcon,
+  },
   setup() {
     const pacientesStore = useApiStore();
     const callsStore = useApiStore();
@@ -133,6 +165,7 @@ export default {
     const pacienteSeleccionado = ref({});
     const mostrarLlamadas = ref(true); // Estado para alternar entre llamadas y avisos
     const mostrarTodos = ref(false); // Estado para mostrar todo
+    const selectedItems = ref([]); // Estado para almacenar los elementos seleccionados
 
     // Obtener pacientes, llamadas y avisos al montar el componente
     onMounted(async () => {
@@ -347,6 +380,51 @@ export default {
       }
     };
 
+    const showDeleteModal = ref(false);
+    const deleteItem = ref(null);
+
+    const confirmDelete = (item) => {
+      deleteItem.value = item;
+      showDeleteModal.value = true;
+    };
+
+    const closeDeleteModal = () => {
+      showDeleteModal.value = false;
+      deleteItem.value = null;
+    };
+
+    const deleteItemAction = async (item) => {
+      if (item.tipo.includes('Llamada')) {
+        await callsStore.deleteCall(item.id);
+      } else if (item.tipo === 'Aviso') {
+        await avisosStore.deleteAviso(item.id);
+      }
+      closeDeleteModal();
+    };
+
+    const toggleSelectAll = (event) => {
+      if (event.target.checked) {
+        selectedItems.value = [...datosPaginados.value];
+      } else {
+        selectedItems.value = [];
+      }
+    };
+
+    const allSelected = computed(() => {
+      return selectedItems.value.length === datosPaginados.value.length;
+    });
+
+    const deleteSelectedItems = async () => {
+      for (const item of selectedItems.value) {
+        if (item.tipo.includes('Llamada')) {
+          await callsStore.deleteCall(item.id);
+        } else if (item.tipo === 'Aviso') {
+          await avisosStore.deleteAviso(item.id);
+        }
+      }
+      selectedItems.value = [];
+    };
+
     return {
       pacientesStore,
       callsStore,
@@ -371,6 +449,15 @@ export default {
       nextPage,
       prevPage,
       changeFilter,
+      showDeleteModal,
+      deleteItem,
+      confirmDelete,
+      closeDeleteModal,
+      deleteItemAction,
+      selectedItems,
+      toggleSelectAll,
+      allSelected,
+      deleteSelectedItems,
     };
   },
 };
@@ -598,6 +685,43 @@ export default {
   font-weight: 600;
 }
 
+.styled-table td .delete-btn {
+  color: #fff; /* White icon color */
+  background-color: #c0392b; /* Slightly less intense red background */
+  border: 1px solid #e74c3c; /* Slightly less intense red border */
+  border-radius: 4px;
+  padding: 0.3rem; /* Reduce padding */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.styled-table td .delete-btn:hover {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.actions-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ensure the buttons are vertically centered */
+}
+
+.styled-table th input[type="checkbox"],
+.styled-table td input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #3498db; /* Change the color of the checkbox */
+}
+
+.styled-table th input[type="checkbox"] {
+  margin: 0;
+}
+
+.styled-table td input[type="checkbox"] {
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .container {
     grid-template-columns: 1fr;
@@ -609,5 +733,109 @@ export default {
     position: static;
     margin-top: 1rem;
   }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #34495e;
+  border-bottom: 1px solid #e9ecef;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.5rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6c757d;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #343a40;
+}
+
+.modal-body {
+  padding: 1rem;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.confirm-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-right: 0.5rem;
+}
+
+.confirm-btn:hover {
+  background-color: #c0392b;
+}
+
+.cancel-btn {
+  background-color: #bdc3c7;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #95a5a6;
+}
+
+.delete-selected-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.delete-selected-btn:hover {
+  background-color: #c0392b;
 }
 </style>

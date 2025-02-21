@@ -4,58 +4,65 @@
         <h2>Añadir Llamada Saliente</h2>
   
         <!-- Formulario para añadir llamadas salientes -->
-        <form @submit.prevent="guardarLlamada" class="form-container">
+        <Form @submit="guardarLlamada" :validation-schema="schema" class="form-container">
           <div class="form-group">
             <label for="fecha_hora">Fecha y Hora:</label>
-            <input type="datetime-local" id="fecha_hora" v-model="llamadaActual.fecha_hora" required>
+            <Field type="datetime-local" id="fecha_hora" name="fecha_hora" v-model="llamadaActual.fecha_hora" />
+            <ErrorMessage name="fecha_hora" class="error-message" />
           </div>
           <div class="form-group">
             <label for="operador">Operador:</label>
-            <select id="operador" v-model="llamadaActual.operador_id" required>
+            <Field as="select" id="operador" name="operador_id" v-model="llamadaActual.operador_id">
               <option v-for="operador in operadorStore.operadores" :key="operador.id" :value="operador.id">
                 {{ operador.name }}
               </option>
-            </select>
+            </Field>
+            <ErrorMessage name="operador_id" class="error-message" />
           </div>
           <div class="form-group">
             <label for="paciente">Paciente:</label>
-            <select id="paciente" v-model="llamadaActual.paciente_id" required>
+            <Field as="select" id="paciente" name="paciente_id" v-model="llamadaActual.paciente_id">
               <option v-for="paciente in pacienteStore.pacientes" :key="paciente.id" :value="paciente.id">
                 {{ paciente.nombre }}
               </option>
-            </select>
+            </Field>
+            <ErrorMessage name="paciente_id" class="error-message" />
           </div>
           <div class="form-group">
             <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" v-model="llamadaActual.descripcion" required></textarea>
+            <Field as="textarea" id="descripcion" name="descripcion" v-model="llamadaActual.descripcion" />
+            <ErrorMessage name="descripcion" class="error-message" />
           </div>
           <div class="form-group">
             <label for="tipo">Tipo de Llamada:</label>
-            <select id="tipo" v-model="llamadaActual.tipo" required>
+            <Field as="select" id="tipo" name="tipo" v-model="llamadaActual.tipo">
               <option value="planificada">Planificada</option>
               <option value="no_planificada">No Planificada</option>
-            </select>
+            </Field>
+            <ErrorMessage name="tipo" class="error-message" />
           </div>
           <div class="form-group">
-          <label for="tipo">Categoria:</label>
-          <select id="tipo" v-model="llamadaActual.categoria" required>
+          <label for="categoria">Categoria:</label>
+          <Field as="select" id="categoria" name="categoria" v-model="llamadaActual.categoria">
             <option value="planificada">Planificada</option>
             <option value="no_planificada">No Planificada</option>
             <option value="atencion_emergencias">Atencion Emergencias</option>
             <option value="comunicaciones_no_urgentes">Comunicaciones No Urgentes</option>
-          </select>
+          </Field>
+          <ErrorMessage name="categoria" class="error-message" />
         </div>
           <div class="form-group">
             <label for="subtipo">Subtipo:</label>
-            <select id="subtipo" v-model="llamadaActual.subtipo" required>
+            <Field as="select" id="subtipo" name="subtipo" v-model="llamadaActual.subtipo">
               <option value="seguimiento">Seguimiento</option>
               <option value="verificacion">Verificación</option>
               <option value="emergencia">Emergencia</option>
               <option value="informacion">Información</option>
-            </select>
+            </Field>
+            <ErrorMessage name="subtipo" class="error-message" />
           </div>
           <button type="submit" class="btn btn-primary">Añadir Llamada</button>
-        </form>
+        </Form>
   
         <!-- Mensaje de confirmación -->
         <div v-if="mostrarMensaje" class="mensaje-exito">
@@ -68,8 +75,15 @@
   <script>
   import { useApiStore } from '@/stores/api';
   import { ref, onMounted } from 'vue';
+  import { Form, Field, ErrorMessage } from 'vee-validate';
+  import * as yup from 'yup';
   
   export default {
+    components: {
+      Form,
+      Field,
+      ErrorMessage
+    },
     setup() {
       const callStore = useApiStore();
       const pacienteStore = useApiStore();
@@ -127,13 +141,24 @@
         await pacienteStore.fetchPacientes();
       });
   
+      const schema = yup.object({
+        fecha_hora: yup.string().required('Fecha y Hora es requerido'),
+        operador_id: yup.string().required('Operador es requerido'),
+        paciente_id: yup.string().required('Paciente es requerido'),
+        descripcion: yup.string().required('Descripción es requerida'),
+        tipo: yup.string().required('Tipo de Llamada es requerido'),
+        subtipo: yup.string().required('Subtipo es requerido'),
+        categoria: yup.string().required('Categoria es requerida')
+      });
+  
       return {
         callStore,
         pacienteStore,
         operadorStore,
         llamadaActual,
         mostrarMensaje,
-        guardarLlamada
+        guardarLlamada,
+        schema
       };
     }
   };
@@ -214,4 +239,11 @@
     border-radius: 4px;
     text-align: center;
   }
+  
+  .error-message {
+    color: red;
+    font-size: 0.875em;
+    margin-top: 0.25em;
+  }
   </style>
+  

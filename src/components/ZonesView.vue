@@ -18,10 +18,10 @@
             <tr v-for="zona in displayedZonas" :key="zona.id" @click="showZonaDetails(zona)">
               <td>{{ zona.name }}</td>
               <td class="actions-cell">
-                <button @click.stop="editZona(zona)" class="edit-btn">
+                <button @click.stop="editZona(zona)" class="edit-btn nav-link">
                   <font-awesome-icon :icon="['fas', 'edit']" />
                 </button>
-                <button @click.stop="confirmDelete(zona.id)" class="delete-btn">
+                <button @click.stop="confirmDelete(zona.id)" class="delete-btn nav-link">
                   <font-awesome-icon :icon="['fas', 'trash']" />
                 </button>
               </td>
@@ -516,19 +516,32 @@ h2 {
 }
 
 .styled-table td .edit-btn {
-  color: #3498db;
+  color: #fff; /* White icon color */
+  background-color: #f39c12; /* Slightly less intense yellow background */
+  border: 1px solid #e67e22; /* Slightly less intense yellow border */
+  border-radius: 4px;
+  padding: 0.3rem; /* Reduce padding */
+  margin-right: 0.3rem; /* Add spacing between buttons */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .styled-table td .edit-btn:hover {
-  color: #2980b9;
+  background-color: #e67e22;
+  color: #fff;
 }
 
 .styled-table td .delete-btn {
-  color: #e74c3c;
+  color: #fff; /* White icon color */
+  background-color: #c0392b; /* Slightly less intense red background */
+  border: 1px solid #e74c3c; /* Slightly less intense red border */
+  border-radius: 4px;
+  padding: 0.3rem; /* Reduce padding */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .styled-table td .delete-btn:hover {
-  color: #c0392b;
+  background-color: #e74c3c;
+  color: #fff;
 }
 
 .modal-body form div {
@@ -593,7 +606,8 @@ h2 {
 .actions-cell {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
+  align-items: center;
+  height: 100%; /* Ensure the buttons are vertically centered */
 }
 
 .styled-table td {

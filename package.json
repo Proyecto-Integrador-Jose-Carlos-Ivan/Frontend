@@ -22,9 +22,12 @@
     "lucide-vue-next": "^0.475.0",
     "pinia": "^2.3.1",
     "v-calendar": "^3.1.2",
+    "vee-validate": "^4.15.0",
     "vue": "^3.5.13",
     "vue-pdf-embed": "^2.1.2",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "vuetify": "^3.7.13",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

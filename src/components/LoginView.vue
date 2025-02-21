@@ -103,6 +103,7 @@ export default {
 .login-wrapper {
   display: flex;
   height: 100vh;
+  position: relative;
 }
 
 .login-container {
@@ -112,14 +113,17 @@ export default {
   justify-content: center;
   width: 40%;
   padding: 30px;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white background */
   border-right: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for a professional look */
+  z-index: 1;
 }
 
 h1 {
   margin-bottom: 20px;
   font-size: 2rem;
   color: #333;
+  font-weight: bold; /* Bold font for the heading */
 }
 
 .login-form {
@@ -142,10 +146,16 @@ h1 {
 
 .form-group input {
   width: 100%;
-  padding: 8px;
+  padding: 10px; /* Increased padding for better usability */
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  transition: border-color 0.3s ease; /* Smooth transition for border color */
+}
+
+.form-group input:focus {
+  border-color: #007bff; /* Blue border on focus */
+  outline: none; /* Remove default outline */
 }
 
 .login-btn {
@@ -188,9 +198,15 @@ h1 {
 }
 
 .login-image {
-  width: 60%;
-  background-image: url('/vue-background.jpg');
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('@/assets/fondo.jpg'); /* Updated path */
   background-size: cover;
   background-position: center;
+  z-index: 0;
+  filter: brightness(0.7); /* Darken the background image for better contrast */
 }
 </style>

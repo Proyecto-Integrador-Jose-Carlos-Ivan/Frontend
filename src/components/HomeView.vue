@@ -30,10 +30,10 @@
               
               <td>{{ paciente.contacto ? paciente.contacto.nombre : "No tiene" }}</td>
               <td class="actions-cell">
-                <button @click.stop="editPaciente(paciente)" class="edit-btn">
+                <button @click.stop="editPaciente(paciente)" class="edit-btn nav-link">
                   <font-awesome-icon :icon="['fas', 'edit']" />
                 </button>
-                <button @click.stop="confirmDelete(paciente.id)" class="delete-btn">
+                <button @click.stop="confirmDelete(paciente.id)" class="delete-btn nav-link">
                   <font-awesome-icon :icon="['fas', 'trash']" />
                 </button>
               </td>
@@ -454,19 +454,32 @@ h2 {
 }
 
 .styled-table td .edit-btn {
-  color: #3498db;
+  color: #fff; /* White icon color */
+  background-color: #f39c12; /* Slightly less intense yellow background */
+  border: 1px solid #e67e22; /* Slightly less intense yellow border */
+  border-radius: 4px;
+  padding: 0.3rem; /* Reduce padding */
+  margin-right: 0.3rem; /* Add spacing between buttons */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .styled-table td .edit-btn:hover {
-  color: #2980b9;
+  background-color: #e67e22;
+  color: #fff;
 }
 
 .styled-table td .delete-btn {
-  color: #e74c3c;
+  color: #fff; /* White icon color */
+  background-color: #c0392b; /* Slightly less intense red background */
+  border: 1px solid #e74c3c; /* Slightly less intense red border */
+  border-radius: 4px;
+  padding: 0.3rem; /* Reduce padding */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .styled-table td .delete-btn:hover {
-  color: #c0392b;
+  background-color: #e74c3c;
+  color: #fff;
 }
 
 .styled-table thead th {
