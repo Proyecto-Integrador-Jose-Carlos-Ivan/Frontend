@@ -12,7 +12,7 @@
           </div>
           <div class="form-group">
             <label for="operador">Operador:</label>
-            <Field as="select" id="operador" name="operador_id" v-model="llamadaActual.operador_id">
+            <Field as="select" id="operador_id" name="operador_id" v-model="llamadaActual.operador_id">
               <option v-for="operador in filteredOperadores" :key="operador.id" :value="operador.id">
                 {{ operador.name }}
               </option>
@@ -21,7 +21,7 @@
           </div>
           <div class="form-group">
             <label for="paciente">Paciente:</label>
-            <Field as="select" id="paciente" name="paciente_id" v-model="llamadaActual.paciente_id">
+            <Field as="select" id="paciente_id" name="paciente_id" v-model="llamadaActual.paciente_id">
               <option v-for="paciente in pacienteStore.pacientes" :key="paciente.id" :value="paciente.id">
                 {{ paciente.nombre }}
               </option>
