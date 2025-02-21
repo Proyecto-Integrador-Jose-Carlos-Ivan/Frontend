@@ -79,7 +79,7 @@ export const useApiStore = defineStore('apiStore', {
         const response = await axios.post(`${API_BASE_URL}api/patients`, paciente, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
-            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'), // Add CSRF token
+            
           },
         });
         this.pacientes.push(response.data.data); // Agregar el nuevo paciente a la lista

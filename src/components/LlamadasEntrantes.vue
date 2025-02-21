@@ -10,16 +10,16 @@
           <input type="datetime-local" id="fecha_hora" v-model="llamadaActual.fecha_hora" required>
         </div>
         <div class="form-group">
-          <label for="operador">Operador:</label>
-          <select id="operador" v-model="llamadaActual.operador_id" required>
+          <label for="operador_id">Operador:</label>
+          <select id="operador_id" v-model="llamadaActual.operador_id" required>
             <option v-for="operador in operadorStore.operadores" :key="operador.id" :value="operador.id">
               {{ operador.name }}
             </option>
           </select>
         </div>
         <div class="form-group">
-          <label for="paciente">Paciente:</label>
-          <select id="paciente" v-model="llamadaActual.paciente_id" required>
+          <label for="paciente_id">Paciente:</label>
+          <select id="paciente_id" v-model="llamadaActual.paciente_id" required>
             <option v-for="paciente in pacienteStore.pacientes" :key="paciente.id" :value="paciente.id">
               {{ paciente.nombre }}
             </option>
@@ -29,16 +29,10 @@
           <label for="descripcion">Descripción:</label>
           <textarea id="descripcion" v-model="llamadaActual.descripcion" required></textarea>
         </div>
+      
         <div class="form-group">
-          <label for="tipo">Tipo de Llamada:</label>
-          <select id="tipo" v-model="llamadaActual.tipo" required>
-            <option value="emergencia">Emergencia</option>
-            <option value="no_urgente">No Urgente</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="tipo">Categoria:</label>
-          <select id="tipo" v-model="llamadaActual.categoria" required>
+          <label for="categoria">Categoria:</label>
+          <select id="categoria" v-model="llamadaActual.categoria" required>
             <option value="planificada">Planificada</option>
             <option value="no_planificada">No Planificada</option>
             <option value="atencion_emergencias">Atencion Emergencias</option>

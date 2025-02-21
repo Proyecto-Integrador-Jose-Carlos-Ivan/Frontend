@@ -46,6 +46,14 @@
             </option>
           </select>
         </div>
+        <div class="form-group">
+          <label for="operador_id">Operador:</label>
+          <select id="operador_id" v-model="nuevoPaciente.operador_id" required>
+            <option v-for="operador in operadores" :key="operador.id" :value="operador.id">
+              {{ operador.name }}
+            </option>
+          </select>
+        </div>
 
         <!-- Tercera fila: Situación personal y sanitaria -->
         <div class="form-group">
@@ -93,6 +101,7 @@ export default {
     const apiStore = useApiStore();
     const router = useRouter();
     const zonas = ref([]);
+    const operadores = ref([]);
 
     const nuevoPaciente = ref({
       nombre: '',
@@ -104,6 +113,7 @@ export default {
       email: '',
       contacto: '', // Nuevo campo de contacto
       zona_id: '', // Campo de zona
+      operador_id: '', // Campo de operador
       situacion_personal: '',
       situacion_sanitaria: '',
       situacion_habitage: '',
@@ -114,6 +124,8 @@ export default {
     onMounted(async () => {
       await apiStore.fetchZonas();
       zonas.value = apiStore.zonas;
+      await apiStore.fetchOperadores();
+      operadores.value = apiStore.operadores;
     });
 
     const guardarAlta = async () => {
@@ -128,6 +140,7 @@ export default {
     return {
       nuevoPaciente,
       zonas,
+      operadores,
       guardarAlta,
     };
   },

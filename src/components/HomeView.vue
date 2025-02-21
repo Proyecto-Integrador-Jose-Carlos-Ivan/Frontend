@@ -11,12 +11,11 @@
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Situación Personal</th>
               <th>Dirección</th>
               <th>Email</th>
               <th>Teléfono</th>
               <th>SIP</th>
-              <th>Situación Sanitaria</th>
+             
               <th>Contacto</th>
               <th>Acciones</th>
             </tr>
@@ -24,12 +23,11 @@
           <tbody>
             <tr v-for="paciente in displayedPacientes" :key="paciente.id" @click="showPacienteDetails(paciente)">
               <td>{{ paciente.nombre }}</td>
-              <td>{{ paciente.situacion_personal || "No disponible" }}</td>
               <td>{{ paciente.direccion }}</td>
               <td>{{ paciente.email }}</td>
               <td>{{ paciente.telefono }}</td>
               <td>{{ paciente.sip }}</td>
-              <td>{{ paciente.situacion_sanitaria || "No disponible" }}</td>
+              
               <td>{{ paciente.contacto ? paciente.contacto.nombre : "No tiene" }}</td>
               <td class="actions-cell">
                 <button @click.stop="editPaciente(paciente)" class="edit-btn">
@@ -85,7 +83,6 @@
             <p><strong>Dirección:</strong> {{ selectedPaciente.direccion }}</p>
             <p><strong>Email:</strong> {{ selectedPaciente.email }}</p>
             <p><strong>Teléfono:</strong> {{ selectedPaciente.telefono }}</p>
-            <p><strong>Contacto:</strong> {{ selectedPaciente.contacto }}</p>
             <p><strong>SIP:</strong> {{ selectedPaciente.sip }}</p>
             <p><strong>Situación Sanitaria:</strong> {{ selectedPaciente.situacion_sanitaria || "No disponible" }}</p>
             <p><strong>Fecha de Nacimiento:</strong> {{ formatFecha(selectedPaciente.fecha_nacimiento) }}</p>
