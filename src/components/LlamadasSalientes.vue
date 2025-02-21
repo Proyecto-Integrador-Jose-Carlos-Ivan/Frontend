@@ -1,40 +1,47 @@
 <template>
-  <div class="main-container">
-    <div class="container">
-      <h2>Añadir Llamada Saliente</h2>
-
-      <!-- Formulario para añadir llamadas entrantes -->
-      <Form @submit="guardarLlamada" :validation-schema="schema" class="form-container">
-        <div class="form-group">
-          <label for="fecha_hora">Fecha y Hora:</label>
-          <Field type="datetime-local" id="fecha_hora" name="fecha_hora" v-model="llamadaActual.fecha_hora" />
-          <ErrorMessage name="fecha_hora" class="error-message" />
-        </div>
-        <div class="form-group">
-          <label for="operador_id">Operador:</label>
-          <Field as="select" id="operador_id" name="operador_id" v-model="llamadaActual.operador_id">
-            <option v-for="operador in filteredOperadores" :key="operador.id" :value="operador.id">
-              {{ operador.name }}
-            </option>
-          </Field>
-          <ErrorMessage name="operador_id" class="error-message" />
-        </div>
-        <div class="form-group">
-          <label for="paciente_id">Paciente:</label>
-          <Field as="select" id="paciente_id" name="paciente_id" v-model="llamadaActual.paciente_id">
-            <option v-for="paciente in pacienteStore.pacientes" :key="paciente.id" :value="paciente.id">
-              {{ paciente.nombre }}
-            </option>
-          </Field>
-          <ErrorMessage name="paciente_id" class="error-message" />
-        </div>
-        <div class="form-group">
-          <label for="descripcion">Descripción:</label>
-          <Field as="textarea" id="descripcion" name="descripcion" v-model="llamadaActual.descripcion" />
-          <ErrorMessage name="descripcion" class="error-message" />
-        </div>
-      
-        <div class="form-group">
+    <div class="main-container">
+      <div class="container">
+        <h2>Añadir Llamada Saliente</h2>
+  
+        <!-- Formulario para añadir llamadas salientes -->
+        <Form @submit="guardarLlamada" :validation-schema="schema" class="form-container">
+          <div class="form-group">
+            <label for="fecha_hora">Fecha y Hora:</label>
+            <Field type="datetime-local" id="fecha_hora" name="fecha_hora" v-model="llamadaActual.fecha_hora" />
+            <ErrorMessage name="fecha_hora" class="error-message" />
+          </div>
+          <div class="form-group">
+            <label for="operador">Operador:</label>
+            <Field as="select" id="operador" name="operador_id" v-model="llamadaActual.operador_id">
+              <option v-for="operador in filteredOperadores" :key="operador.id" :value="operador.id">
+                {{ operador.name }}
+              </option>
+            </Field>
+            <ErrorMessage name="operador_id" class="error-message" />
+          </div>
+          <div class="form-group">
+            <label for="paciente">Paciente:</label>
+            <Field as="select" id="paciente" name="paciente_id" v-model="llamadaActual.paciente_id">
+              <option v-for="paciente in pacienteStore.pacientes" :key="paciente.id" :value="paciente.id">
+                {{ paciente.nombre }}
+              </option>
+            </Field>
+            <ErrorMessage name="paciente_id" class="error-message" />
+          </div>
+          <div class="form-group">
+            <label for="descripcion">Descripción:</label>
+            <Field as="textarea" id="descripcion" name="descripcion" v-model="llamadaActual.descripcion" />
+            <ErrorMessage name="descripcion" class="error-message" />
+          </div>
+          <div class="form-group">
+            <label for="tipo">Tipo de Llamada:</label>
+            <Field as="select" id="tipo" name="tipo" v-model="llamadaActual.tipo">
+              <option value="planificada">Planificada</option>
+              <option value="no_planificada">No Planificada</option>
+            </Field>
+            <ErrorMessage name="tipo" class="error-message" />
+          </div>
+          <div class="form-group">
           <label for="categoria">Categoria:</label>
           <Field as="select" id="categoria" name="categoria" v-model="llamadaActual.categoria">
             <option value="planificada">Planificada</option>
