@@ -81,7 +81,7 @@
           <Field as="textarea" id="situacion_economica" name="situacion_economica" v-model="nuevoPaciente.situacion_economica" />
         </div>
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="submit" class="btn btn-primary">Dar de alta</button>
           <router-link to="/home" class="btn btn-secondary">Cancelar</router-link>
         </div>
       </Form>
@@ -176,7 +176,7 @@ export default {
 }
 
 h2 {
-  color: #009879;
+  color: #5bc0de; /* Cambiar el color a un azul más claro */
   margin-bottom: 20px;
 }
 
@@ -194,7 +194,7 @@ h2 {
 .form-group label {
   display: block;
   margin-bottom: 5px;
-  color: #009879;
+  color: #2bb6e0; /* Cambiar el color a un azul más claro */
   font-weight: bold;
 }
 
@@ -234,12 +234,12 @@ h2 {
 }
 
 .btn-primary {
-  background-color: #009879;
+  background-color: #5bc0de; /* Cambiar el color a un azul más claro */
   color: white;
 }
 
 .btn-primary:hover {
-  background-color: #007f63;
+  background-color: #2bb6e0; /* Cambiar el color a un azul más claro */
 }
 
 .btn-secondary {

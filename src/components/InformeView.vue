@@ -27,7 +27,8 @@
 
         <div v-if="reportType === 'llamadas-realizadas'">
           <label for="fecha">Fecha:</label>
-          <input type="date" id="fecha" v-model="fecha">
+          <Field type="date" id="fecha" name="fecha" v-model="fecha" />
+          <ErrorMessage name="fecha" />
           <label for="tipo">Tipo de llamada:</label>
           <select id="tipo" v-model="tipo">
             <option value="emergencia">Emergencia</option>
@@ -45,7 +46,8 @@
 
         <div v-if="reportType === 'llamadas-previstas'">
           <label for="fecha">Fecha:</label>
-          <input type="date" id="fecha" v-model="fecha">
+          <Field type="date" id="fecha" name="fecha" v-model="fecha" />
+          <ErrorMessage name="fecha" />
           <label for="zona">Zona:</label>
           <select id="zona" v-model="zona">
             <option value="">Todas las zonas</option>
@@ -100,21 +102,28 @@
 import { ref, computed, onMounted } from 'vue';
 import { useApiStore } from '@/stores/api';
 import VuePdfEmbed from 'vue-pdf-embed';
+import { useField, Form, Field, ErrorMessage } from 'vee-validate';
+import * as yup from 'yup';
 
 export default {
-  components: { VuePdfEmbed },
+  components: { VuePdfEmbed, Form, Field, ErrorMessage },
   setup() {
     const informesStore = useApiStore();
     const pacientesStore = useApiStore();
 
     const reportType = ref('emergencias');
     const zona = ref('');
-    const fecha = ref('');
     const tipo = ref('');
     const pacienteId = ref('');
     const informes = ref([]);
     const loading = ref(false);
     const emergenciesUrl = ref(null);
+
+    const schema = yup.object({
+      fecha: yup.date().required('La fecha es obligatoria').typeError('Fecha no válida'),
+    });
+
+    const { value: fecha, errorMessage: fechaError } = useField('fecha', schema);
 
     const zonas = computed(() => informesStore.zonas);
 
@@ -187,6 +196,7 @@ export default {
       reportType,
       zona,
       fecha,
+      fechaError,
       tipo,
       pacienteId,
       informes,

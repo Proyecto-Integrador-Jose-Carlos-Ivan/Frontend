@@ -96,7 +96,7 @@ router.beforeEach((to, from, next) => {
   const apiStore = useApiStore();
 
   // Si la ruta requiere autenticación y el usuario no está autenticado, redirige a login
-  if (to.meta.requiresAuth && !apiStore.isAuthenticated) {
+  if (to.name !== 'login' && to.name !== 'google-callback' && !apiStore.isAuthenticated) {
     next({ name: 'login' });
   } else {
     next();

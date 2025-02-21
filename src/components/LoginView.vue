@@ -1,20 +1,24 @@
 <template>
   <div class="login-wrapper">
     <div class="login-container">
-      <h1>Iniciar Sesión</h1>
+      <h1>TeleAsistencia Batoi</h1> <!-- Added title -->
+      <h2>Iniciar Sesión</h2> <!-- Changed to h2 -->
 
       <!-- Formulario de inicio de sesión -->
-      <form @submit.prevent="loginWithCredentials" class="login-form">
+      <Form @submit="loginWithCredentials" :validation-schema="schema" class="login-form">
         <div class="form-group">
           <label for="email">Correo electrónico:</label>
-          <input type="email" id="email" v-model="email" required />
+          <Field type="email" id="email" name="email" v-model="email" />
+          <ErrorMessage name="email" class="error-message" />
         </div>
         <div class="form-group">
           <label for="password">Contraseña:</label>
-          <input type="password" id="password" v-model="password" required />
+          <Field type="password" id="password" name="password" v-model="password" />
+          <ErrorMessage name="password" class="error-message" />
         </div>
         <button type="submit" class="login-btn">Iniciar sesión</button>
-      </form>
+        <div v-if="loginError" class="error-message">{{ loginError }}</div>
+      </Form>
 
       <!-- Botón de inicio de sesión con Google -->
       <button @click="loginWithGoogle" class="google-login-btn">
@@ -27,12 +31,19 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import AuthRepository from '../repositories/auth.repository';
+import { Form, Field, ErrorMessage } from 'vee-validate';
+import * as yup from 'yup';
 
 export default {
+  components: {
+    Form,
+    Field,
+    ErrorMessage
+  },
   setup() {
     const router = useRouter();
     const authStore = useAuthStore();
@@ -40,6 +51,7 @@ export default {
 
     const email = ref('');
     const password = ref('');
+    const loginError = ref('');
 
     const loginWithCredentials = async () => {
       try {
@@ -47,53 +59,48 @@ export default {
           email: email.value,
           password: password.value,
         };
-        console.log(payload);
         const result = await authRepository.loginWithCredentials(payload);
         if (result.success) {
           authStore.setToken(result.data.token);
           authStore.setUser(result.data.user);
           router.push({ name: 'home' });
         } else {
-          console.error('Login with credentials failed:', result);
+          loginError.value = 'El email o la contraseña no coinciden';
         }
       } catch (error) {
-        console.error('Error al iniciar sesión:', error);
+        loginError.value = 'El email o la contraseña no coinciden'
+        console.error(loginError.value);
       }
     };
 
     const loginWithGoogle = async () => {
       try {
         const result = await authRepository.loginWithGoogle();
-
         if (result.success) {
           authStore.setToken(result.token);
           authStore.setUser(result.user);
-          console.log('Google login successful:', result.success);
           router.push({ name: 'home' });
         } else {
-          console.error('Google login failed:', result.error);
+          loginError.value = 'El email o la contraseña no coinciden';
         }
       } catch (error) {
-        console.error('Error during Google login:', error);
+        loginError.value = 'El email o la contraseña no coinciden'
+        console.error(loginError.value);
       }
     };
 
-    // Watch for changes in isAuthenticated
-    watch(
-      () => authStore.isLoggedIn,
-      (isLoggedIn) => {
-        if (isLoggedIn) {
-          router.push({ name: 'home' });
-        }
-      },
-      { immediate: true } // Add immediate: true to run the watcher on component mount
-    );
+    const schema = yup.object({
+      email: yup.string().email('Email no es válido').required('Email es requerido'),
+      password: yup.string().required('Contraseña es requerida')
+    });
 
     return {
       email,
       password,
       loginWithCredentials,
       loginWithGoogle,
+      loginError,
+      schema
     };
   },
 };
@@ -117,13 +124,21 @@ export default {
   border-right: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for a professional look */
   z-index: 1;
+  margin-top: -120px; /* Move the container higher */
 }
 
 h1 {
+  margin-bottom: 90px; /* Adjusted margin */
+  font-size: 2.5rem; /* Increased font size */
+  color: #000; /* Black color */
+  font-weight: bold;
+}
+
+h2 {
   margin-bottom: 20px;
   font-size: 2rem;
   color: #333;
-  font-weight: bold; /* Bold font for the heading */
+  font-weight: bold;
 }
 
 .login-form {
@@ -208,5 +223,10 @@ h1 {
   background-position: center;
   z-index: 0;
   filter: brightness(0.7); /* Darken the background image for better contrast */
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
 }
 </style>
