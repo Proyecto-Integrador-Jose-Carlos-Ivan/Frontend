@@ -91,6 +91,7 @@
             <p><strong>Contacto:</strong> {{ selectedPaciente.contacto ? selectedPaciente.contacto.nombre : "No disponible" }}</p>
             <p v-if="selectedPaciente.contacto"><strong>Teléfono del Contacto:</strong> {{ selectedPaciente.contacto.telefono }}</p>
             <p v-if="selectedPaciente.contacto"><strong>Relación:</strong> {{ selectedPaciente.contacto.relacion }}</p>
+            <p><strong>Zona:</strong> {{ getZonaName(selectedPaciente.zona_id) }}</p>
           </div>
         </div>
       </div>
@@ -136,6 +137,14 @@
             <div>
               <label>Fecha de Nacimiento:</label>
               <input v-model="editPacienteData.fecha_nacimiento" type="date" />
+            </div>
+            <div>
+              <label>Zona:</label>
+              <select v-model="editPacienteData.zona_id">
+                <option v-for="zona in zonasStore.zonas" :key="zona.id" :value="zona.id">
+                  {{ zona.name }}
+                </option>
+              </select>
             </div>
             <div>
               <label>DNI:</label>
@@ -184,6 +193,7 @@ export default {
   },
   setup() {
     const pacientesStore = useApiStore();
+    const zonasStore = useApiStore();
     const showModal = ref(false);
     const selectedPaciente = ref(null);
     const currentPage = ref(1);
@@ -332,8 +342,14 @@ export default {
       closeDeleteModal();
     };
 
+    const getZonaName = (zonaId) => {
+      const zona = zonasStore.zonas.find(z => z.id === zonaId);
+      return zona ? zona.name : 'No disponible';
+    };
+
     onMounted(async () => {
       await pacientesStore.fetchPacientes();
+      await zonasStore.fetchZonas();
     });
 
     watch(() => pacientesStore.searchQuery, (newQuery) => {
@@ -343,6 +359,7 @@ export default {
 
     return {
       pacientesStore,
+      zonasStore,
       formatFecha,
       showModal,
       selectedPaciente,
@@ -371,6 +388,7 @@ export default {
       confirmDelete,
       closeDeleteModal,
       deletePaciente,
+      getZonaName,
     };
   }
 };

@@ -84,11 +84,7 @@
           <form @submit.prevent="updateZona">
             <div>
               <label>Nombre:</label>
-              <input v-model="editZonaData.nombre" required />
-            </div>
-            <div>
-              <label>Descripción:</label>
-              <input v-model="editZonaData.descripcion" />
+              <input v-model="editZonaData.name" required />
             </div>
             <button type="submit">Guardar</button>
           </form>

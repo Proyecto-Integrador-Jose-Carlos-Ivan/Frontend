@@ -63,6 +63,7 @@ export const useApiStore = defineStore('apiStore', {
         const response = await axios.get(`${API_BASE_URL}api/patients`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
           },
         });
         console.log('Pacientes obtenidos:', response.data.data); // Verificar los datos
@@ -79,6 +80,7 @@ export const useApiStore = defineStore('apiStore', {
         const response = await axios.post(`${API_BASE_URL}api/patients`, paciente, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
             
           },
         });
@@ -94,6 +96,7 @@ export const useApiStore = defineStore('apiStore', {
         const response = await axios.put(`${API_BASE_URL}api/patients/${id}`, paciente, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
           },
         });
         const index = this.pacientes.findIndex((p) => p.id === id);
@@ -111,6 +114,7 @@ export const useApiStore = defineStore('apiStore', {
         await axios.delete(`${API_BASE_URL}api/patients/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
           },
         });
         this.pacientes = this.pacientes.filter((p) => p.id !== id); // Eliminar el paciente de la lista
@@ -251,6 +255,7 @@ export const useApiStore = defineStore('apiStore', {
         const response = await axios.put(`${API_BASE_URL}api/calls/${id}`, call, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
           },
         });
         const index = this.calls.findIndex((p) => p.id === id);
@@ -267,6 +272,7 @@ export const useApiStore = defineStore('apiStore', {
         await axios.delete(`${API_BASE_URL}api/calls/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
           },
         });
         this.calls = this.calls.filter((p) => p.id !== id); // Eliminar el paciente de la lista
@@ -280,6 +286,7 @@ export const useApiStore = defineStore('apiStore', {
         await axios.delete(`${API_BASE_URL}api/calls/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
           },
         });
         this.calls = this.calls.filter((call) => call.id !== id);
@@ -295,6 +302,7 @@ export const useApiStore = defineStore('apiStore', {
         const response = await axios.get(API_BASE_URL + 'api/alerts',{
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
+              'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
             },
           });
         console.log('Llamadas obtenidas:', response.data.data); // Ajusta la URL de la API
@@ -327,6 +335,7 @@ export const useApiStore = defineStore('apiStore', {
         await axios.delete(`${API_BASE_URL}api/alerts/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
           },
         });
         this.avisos = this.avisos.filter((aviso) => aviso.id !== id); 
@@ -341,6 +350,7 @@ export const useApiStore = defineStore('apiStore', {
         const response = await axios.get(API_BASE_URL + 'api/operators' ,{
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
+              'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
             },
           });
         console.log('Operadores obtenidos:', response.data.data);
@@ -356,7 +366,8 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.post(API_BASE_URL + 'api/operators', operador, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
           }
         });
         this.operadores.push(response.data.data)
@@ -371,7 +382,8 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.put(`${API_BASE_URL}api/operators/${id}`, operador, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
           }
         });
         const index = this.operadores.findIndex((o) => o.id === id)
@@ -389,7 +401,8 @@ export const useApiStore = defineStore('apiStore', {
       try {
         await axios.delete(`${API_BASE_URL}api/operators/${id}` ,{
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
           }
         });
         this.operadores = this.operadores.filter((o) => o.id !== id)
@@ -404,7 +417,8 @@ export const useApiStore = defineStore('apiStore', {
       try {
         const response = await axios.get(`${API_BASE_URL}api/zones`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-TOKEN': localStorage.getItem('csrf_token'),
           }
         });
         this.zonas = response.data.data;
