@@ -13,7 +13,7 @@
           <div class="form-group">
             <label for="operador">Operador:</label>
             <Field as="select" id="operador" name="operador_id" v-model="llamadaActual.operador_id">
-              <option v-for="operador in operadorStore.operadores" :key="operador.id" :value="operador.id">
+              <option v-for="operador in filteredOperadores" :key="operador.id" :value="operador.id">
                 {{ operador.name }}
               </option>
             </Field>
@@ -74,7 +74,7 @@
   
   <script>
   import { useApiStore } from '@/stores/api';
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, computed } from 'vue';
   import { Form, Field, ErrorMessage } from 'vee-validate';
   import * as yup from 'yup';
   
@@ -140,6 +140,10 @@
         await operadorStore.fetchOperadores();
         await pacienteStore.fetchPacientes();
       });
+
+      const filteredOperadores = computed(() => {
+        return operadorStore.operadores.filter(operador => operador.role !== 'admin' && operador.name !== 'Admin');
+      });
   
       const schema = yup.object({
         fecha_hora: yup.string().required('Fecha y Hora es requerido'),
@@ -158,7 +162,8 @@
         llamadaActual,
         mostrarMensaje,
         guardarLlamada,
-        schema
+        schema,
+        filteredOperadores
       };
     }
   };
@@ -246,4 +251,3 @@
     margin-top: 0.25em;
   }
   </style>
-  
